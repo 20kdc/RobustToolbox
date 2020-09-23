@@ -115,7 +115,7 @@ namespace Robust.Shared.Physics
         public IEnumerable<IEntity> GetCollidingEntities(IPhysBody physBody, Vector2 offset, bool approximate = true)
         {
             var modifiers = physBody.Entity.GetAllComponents<ICollideSpecial>();
-            foreach ( var body in this[physBody.MapID].Query(physBody.WorldAABB, approximate))
+            foreach (var body in this[physBody.MapID].Query(physBody.WorldAABB.Union(physBody.WorldAABB.Translated(offset)), approximate))
             {
                 if (body.Entity.Deleted) {
                     continue;

@@ -24,8 +24,9 @@ namespace Robust.Shared.GameObjects.Systems
 
         private const float Epsilon = 1.0e-6f;
 
-        private readonly List<Manifold> _collisionCache = new List<Manifold>();
+        // Runtime stuff that gets cleared and such, ugly but good on the GC
         private readonly HashSet<ICollidableComponent> _awakeBodies = new HashSet<ICollidableComponent>();
+        private readonly List<ICollidableComponent> _awakeBodiesAddCache = new List<ICollidableComponent>();
 
         /// <summary>
         /// Simulates the physical world for a given amount of time.
@@ -116,7 +117,8 @@ namespace Robust.Shared.GameObjects.Systems
             // Remove all entities that were deleted due to the controller
             physicsComponents.RemoveAll(p => p.Deleted);
 
-            const int solveIterationsAt60 = 1;
+            /* PhysGITG: Commented because not using right now
+            const int solveIterationsAt60 = 2;
 
             var multiplier = deltaTime / (1f / 60);
 
@@ -126,80 +128,117 @@ namespace Robust.Shared.GameObjects.Systems
                 4
             );
 
-            if (_timing.InSimulation || prediction) divisions = 1;
+            if (_timing.InSimulation || prediction) divisions = 1;*/
 
-            for (var i = 0; i < divisions; i++)
+            var outerDivisions = 1;
+            var innerDivisions = 2;
+
+            for (var i = 0; i < outerDivisions; i++)
             {
-                // PhysGITD: Since we don't have CCD implemented,
-                //  it doesn't matter if we're *already* colliding.
-                // As such, we can update position first and ask questions later.
-                // If AND ONLY IF CCD gets implemented, then rearrange this so that we do collision checks first.
-                // To be clear, if you do collision checks first with CCD not implemented, you'll get glitches. DO NOT DO THIS.
-
                 foreach (var physics in _awakeBodies)
                 {
                     if (physics.Deleted)
                         continue;
-                    var oldPosition = physics.WorldPosition;
                     if (physics.Awake && physics.CanMove())
                     {
-                        UpdatePosition(physics, deltaTime / divisions);
-                        var temp = new List<ICollidableComponent>();
-                        temp.Add(physics);
-                        ProcessCollisions(temp);
-                        if (physics.Deleted)
-                            continue;
-                        foreach (var collision in _collisionCache)
-                        {
-                            if (collision.Hard)
-                            {
-                                physics.Owner.Transform.WorldPosition = oldPosition;
-                                break;
-                            }
-                        }
-                        // FixClipping(_collisionCache);
+                        MoveAndSlide(physics, deltaTime / outerDivisions, innerDivisions);
                     }
+                }
+                foreach (var body in _awakeBodiesAddCache)
+                {
+                    _awakeBodies.Add(body);
                 }
             }
         }
 
-        // Runs collision behavior and updates cache
-        private void ProcessCollisions(IEnumerable<ICollidableComponent> bodies)
+        // Alternates between moving the target body as far as it can in a given direction, and altering it's velocity to make it slide.
+        private void MoveAndSlide(ICollidableComponent body, float deltaTime, int innerDivisions)
         {
-            _collisionCache.Clear();
-            var combinations = new HashSet<(EntityUid, EntityUid)>();
-            foreach (var aCollidable in bodies)
+            for (var i = 0; i < innerDivisions; i++)
             {
-                if(!aCollidable.Awake)
-                    continue;
+                if (deltaTime < Epsilon)
+                    return;
+                if (body.LinearVelocity.LengthSquared < Epsilon && MathF.Abs(body.AngularVelocity) < Epsilon)
+                    return;
 
-                foreach (var b in _physicsManager.GetCollidingEntities(aCollidable, Vector2.Zero))
+                // PhysGITD: This is written knowing CCD isn't available.
+                // If CCD is in use, this won't make use of it.
+                // Keep in mind, the MoveAndSlide function assumes that everything else remains still,
+                //  since everything else will later do it's own collision checks when it moves.
+
+                var startPos = body.WorldPosition;
+                var startRot = body.WorldRotation;
+
+                var velPos = body.LinearVelocity;
+                var velRot = body.AngularVelocity;
+
+                var safeDeltaTime = deltaTime;
+                if (body.Hard)
                 {
-                    var aUid = aCollidable.Entity.Uid;
-                    var bUid = b.Uid;
-
-                    if (bUid.CompareTo(aUid) > 0)
+                    var hit = false;
+                    var hitNormal = Vector2.Zero;
+                    foreach (var b in _physicsManager.GetCollidingEntities(body, velPos * deltaTime))
                     {
-                        var tmpUid = bUid;
-                        bUid = aUid;
-                        aUid = tmpUid;
+                        // Entities that got here passed broadphase. We don't yet have any idea if we're actually colliding with them though.
+                        var bCollidable = b.GetComponent<ICollidableComponent>();
+                        if ((bCollidable == body) || !bCollidable.Hard)
+                            continue;
+                        var collisionWindow = TimeToImpact.Calculate(body, velPos, bCollidable);
+                        var windowEffectiveStart = collisionWindow.Start - 0.001f;
+                        if (collisionWindow.Valid && (collisionWindow.Start >= 0) && (windowEffectiveStart < safeDeltaTime))
+                        {
+                            safeDeltaTime = windowEffectiveStart;
+                            hit = true;
+                            hitNormal = collisionWindow.Normal;
+                        }
                     }
-
-                    if (!combinations.Add((aUid, bUid)))
+                    if (hit)
                     {
-                        continue;
+                        // let's just do this the simple way
+                        // note that this won't have an effect on velPos/velRot, which is critically important
+                        body.LinearVelocity *= new Vector2(Math.Abs(hitNormal.Y), Math.Abs(hitNormal.X));
                     }
-
-                    var bCollidable = b.GetComponent<ICollidableComponent>();
-                    _collisionCache.Add(new Manifold(aCollidable, bCollidable, aCollidable.Hard && bCollidable.Hard));
                 }
+
+                // Confirm.
+                safeDeltaTime = Math.Max(0, safeDeltaTime);
+                body.WorldPosition += velPos * safeDeltaTime;
+                body.WorldRotation += velRot * safeDeltaTime;
+                deltaTime -= safeDeltaTime;
+            }
+        }
+/*
+            var targets = new HashSet<ICollidableComponent>();
+
+            foreach (var b in _physicsManager.GetCollidingEntities(aCollidable, Vector2.Zero))
+            {
+                var aUid = aCollidable.Entity.Uid;
+                var bUid = b.Uid;
+
+                if (bUid.CompareTo(aUid) > 0)
+                {
+                    var tmpUid = bUid;
+                    bUid = aUid;
+                    aUid = tmpUid;
+                }
+
+                if (!combinations.Add((aUid, bUid)))
+                {
+                    continue;
+                }
+
+                var bCollidable = b.GetComponent<ICollidableComponent>();
+                _collisionCache.Add(new Manifold(aCollidable, bCollidable, aCollidable.Hard && bCollidable.Hard));
             }
 
             var counter = 0;
             while(GetNextCollision(_collisionCache, counter, out var collision))
             {
                 collision.A.WakeBody();
-                collision.B.WakeBody();
+                if (!collision.B.Awake) {
+                    collision.B.WakeBody();
+                    _awakeBodiesAddCache.Add(collision.B);
+                }
 
                 counter++;
                 var impulse = _physicsManager.SolveCollisionImpulse(collision);
@@ -255,7 +294,7 @@ namespace Robust.Shared.GameObjects.Systems
                 behavior.PostCollide(collisionsWith[behavior]);
             }
         }
-
+*/
         private bool GetNextCollision(IReadOnlyList<Manifold> collisions, int counter, out Manifold collision)
         {
             // The *4 is completely arbitrary
@@ -308,15 +347,16 @@ namespace Robust.Shared.GameObjects.Systems
             body.LinearVelocity += frictionVelocityChange;
         }
 
+        // DO NOT RUN if the body cannot move! The checks were removed.
         private static void UpdatePosition(IPhysBody body, float frameTime)
         {
-            var ent = body.Entity;
-
-            if (!body.CanMove() || (body.LinearVelocity.LengthSquared < Epsilon && MathF.Abs(body.AngularVelocity) < Epsilon))
+            if (body.LinearVelocity.LengthSquared < Epsilon && MathF.Abs(body.AngularVelocity) < Epsilon)
                 return;
 
             if (body.LinearVelocity != Vector2.Zero)
             {
+                var ent = body.Entity;
+
                 var entityMoveMessage = new EntityMovementMessage();
                 ent.SendMessage(ent.Transform, entityMoveMessage);
 
