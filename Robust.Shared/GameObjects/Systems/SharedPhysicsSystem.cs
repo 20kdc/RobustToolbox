@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Robust.Shared.Containers;
 using Robust.Shared.GameObjects.Components;
 using Robust.Shared.Interfaces.Map;
@@ -32,8 +33,17 @@ namespace Robust.Shared.GameObjects.Systems
         /// <param name="deltaTime">Delta Time in seconds of how long to simulate the world.</param>
         /// <param name="physicsComponents">List of all possible physics bodes </param>
         /// <param name="prediction">Should only predicted entities be considered in this simulation step?</param>
-        protected void SimulateWorld(float deltaTime, List<ICollidableComponent> physicsComponents, bool prediction)
+        protected void SimulateWorld(float deltaTime, bool prediction)
         {
+            List<ICollidableComponent> physicsComponents;
+            if (!prediction)
+            {
+                physicsComponents = EntityManager.ComponentManager.EntityQuery<ICollidableComponent>().ToList();
+            }
+            else
+            {
+                physicsComponents = EntityManager.ComponentManager.EntityQuery<ICollidableComponent>().Where(p => p.Predict).ToList();
+            }
             _awakeBodies.Clear();
 
             foreach (var body in physicsComponents)
