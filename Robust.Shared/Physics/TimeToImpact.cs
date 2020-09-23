@@ -103,7 +103,7 @@ namespace Robust.Shared.Physics
             }
             else
             {
-                // If there's no velocity at all, we know that the object will EVENTUALLY leave.
+                // If there's no velocity at all, we know that the object is embedded.
                 bool collides = aRight >= bLeft && aLeft <= bRight;
                 return (
                     collides ? float.NegativeInfinity : float.PositiveInfinity,

@@ -25,6 +25,7 @@ namespace Robust.Shared.GameObjects.Systems
         private const float Epsilon = 1.0e-6f;
 
         // Runtime stuff that gets cleared and such, ugly but good on the GC
+        private readonly List<Manifold> _collisionCache = new List<Manifold>();
         private readonly HashSet<ICollidableComponent> _awakeBodies = new HashSet<ICollidableComponent>();
         private readonly List<ICollidableComponent> _awakeBodiesAddCache = new List<ICollidableComponent>();
 
@@ -141,25 +142,36 @@ namespace Robust.Shared.GameObjects.Systems
                         continue;
                     if (physics.Awake && physics.CanMove())
                     {
+                        _collisionCache.Clear();
                         MoveAndSlide(physics, deltaTime / outerDivisions, innerDivisions);
+                        PerformSecondaryCollisionBehaviours(physics);
                     }
                 }
-                foreach (var body in _awakeBodiesAddCache)
+                if (i != outerDivisions - 1)
                 {
-                    _awakeBodies.Add(body);
+                    foreach (var body in _awakeBodiesAddCache)
+                    {
+                        _awakeBodies.Add(body);
+                    }
                 }
             }
         }
 
         // Alternates between moving the target body as far as it can in a given direction, and altering it's velocity to make it slide.
+        // If no movement is actually valid, uses an alternate approach to push out stuck objects.
+        // Adds results to the collision cache.
         private void MoveAndSlide(ICollidableComponent body, float deltaTime, int innerDivisions)
         {
             for (var i = 0; i < innerDivisions; i++)
             {
                 if (deltaTime < Epsilon)
                     return;
-                if (body.LinearVelocity.LengthSquared < Epsilon && MathF.Abs(body.AngularVelocity) < Epsilon)
+                if (body.LinearVelocity.LengthSquared < Epsilon)
+                {
+                    if (i == 0)
+                        FixClipping(body);
                     return;
+                }
 
                 // PhysGITD: This is written knowing CCD isn't available.
                 // If CCD is in use, this won't make use of it.
@@ -175,7 +187,7 @@ namespace Robust.Shared.GameObjects.Systems
                 var safeDeltaTime = deltaTime;
                 if (body.Hard)
                 {
-                    var hit = false;
+                    ICollidableComponent? hit = null;
                     var hitNormal = Vector2.Zero;
                     foreach (var b in _physicsManager.GetCollidingEntities(body, velPos * deltaTime))
                     {
@@ -185,18 +197,20 @@ namespace Robust.Shared.GameObjects.Systems
                             continue;
                         var collisionWindow = TimeToImpact.Calculate(body, velPos, bCollidable);
                         var windowEffectiveStart = collisionWindow.Start - 0.001f;
-                        if (collisionWindow.Valid && (collisionWindow.Start >= 0) && (windowEffectiveStart < safeDeltaTime))
+                        if (collisionWindow.Valid && (windowEffectiveStart < safeDeltaTime) && (collisionWindow.End >= 0))
                         {
                             safeDeltaTime = windowEffectiveStart;
-                            hit = true;
+                            hit = bCollidable;
                             hitNormal = collisionWindow.Normal;
                         }
                     }
-                    if (hit)
+                    if (hit != null)
                     {
                         // let's just do this the simple way
                         // note that this won't have an effect on velPos/velRot, which is critically important
                         body.LinearVelocity *= new Vector2(Math.Abs(hitNormal.Y), Math.Abs(hitNormal.X));
+                        var manifold = new Manifold(body, hit!, true);
+                        _collisionCache.Add(manifold);
                     }
                 }
 
@@ -205,6 +219,79 @@ namespace Robust.Shared.GameObjects.Systems
                 body.WorldPosition += velPos * safeDeltaTime;
                 body.WorldRotation += velRot * safeDeltaTime;
                 deltaTime -= safeDeltaTime;
+            }
+        }
+
+
+        // Originally based off of Randy Gaul's ImpulseEngine code. Now warped beyond recognition.
+        private void FixClipping(ICollidableComponent body)
+        {
+            var collisions = new List<Manifold>();
+            foreach (var b in _physicsManager.GetCollidingEntities(body, Vector2.Zero))
+            {
+                var bCollidable = b.GetComponent<ICollidableComponent>();
+                if ((bCollidable == body) || !bCollidable.Hard)
+                    continue;
+                var manifold = new Manifold(body, bCollidable, body.Hard && bCollidable.Hard);
+                collisions.Add(manifold);
+                _collisionCache.Add(manifold);
+            }
+            if (!body.Hard)
+                return;
+
+            const float allowance = 1 / 128f;
+            foreach (var collision in collisions)
+            {
+                var penetration = _physicsManager.CalculatePenetration(collision.A, collision.B);
+
+                if (penetration <= allowance)
+                    continue;
+
+                collision.A.Owner.Transform.WorldPosition -= collision.Normal * Math.Abs(penetration);
+            }
+        }
+
+        private void PerformSecondaryCollisionBehaviours(ICollidableComponent body)
+        {
+            var collisionsWith = new Dictionary<ICollideBehavior, int>();
+            foreach (var collision in _collisionCache)
+            {
+                // Apply onCollide behavior
+                var aBehaviors = collision.A.Entity.GetAllComponents<ICollideBehavior>();
+                foreach (var behavior in aBehaviors)
+                {
+                    var entity = collision.B.Entity;
+                    if (entity.Deleted) continue;
+                    behavior.CollideWith(entity);
+                    if (collisionsWith.ContainsKey(behavior))
+                    {
+                        collisionsWith[behavior] += 1;
+                    }
+                    else
+                    {
+                        collisionsWith[behavior] = 1;
+                    }
+                }
+                var bBehaviors = collision.B.Entity.GetAllComponents<ICollideBehavior>();
+                foreach (var behavior in bBehaviors)
+                {
+                    var entity = collision.A.Entity;
+                    if (entity.Deleted) continue;
+                    behavior.CollideWith(entity);
+                    if (collisionsWith.ContainsKey(behavior))
+                    {
+                        collisionsWith[behavior] += 1;
+                    }
+                    else
+                    {
+                        collisionsWith[behavior] = 1;
+                    }
+                }
+            }
+
+            foreach (var behavior in collisionsWith.Keys)
+            {
+                behavior.PostCollide(collisionsWith[behavior]);
             }
         }
 /*
@@ -251,47 +338,6 @@ namespace Robust.Shared.GameObjects.Systems
                 {
                     collision.B.Momentum += impulse;
                 }
-            }
-
-            var collisionsWith = new Dictionary<ICollideBehavior, int>();
-            foreach (var collision in _collisionCache)
-            {
-                // Apply onCollide behavior
-                var aBehaviors = collision.A.Entity.GetAllComponents<ICollideBehavior>();
-                foreach (var behavior in aBehaviors)
-                {
-                    var entity = collision.B.Entity;
-                    if (entity.Deleted) continue;
-                    behavior.CollideWith(entity);
-                    if (collisionsWith.ContainsKey(behavior))
-                    {
-                        collisionsWith[behavior] += 1;
-                    }
-                    else
-                    {
-                        collisionsWith[behavior] = 1;
-                    }
-                }
-                var bBehaviors = collision.B.Entity.GetAllComponents<ICollideBehavior>();
-                foreach (var behavior in bBehaviors)
-                {
-                    var entity = collision.A.Entity;
-                    if (entity.Deleted) continue;
-                    behavior.CollideWith(entity);
-                    if (collisionsWith.ContainsKey(behavior))
-                    {
-                        collisionsWith[behavior] += 1;
-                    }
-                    else
-                    {
-                        collisionsWith[behavior] = 1;
-                    }
-                }
-            }
-
-            foreach (var behavior in collisionsWith.Keys)
-            {
-                behavior.PostCollide(collisionsWith[behavior]);
             }
         }
 */
@@ -371,57 +417,6 @@ namespace Robust.Shared.GameObjects.Systems
 
             body.WorldRotation += body.AngularVelocity * frameTime;
             body.WorldPosition += body.LinearVelocity * frameTime;
-        }
-
-        // Based off of Randy Gaul's ImpulseEngine code
-        private void FixClipping(List<Manifold> collisions)
-        {
-            const float allowance = 1 / 128f;
-            foreach (var collision in collisions)
-            {
-                if (!collision.Hard)
-                {
-                    continue;
-                }
-
-                var penetration = _physicsManager.CalculatePenetration(collision.A, collision.B);
-
-                if (penetration <= allowance)
-                    continue;
-
-                var correction = collision.Normal * Math.Abs(penetration);
-                // PhysGITD: This bit is interesting.
-                // I tried making this realistically adjust based on mass.
-                // This did not work out.
-                // What I've worked out is, if we're not exceptionally careful to try and force "pushers" to move instead of "pushees",
-                //  the whole thing can derail very, very quickly.
-                var cwA = 0.5f;
-                var cwB = 0.5f;
-                if (!collision.A.CanMove())
-                {
-                    cwA = 0;
-                    cwB = collision.B.CanMove() ? 1 : 0;
-                }
-                else if (!collision.B.CanMove())
-                {
-                    cwA = collision.A.CanMove() ? 1 : 0;
-                    cwB = 0;
-                }
-                else if (collision.A.LinearVelocity.LengthSquared < collision.B.LinearVelocity.LengthSquared)
-                {
-                    cwA = 0;
-                    cwB = 1;
-                }
-                else
-                {
-                    cwA = 1;
-                    cwB = 0;
-                }
-                if (cwA != 0)
-                    collision.A.Owner.Transform.WorldPosition -= correction * cwA;
-                if (cwB != 0)
-                    collision.B.Owner.Transform.WorldPosition += correction * cwB;
-            }
         }
 
         private (float friction, float gravity) GetFriction(ICollidableComponent body)
