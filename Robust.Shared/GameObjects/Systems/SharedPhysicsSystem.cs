@@ -208,9 +208,8 @@ namespace Robust.Shared.GameObjects.Systems
                     {
                         // let's just do this the simple way
                         // note that this won't have an effect on velPos/velRot, which is critically important
+                        AckAndCacheCollision(new Manifold(body, hit!, true), (hit!.WorldPosition - body.WorldPosition).Normalized * hit!.Mass * 100);
                         body.LinearVelocity *= new Vector2(Math.Abs(hitNormal.Y), Math.Abs(hitNormal.X));
-                        var manifold = new Manifold(body, hit!, true);
-                        _collisionCache.Add(manifold);
                     }
                 }
 
@@ -233,8 +232,8 @@ namespace Robust.Shared.GameObjects.Systems
                 if ((bCollidable == body) || !bCollidable.Hard)
                     continue;
                 var manifold = new Manifold(body, bCollidable, body.Hard && bCollidable.Hard);
+                AckAndCacheCollision(manifold, _physicsManager.SolveCollisionImpulse(manifold));
                 collisions.Add(manifold);
-                _collisionCache.Add(manifold);
             }
             if (!body.Hard)
                 return;
@@ -249,6 +248,27 @@ namespace Robust.Shared.GameObjects.Systems
 
                 collision.A.Owner.Transform.WorldPosition -= collision.Normal * Math.Abs(penetration);
             }
+        }
+
+        private void AckAndCacheCollision(Manifold collision, Vector2 impulse)
+        {
+            collision.A.WakeBody();
+            if (!collision.B.Awake)
+            {
+                collision.B.WakeBody();
+                _awakeBodiesAddCache.Add(collision.B);
+            }
+
+            if (collision.A.CanMove())
+            {
+                collision.A.Momentum -= impulse;
+            }
+
+            if (collision.B.CanMove())
+            {
+                collision.B.Momentum += impulse;
+            }
+            _collisionCache.Add(collision);
         }
 
         private void PerformSecondaryCollisionBehaviours(ICollidableComponent body)
@@ -293,79 +313,6 @@ namespace Robust.Shared.GameObjects.Systems
             {
                 behavior.PostCollide(collisionsWith[behavior]);
             }
-        }
-/*
-            var targets = new HashSet<ICollidableComponent>();
-
-            foreach (var b in _physicsManager.GetCollidingEntities(aCollidable, Vector2.Zero))
-            {
-                var aUid = aCollidable.Entity.Uid;
-                var bUid = b.Uid;
-
-                if (bUid.CompareTo(aUid) > 0)
-                {
-                    var tmpUid = bUid;
-                    bUid = aUid;
-                    aUid = tmpUid;
-                }
-
-                if (!combinations.Add((aUid, bUid)))
-                {
-                    continue;
-                }
-
-                var bCollidable = b.GetComponent<ICollidableComponent>();
-                _collisionCache.Add(new Manifold(aCollidable, bCollidable, aCollidable.Hard && bCollidable.Hard));
-            }
-
-            var counter = 0;
-            while(GetNextCollision(_collisionCache, counter, out var collision))
-            {
-                collision.A.WakeBody();
-                if (!collision.B.Awake) {
-                    collision.B.WakeBody();
-                    _awakeBodiesAddCache.Add(collision.B);
-                }
-
-                counter++;
-                var impulse = _physicsManager.SolveCollisionImpulse(collision);
-                if (collision.A.CanMove())
-                {
-                    collision.A.Momentum -= impulse;
-                }
-
-                if (collision.B.CanMove())
-                {
-                    collision.B.Momentum += impulse;
-                }
-            }
-        }
-*/
-        private bool GetNextCollision(IReadOnlyList<Manifold> collisions, int counter, out Manifold collision)
-        {
-            // The *4 is completely arbitrary
-            if (counter > collisions.Count * 4)
-            {
-                collision = default;
-                return false;
-            }
-            var indexes = new List<int>();
-            for (int i = 0; i < collisions.Count; i++)
-            {
-                indexes.Add(i);
-            }
-            _random.Shuffle(indexes);
-            foreach (var index in indexes)
-            {
-                if (collisions[index].Unresolved)
-                {
-                    collision = collisions[index];
-                    return true;
-                }
-            }
-
-            collision = default;
-            return false;
         }
 
         private void ProcessFriction(ICollidableComponent body, float deltaTime)
