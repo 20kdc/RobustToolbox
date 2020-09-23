@@ -46,22 +46,29 @@ namespace Robust.Shared.GameObjects.Systems
             }
             _awakeBodies.Clear();
 
+            // GITD: If a body doesn't have a controller, don't give it
+            var bodiesWithControllers = new List<ICollidableComponent>();
+
+            // This is the main "apply forces and do stuff" loop.
             foreach (var body in physicsComponents)
             {
-                if(prediction && !body.Predict)
+                if (prediction && !body.Predict)
                     continue;
 
-                if(!body.Awake)
+                if (body.Controllers.Values.Count > 0)
+                    bodiesWithControllers.Add(body);
+
+                if (!body.Awake)
                     continue;
 
                 _awakeBodies.Add(body);
 
                 // running prediction updates will not cause a body to go to sleep.
-                if(!prediction)
+                if (!prediction)
                     body.SleepAccumulator++;
 
                 // if the body cannot move, nothing to do here
-                if(!body.CanMove())
+                if (!body.CanMove())
                     continue;
 
                 var linearVelocity = Vector2.Zero;
@@ -87,18 +94,9 @@ namespace Robust.Shared.GameObjects.Systems
                 // it has to be re-applied every tick.
                 body.Force = Vector2.Zero;
                 body.Torque = 0f;
-            }
 
-            // Calculate collisions and store them in the cache
-            ProcessCollisions(physicsComponents);
-
-            // Remove all entities that were deleted during collision handling
-            physicsComponents.RemoveAll(p => p.Deleted);
-
-            // Process frictional forces
-            foreach (var physics in physicsComponents)
-            {
-                ProcessFriction(physics, deltaTime);
+                // Process frictional forces
+                ProcessFriction(body, deltaTime);
             }
 
             foreach (var physics in physicsComponents)
@@ -112,37 +110,42 @@ namespace Robust.Shared.GameObjects.Systems
             // Remove all entities that were deleted due to the controller
             physicsComponents.RemoveAll(p => p.Deleted);
 
-            const int solveIterationsAt60 = 4;
+            const int solveIterationsAt60 = 1;
 
             var multiplier = deltaTime / (1f / 60);
 
-            var divisions = MathHelper.Clamp(
+            var divisions = (int) MathHelper.Clamp(
                 MathF.Round(solveIterationsAt60 * multiplier, MidpointRounding.AwayFromZero),
                 1,
-                20
+                4
             );
 
-            if (_timing.InSimulation) divisions = 1;
+            if (_timing.InSimulation || prediction) divisions = 1;
 
             for (var i = 0; i < divisions; i++)
             {
-                foreach (var physics in physicsComponents)
-                {
-                    // TODO: Remove this once we are not sending *every* body to the solver
-                    if(prediction && !physics.Predict)
-                        continue;
+                // PhysGITD: Since we don't have CCD implemented,
+                //  it doesn't matter if we're *already* colliding.
+                // As such, we can update position first and ask questions later.
+                // If AND ONLY IF CCD gets implemented, then rearrange this so that we do collision checks first.
+                // To be clear, if you do collision checks first with CCD not implemented, you'll get glitches. DO NOT DO THIS.
 
-                    if(physics.Awake && physics.CanMove())
+                foreach (var physics in _awakeBodies)
+                {
+                    if (physics.Awake && physics.CanMove())
                         UpdatePosition(physics, deltaTime / divisions);
                 }
 
-                for (var j = 0; j < divisions; ++j)
-                {
-                    if (FixClipping(_collisionCache, divisions))
-                    {
-                        break;
-                    }
-                }
+                // Calculate collisions and store them in the cache
+                // TODO: PhysGITD: Unify ProcessCollisions and FixClipping
+                ProcessCollisions(physicsComponents);
+
+                // Remove all entities that were deleted during collision handling, unless this is the last iteration,
+                //  in which case we will never use these results
+                if (i != (divisions - 1))
+                    physicsComponents.RemoveAll(p => p.Deleted);
+
+                FixClipping(_collisionCache);
             }
         }
 
@@ -317,11 +320,9 @@ namespace Robust.Shared.GameObjects.Systems
         }
 
         // Based off of Randy Gaul's ImpulseEngine code
-        private bool FixClipping(List<Manifold> collisions, float divisions)
+        private void FixClipping(List<Manifold> collisions)
         {
             const float allowance = 1 / 128f;
-            var percent = MathHelper.Clamp(1f / divisions, 0.01f, 1f);
-            var done = true;
             foreach (var collision in collisions)
             {
                 if (!collision.Hard)
@@ -334,15 +335,12 @@ namespace Robust.Shared.GameObjects.Systems
                 if (penetration <= allowance)
                     continue;
 
-                done = false;
-                var correction = collision.Normal * Math.Abs(penetration) * percent;
+                var correction = collision.Normal * Math.Abs(penetration);
                 if (collision.A.CanMove())
                     collision.A.Owner.Transform.WorldPosition -= correction;
                 if (collision.B.CanMove())
                     collision.B.Owner.Transform.WorldPosition += correction;
             }
-
-            return done;
         }
 
         private (float friction, float gravity) GetFriction(ICollidableComponent body)
