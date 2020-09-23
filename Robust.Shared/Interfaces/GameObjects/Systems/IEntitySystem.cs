@@ -26,10 +26,17 @@ namespace Robust.Shared.Interfaces.GameObjects.Systems
         void Shutdown();
 
         /// <summary>
-        ///     Called once per frame/tick to update the system.
+        /// Called once per frame/tick to update the system. (This is part of "Tick" at client GameController level, and "Update" at server BaseServer level.)
         /// </summary>
-        /// <param name="frameTime">Delta time since Update() was last called.</param>
+        /// <param name="frameTime">Time since the last call in seconds.</param>
+        /// <seealso cref="IEntitySystemManager.Update(float)"/>
         void Update(float frameTime);
+
+        /// <summary>
+        /// Called once per frame/tick to update the system. (This is part of "Update" at client GameController level and is never called server-side.)
+        /// </summary>
+        /// <param name="frameTime">Time since the last call in seconds.</param>
+        /// <seealso cref="IEntitySystemManager.FrameUpdate(float)"/>
         void FrameUpdate(float frameTime);
     }
 }

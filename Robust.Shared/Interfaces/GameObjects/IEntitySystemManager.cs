@@ -58,11 +58,17 @@ namespace Robust.Shared.Interfaces.GameObjects
         void Shutdown();
 
         /// <summary>
-        /// Update all systems.
+        /// Update all systems. (This is part of "Tick" at client GameController level, and "Update" at server BaseServer level.)
         /// </summary>
-        /// <param name="frameTime">Time since the last frame was rendered.</param>
+        /// <param name="frameTime">Time since the last call in seconds.</param>
         /// <seealso cref="IEntitySystem.Update(float)"/>
         void Update(float frameTime);
+
+        /// <summary>
+        /// Update all systems. (This is part of "Update" at client GameController level and is never called server-side.)
+        /// </summary>
+        /// <param name="frameTime">Time since the last call in seconds.</param>
+        /// <seealso cref="IEntitySystem.FrameUpdate(float)"/>
         void FrameUpdate(float frameTime);
 
         /// <summary>
