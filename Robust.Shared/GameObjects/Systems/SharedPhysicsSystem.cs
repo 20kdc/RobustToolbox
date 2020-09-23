@@ -101,9 +101,15 @@ namespace Robust.Shared.GameObjects.Systems
 
             foreach (var physics in physicsComponents)
             {
+                var wasAwakeBefore = physics.Awake;
                 foreach (var controller in physics.Controllers.Values)
                 {
                     controller.UpdateAfterProcessing();
+                }
+                // PhysGITD: Try to keep _awakeBodies as accurate as possible
+                if (physics.Awake && !wasAwakeBefore)
+                {
+                    _awakeBodies.Add(physics);
                 }
             }
 
@@ -132,20 +138,28 @@ namespace Robust.Shared.GameObjects.Systems
 
                 foreach (var physics in _awakeBodies)
                 {
+                    if (physics.Deleted)
+                        continue;
+                    var oldPosition = physics.WorldPosition;
                     if (physics.Awake && physics.CanMove())
+                    {
                         UpdatePosition(physics, deltaTime / divisions);
+                        var temp = new List<ICollidableComponent>();
+                        temp.Add(physics);
+                        ProcessCollisions(temp);
+                        if (physics.Deleted)
+                            continue;
+                        foreach (var collision in _collisionCache)
+                        {
+                            if (collision.Hard)
+                            {
+                                physics.Owner.Transform.WorldPosition = oldPosition;
+                                break;
+                            }
+                        }
+                        // FixClipping(_collisionCache);
+                    }
                 }
-
-                // Calculate collisions and store them in the cache
-                // TODO: PhysGITD: Unify ProcessCollisions and FixClipping
-                ProcessCollisions(physicsComponents);
-
-                // Remove all entities that were deleted during collision handling, unless this is the last iteration,
-                //  in which case we will never use these results
-                if (i != (divisions - 1))
-                    physicsComponents.RemoveAll(p => p.Deleted);
-
-                FixClipping(_collisionCache);
             }
         }
 
@@ -336,10 +350,37 @@ namespace Robust.Shared.GameObjects.Systems
                     continue;
 
                 var correction = collision.Normal * Math.Abs(penetration);
-                if (collision.A.CanMove())
-                    collision.A.Owner.Transform.WorldPosition -= correction;
-                if (collision.B.CanMove())
-                    collision.B.Owner.Transform.WorldPosition += correction;
+                // PhysGITD: This bit is interesting.
+                // I tried making this realistically adjust based on mass.
+                // This did not work out.
+                // What I've worked out is, if we're not exceptionally careful to try and force "pushers" to move instead of "pushees",
+                //  the whole thing can derail very, very quickly.
+                var cwA = 0.5f;
+                var cwB = 0.5f;
+                if (!collision.A.CanMove())
+                {
+                    cwA = 0;
+                    cwB = collision.B.CanMove() ? 1 : 0;
+                }
+                else if (!collision.B.CanMove())
+                {
+                    cwA = collision.A.CanMove() ? 1 : 0;
+                    cwB = 0;
+                }
+                else if (collision.A.LinearVelocity.LengthSquared < collision.B.LinearVelocity.LengthSquared)
+                {
+                    cwA = 0;
+                    cwB = 1;
+                }
+                else
+                {
+                    cwA = 1;
+                    cwB = 0;
+                }
+                if (cwA != 0)
+                    collision.A.Owner.Transform.WorldPosition -= correction * cwA;
+                if (cwB != 0)
+                    collision.B.Owner.Transform.WorldPosition += correction * cwB;
             }
         }
 
