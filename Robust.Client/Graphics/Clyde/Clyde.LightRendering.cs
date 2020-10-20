@@ -240,6 +240,7 @@ namespace Robust.Client.Graphics.Clyde
         {
             // The light is now the center of the universe.
             _fovCalculationProgram.SetUniform("shadowLightCentre", lightPos);
+            _fovCalculationProgram.SetUniform("shadowCConvDiv", (float) (width / (Math.PI * 2.0)));
 
             // Shift viewport around so we write to the correct quadrant of the depth map.
             GL.Viewport(0, viewportY, width, 1);

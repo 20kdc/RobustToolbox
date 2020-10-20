@@ -1,7 +1,5 @@
 // Shared code necessary for using depth casting like FOV and shadows.
 
-const highp float PI = 3.1415926535897932384626433; // That enough digits?
-
 // This returns a vec2 because of VSM moments.
 highp vec2 occludeDepth(highp vec2 rel, sampler2D shadowMap, highp float mapOffsetY)
 {

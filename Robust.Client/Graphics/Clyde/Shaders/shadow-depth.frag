@@ -1,20 +1,30 @@
+// xy: actual ref pos, z: horizontal (1) / vertical (-1)
+varying mediump vec3 fragRefPos;
 
-varying mediump vec2 fragRefPos;
-// x: actual angle, y: horizontal (1) / vertical (-1)
-varying mediump vec2 fragAngle;
+uniform highp float shadowCConvDiv;
 
 void main()
 {
+    mediump float fragAngle = gl_FragCoord.x / shadowCConvDiv;
+
     // Stuff that needs to be inferred to avoid interpolation issues.
-    mediump vec2 rayNormal = vec2(cos(fragAngle.x), -sin(fragAngle.x));
+    mediump vec2 rayNormal = vec2(cos(fragAngle), -sin(fragAngle));
 
     // Depth calculation accounting for interpolation.
-    mediump float dist;
+    highp float dist;
 
-	// Get rid of sparklies.
-	mediump vec2 fragRefPosMod = fragRefPos - (sign(fragRefPos) * (1.0 / 32.0));
+    mediump vec2 fragRefPosMod = fragRefPos.xy;
 
-    if (fragAngle.y > 0.0) {
+    // Try to reduce sparklies, maybe.
+    if (gl_FrontFacing) {
+        // front: lighting
+        fragRefPosMod += sign(fragRefPosMod) / 32.0;
+    } else {
+        // back: solid fov
+        fragRefPosMod -= sign(fragRefPosMod) / 32.0;
+    }
+
+    if (fragRefPos.z > 0.0) {
         // Line is horizontal
         dist = abs(fragRefPosMod.y / rayNormal.y);
     } else {

@@ -4,6 +4,10 @@
 // It's literally just called the Z-Library for alphabetical ordering reasons.
 //  - 20kdc
 
+// -- constants --
+
+const highp float PI = 3.1415926535897932384626433;
+
 // -- varying/attribute/texture2D --
 
 #ifndef HAS_VARYING_ATTRIBUTE

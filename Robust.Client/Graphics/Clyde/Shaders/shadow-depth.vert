@@ -11,18 +11,13 @@ attribute vec4 aPos;
 // x: deflection(0=A/1=B) y: height
 attribute vec2 subVertex;
 
-varying vec2 fragRefPos;
-// x: actual angle, y: horizontal (1) / vertical (-1)
-varying vec2 fragAngle;
+// xy: actual ref pos, z: horizontal (1) / vertical (-1)
+varying vec3 fragRefPos;
 
 // Note: This is *not* the standard projectionMatrix!
 uniform vec2 shadowLightCentre;
 
 uniform float shadowOverlapSide;
-
-// this constant ought to be moved to z-library
-// also deal with the reference to it in shadow_cast_shared
-const highp float PI = 3.1415926535897932384626433;
 
 void main()
 {
@@ -64,12 +59,11 @@ void main()
     //  and we don't really need to have correction
     float depth = 1.0 - (1.0 / length(mix(pA, pB, subVertex.x)));
 
-    // The new "double-sized triangle" layout implies the interpolation targets are off-screen.
-    // To fix this, modify these values in such a way that it comes out the same as it should.
-    float xBMod = xA + ((xB - xA) * 2.0);
+    // The new "double-sized triangle" layout implies that the horizontal part of the triangle also needs to be double-sized.
+    // Note that there's a deliberate bias here to prevent holes appearing.
+    float xBMod = xA + ((xB - xA) * 2.05);
 
-    fragRefPos = pA;
-    fragAngle = vec2(mix(xA, xBMod, subVertex.x), abs(pA.x - pB.x) - abs(pA.y - pB.y));
+    fragRefPos = vec3(pA, abs(pA.x - pB.x) - abs(pA.y - pB.y));
 
     gl_Position = vec4(mix(xA, xBMod, subVertex.x) / PI, mix(2.0, -2.0, subVertex.y), depth, 1.0);
 }
