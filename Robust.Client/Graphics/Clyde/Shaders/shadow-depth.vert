@@ -11,8 +11,7 @@ attribute vec4 aPos;
 // x: deflection(0=A/1=B) y: height
 attribute vec2 subVertex;
 
-// xy: A, zw: B
-varying vec4 fragPos;
+varying vec2 fragRefPos;
 // x: actual angle, y: horizontal (1) / vertical (-1)
 varying vec2 fragAngle;
 
@@ -59,14 +58,18 @@ void main()
         }
     }
 
-    fragPos = vec4(pA, pB);
-    fragAngle = vec2(mix(xA, xB, subVertex.x), abs(pA.x - pB.x) - abs(pA.y - pB.y));
-
     // Depth divide MUST be implemented here no matter what,
     //  because GLES SL 1.00 doesn't have gl_FragDepth.
     // Keep in mind: Ultimately, this doesn't matter, because we use the colour buffer for actual casting,
     //  and we don't really need to have correction
     float depth = 1.0 - (1.0 / length(mix(pA, pB, subVertex.x)));
 
-    gl_Position = vec4(mix(xA, xB, subVertex.x) / PI, mix(1.0, -1.0, subVertex.y), depth, 1.0);
+    // The new "double-sized triangle" layout implies the interpolation targets are off-screen.
+    // To fix this, modify these values in such a way that it comes out the same as it should.
+    float xBMod = xA + ((xB - xA) * 2.0);
+
+    fragRefPos = pA;
+    fragAngle = vec2(mix(xA, xBMod, subVertex.x), abs(pA.x - pB.x) - abs(pA.y - pB.y));
+
+    gl_Position = vec4(mix(xA, xBMod, subVertex.x) / PI, mix(2.0, -2.0, subVertex.y), depth, 1.0);
 }

@@ -54,13 +54,12 @@ namespace Robust.Client.Graphics.Clyde
 
         // Occlusion geometry used to render shadows and FOV.
 
-        // Amount of indices in _occlusionEbo, so how much we have to draw when drawing _occlusionVao.
+        // Amount of vertices in _occlusionVbo, so how much we have to draw when drawing _occlusionVao.
         private int _occlusionDataLength;
 
         // Actual GL objects used for rendering.
         private GLBuffer _occlusionVbo = default!;
         private GLBuffer _occlusionVIVbo = default!;
-        private GLBuffer _occlusionEbo = default!;
         private GLHandle _occlusionVao;
 
 
@@ -114,10 +113,6 @@ namespace Robust.Client.Graphics.Clyde
                     nameof(_occlusionVIVbo));
                 GL.VertexAttribPointer(1, 2, VertexAttribPointerType.UnsignedByte, true, sizeof(byte) * 2, IntPtr.Zero);
                 GL.EnableVertexAttribArray(1);
-
-                // index
-                _occlusionEbo = new GLBuffer(this, BufferTarget.ElementArrayBuffer, BufferUsageHint.DynamicDraw,
-                    nameof(_occlusionEbo));
 
                 CheckGlError();
             }
@@ -252,12 +247,12 @@ namespace Robust.Client.Graphics.Clyde
 
             // Make two draw calls. This allows a faked "generation" of additional polygons.
             _fovCalculationProgram.SetUniform("shadowOverlapSide", 0.0f);
-            GL.DrawElements(GetQuadGLPrimitiveType(), _occlusionDataLength, DrawElementsType.UnsignedShort, 0);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, _occlusionDataLength);
             CheckGlError();
             _debugStats.LastGLDrawCalls += 1;
             // Yup, it's the other draw call.
             _fovCalculationProgram.SetUniform("shadowOverlapSide", 1.0f);
-            GL.DrawElements(GetQuadGLPrimitiveType(), _occlusionDataLength, DrawElementsType.UnsignedShort, 0);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, _occlusionDataLength);
             CheckGlError();
             _debugStats.LastGLDrawCalls += 1;
         }
@@ -694,11 +689,10 @@ namespace Robust.Client.Graphics.Clyde
 
             using var _ = DebugGroup(nameof(UpdateOcclusionGeometry));
 
-            // 16 = 4 vertices * 4 directions
-            var arrayBuffer = ArrayPool<Vector4>.Shared.Rent(maxOccluders * 4 * 4);
+            // 8 = 3 vertices * 4 directions
+            var arrayBuffer = ArrayPool<Vector4>.Shared.Rent(maxOccluders * 3 * 4);
             // multiplied by 2 (it's a vector2 of bytes)
-            var arrayVIBuffer = ArrayPool<byte>.Shared.Rent(maxOccluders * 2 * 4 * 4);
-            var indexBuffer = ArrayPool<ushort>.Shared.Rent(maxOccluders * GetQuadBatchIndexCount() * 4);
+            var arrayVIBuffer = ArrayPool<byte>.Shared.Rent(maxOccluders * 2 * 3 * 4);
 
             var arrayMaskBuffer = ArrayPool<Vector2>.Shared.Rent(maxOccluders * 4);
             var indexMaskBuffer = ArrayPool<ushort>.Shared.Rent(maxOccluders * GetQuadBatchIndexCount());
@@ -712,7 +706,6 @@ namespace Robust.Client.Graphics.Clyde
                 var ai = 0;
                 var avi = 0;
                 var ami = 0;
-                var ii = 0;
                 var imi = 0;
 
                 occluderTree.QueryAabb((in OccluderComponent sOccluder) =>
@@ -796,18 +789,17 @@ namespace Robust.Client.Graphics.Clyde
                     void WriteFaceOfBuffer(Vector4 vec)
                     {
                         var aiBase = ai;
-                        for (byte vi = 0; vi < 4; vi++)
+                        for (byte vi = 0; vi < 3; vi++)
                         {
                             arrayBuffer[ai++] = vec;
                             // generates the sequence:
-                            // DddD
-                            // HHhh
+                            // ddD
                             // deflection
-                            arrayVIBuffer[avi++] = (byte) ((((vi + 1) & 2) != 0) ? 0 : 255);
+                            arrayVIBuffer[avi++] = (byte) ((vi == 2) ? 255 : 0);
+                            // Hhh
                             // height
-                            arrayVIBuffer[avi++] = (byte) (((vi & 2) != 0) ? 0 : 255);
+                            arrayVIBuffer[avi++] = (byte) ((vi == 0) ? 255 : 0);
                         }
-                        QuadBatchIndexWrite(indexBuffer, ref ii, (ushort) aiBase);
                     }
 
                     // North face (TL/TR)
@@ -848,7 +840,7 @@ namespace Robust.Client.Graphics.Clyde
                     return true;
                 }, expandedBounds);
 
-                _occlusionDataLength = ii;
+                _occlusionDataLength = ai;
                 _occlusionMaskDataLength = imi;
 
                 // Upload geometry to OpenGL.
@@ -857,7 +849,6 @@ namespace Robust.Client.Graphics.Clyde
 
                 _occlusionVbo.Reallocate(arrayBuffer.AsSpan(..ai));
                 _occlusionVIVbo.Reallocate(arrayVIBuffer.AsSpan(..avi));
-                _occlusionEbo.Reallocate(indexBuffer.AsSpan(..ii));
 
                 BindVertexArray(_occlusionMaskVao.Handle);
                 CheckGlError();
@@ -869,7 +860,6 @@ namespace Robust.Client.Graphics.Clyde
             {
                 ArrayPool<Vector4>.Shared.Return(arrayBuffer);
                 ArrayPool<byte>.Shared.Return(arrayVIBuffer);
-                ArrayPool<ushort>.Shared.Return(indexBuffer);
                 ArrayPool<Vector2>.Shared.Return(arrayMaskBuffer);
                 ArrayPool<ushort>.Shared.Return(indexMaskBuffer);
             }
