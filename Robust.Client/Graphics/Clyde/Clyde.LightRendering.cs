@@ -337,13 +337,6 @@ namespace Robust.Client.Graphics.Clyde
         {
             DrawFov(viewport, eye);
 
-            // Stencil shadows have to draw inline with the actual lights because otherwise there isn't enough bit-space.
-            // This, combined with optimal shader use arrangement,
-            /// conveniently means that in stencil shadow mode, the entire depth draw area is contained,
-            //  and can be turned off.
-            if (_enableStencilShadows)
-                return;
-
             using (DebugGroup("Draw shadow depth"))
             {
                 PrepareDepthDraw(RtToLoaded(_shadowRenderTarget));
@@ -377,7 +370,12 @@ namespace Robust.Client.Graphics.Clyde
 
             UpdateOcclusionGeometry(map, expandedBounds, eye.Position.Position);
 
-            UpdateRelevantShadowAndFOVDepthBuffers(viewport, eye, lights, count, expandedBounds);
+            // Stencil shadows have to draw inline with the actual lights because otherwise there isn't enough bit-space.
+            // This, combined with optimal shader use arrangement,
+            /// conveniently means that in stencil shadow mode, the entire depth draw area is contained,
+            //  and can be turned off.
+            if (!_enableStencilShadows)
+                UpdateRelevantShadowAndFOVDepthBuffers(viewport, eye, lights, count, expandedBounds);
 
             BindRenderTargetImmediate(RtToLoaded(viewport.LightRenderTarget));
             CheckGlError();
@@ -591,7 +589,8 @@ namespace Robust.Client.Graphics.Clyde
             if (_enableStencilShadows)
                 SetStencillingImmediate(false);
 
-            ApplyLightingFovToBuffer(viewport, eye);
+            if (eye.DrawFov)
+                ApplyLightingFovToBuffer(viewport, eye);
 
             BlurOntoWalls(viewport, eye);
 
@@ -753,6 +752,32 @@ namespace Robust.Client.Graphics.Clyde
         private void ApplyFovToBuffer(Viewport viewport, IEye eye)
         {
             // Applies FOV to the final framebuffer.
+            if (_enableStencilShadows)
+            {
+                ApplyFovToBufferStencil(viewport, eye, CullFaceMode.Back);
+            }
+            else
+            {
+                ApplyFovToBufferDepth(viewport, eye);
+            }
+        }
+        private void ApplyFovToBufferStencil(Viewport viewport, IEye eye, CullFaceMode mode)
+        {
+            GL.Enable(EnableCap.CullFace);
+            GL.FrontFace(FrontFaceDirection.Cw);
+            GL.CullFace(mode);
+
+            _stencilCalculationProgram.Use();
+            BindVertexArray(_occlusionVao.Handle);
+            SetupGlobalUniformsImmediate(_stencilCalculationProgram, null);
+            _stencilCalculationProgram.SetUniform("shadowLightCentre", eye.Position.Position);
+            GL.DrawElements(GetQuadGLPrimitiveType(), _occlusionDataLength, DrawElementsType.UnsignedShort, 0);
+            _debugStats.LastGLDrawCalls += 1;
+
+            GL.Disable(EnableCap.CullFace);
+        }
+        private void ApplyFovToBufferDepth(Viewport viewport, IEye eye)
+        {
             var fovShader = _loadedShaders[_fovShaderHandle].Program;
             fovShader.Use();
 
@@ -767,6 +792,18 @@ namespace Robust.Client.Graphics.Clyde
         }
 
         private void ApplyLightingFovToBuffer(Viewport viewport, IEye eye)
+        {
+            if (_enableStencilShadows)
+            {
+                // Just do the same thing, there isn't a difference here
+                ApplyFovToBufferStencil(viewport, eye, CullFaceMode.Front);
+            }
+            else
+            {
+                ApplyLightingFovToBufferDepth(viewport, eye);
+            }
+        }
+        private void ApplyLightingFovToBufferDepth(Viewport viewport, IEye eye)
         {
             // Applies FOV to the lighting framebuffer.
 
