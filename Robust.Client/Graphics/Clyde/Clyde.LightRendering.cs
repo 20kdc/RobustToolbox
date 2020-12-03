@@ -364,27 +364,6 @@ namespace Robust.Client.Graphics.Clyde
             }
         }
 
-        private void PerformDepthStencil(Vector2 lightPos)
-        {
-            GL.Disable(EnableCap.Blend);
-            CheckGlError();
-
-            BindVertexArray(_occlusionVao.Handle);
-            CheckGlError();
-
-            _stencilCalculationProgram.Use();
-
-            SetupGlobalUniformsImmediate(_stencilCalculationProgram, null);
-
-            _stencilCalculationProgram.SetUniform("shadowLightCentre", lightPos);
-            GL.DrawElements(GetQuadGLPrimitiveType(), _occlusionDataLength, DrawElementsType.UnsignedShort, 0);
-            CheckGlError();
-            _debugStats.LastGLDrawCalls += 1;
-
-            GL.Enable(EnableCap.Blend);
-            CheckGlError();
-        }
-
         private void DrawLightsAndFov(Viewport viewport, Box2 worldBounds, IEye eye)
         {
             if (!_lightManager.Enabled)
@@ -403,6 +382,7 @@ namespace Robust.Client.Graphics.Clyde
             BindRenderTargetImmediate(RtToLoaded(viewport.LightRenderTarget));
             CheckGlError();
             GL.ClearStencil(0);
+            GL.StencilMask(-1);
             GLClearColor(Color.FromSrgb(AmbientLightColor));
             if (!_enableStencilShadows)
             {
@@ -423,6 +403,7 @@ namespace Robust.Client.Graphics.Clyde
             // In stencil shadows mode with shadows off, to simplify the code,
             //  we still use the stencil shadow technique but with the actual stencilling disabled,
             //  and with the shadow draw disabled.
+            // LIGHT & SHADOW PREHEAT CODE
             var lightShader = _loadedShaders[_lightStencilShaderHandle].Program;
             if (!_enableStencilShadows)
             {
@@ -440,15 +421,19 @@ namespace Robust.Client.Graphics.Clyde
                 {
                     SetStencillingImmediate(true);
                 }
-                else
-                {
-                    // We set stuff up for stencil shadows, but we don't actually need to USE the stencil shadows mode.
-                    // So essentially, the actual stenciller is disabled.
-                    // But the shadow map is unsafe to use, so we can't just switch into the depth shadow mode.
-                    // So use the stencil shadow lighting shader (which doesn't use a shadow map).
-                    lightShader.Use();
-                    SetupGlobalUniformsImmediate(lightShader, null);
-                }
+                // If DrawShadows is off:
+                // We set stuff up for stencil shadows, but we don't actually need to USE the stencil shadows mode.
+                // So essentially, the actual stenciller is disabled.
+                // But the shadow map is unsafe to use, so we can't just switch into the depth shadow mode.
+                // So use the stencil shadow lighting shader (which doesn't use a shadow map).
+                
+                // Either way,
+                //  we need to SetupGlobalUniformsImmediate the shaders.
+                // And we have to end on lightShader in case DrawShadows is off.
+                _stencilCalculationProgram.Use();
+                SetupGlobalUniformsImmediate(_stencilCalculationProgram, null);
+                lightShader.Use();
+                SetupGlobalUniformsImmediate(lightShader, null);
             }
 
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.One);
@@ -459,40 +444,8 @@ namespace Robust.Client.Graphics.Clyde
             var lastColor = new Color(float.NaN, float.NaN, float.NaN, float.NaN);
             Texture? lastMask = null;
 
-            // This is the used value in the stencil buffer for the given light.
-            // Note that the stencil buffer is NOT cleared between lights, or between lights and FOV.
-            var stencilNumber = 1;
-
-            for (var i = 0; i < count; i++)
+            void _drawActualLight(PointLightComponent component, Vector2 lightPos)
             {
-                var (component, lightPos) = lights[i];
-
-                if (_enableStencilShadows && _lightManager.DrawShadows)
-                {
-                    // Need to perform stencil draw.
-
-                    GL.StencilMask(-1);
-                    CheckGlError();
-                    GL.StencilFunc(StencilFunction.Never, stencilNumber, -1);
-                    CheckGlError();
-                    GL.StencilOp(StencilOp.Replace, StencilOp.Replace, StencilOp.Replace);
-                    CheckGlError();
-
-                    PerformDepthStencil(lightPos);
-
-                    // Now prepare the actual light draw.
-                    lightShader.Use();
-
-                    SetupGlobalUniformsImmediate(lightShader, null);
-
-                    // This can overwrite. It doesn't matter.
-                    GL.StencilFunc(StencilFunction.Notequal, stencilNumber, -1);
-                    CheckGlError();
-
-                    // Advance stencil number
-                    stencilNumber++;
-                }
-
                 var transform = component.Owner.Transform;
 
                 Texture? mask = null;
@@ -535,7 +488,6 @@ namespace Robust.Client.Graphics.Clyde
                 }
 
                 lightShader.SetUniformMaybe("lightCenter", lightPos);
-                lightShader.SetUniformMaybe("lightIndex", (i + 0.5f) / ShadowTexture.Height);
 
                 var offset = new Vector2(component.Radius, component.Radius);
 
@@ -555,6 +507,81 @@ namespace Robust.Client.Graphics.Clyde
                 _drawQuad(-offset, offset, matrix, lightShader);
 
                 _debugStats.TotalLights += 1;
+            }
+
+            if (!(_enableStencilShadows && _lightManager.DrawShadows))
+            {
+                // Depth shadows (or stencil shadows if shadows are turned off)
+                for (var i = 0; i < count; i++)
+                {
+                    var (component, lightPos) = lights[i];
+                    lightShader.SetUniformMaybe("lightIndex", (i + 0.5f) / ShadowTexture.Height);
+                    _drawActualLight(component, lightPos);
+                }
+            }
+            else
+            {
+                for (var i = 0; i < count; i += 8)
+                {
+                    // Need to perform stencil clear.
+                    // Note that mask is left at -1 from original clear and mask is reset after each just to be sure.
+                    if (i != 0)
+                        GL.Clear(ClearBufferMask.StencilBufferBit);
+
+                    int endOfBatch = i + 8;
+                    if (endOfBatch > count)
+                        endOfBatch = count;
+
+                    // Stencil Draw
+
+                    // Actually setup stencil calculator.
+                    _stencilCalculationProgram.Use();
+                    BindVertexArray(_occlusionVao.Handle);
+                    // NOTE: WE DO NOT PERFORM SetupGlobalUniformsImmediate HERE BECAUSE IT IS NOT NECESSARY HERE, SEE PREHEAT.
+
+                    int stencilFlag = 1;
+                    for (var j = i; j < endOfBatch; j++)
+                    {
+                        var (component, lightPos) = lights[j];
+
+                        GL.StencilMask(stencilFlag);
+                        GL.StencilFunc(StencilFunction.Never, stencilFlag, stencilFlag);
+                        // Set to "always write -1 and fail" - which stencil flag is being written is controlled via the stencil mask.
+                        // The reason the stencil test has to always fail is to prevent writing to the colour buffer.
+                        GL.StencilOp(StencilOp.Replace, StencilOp.Replace, StencilOp.Replace);
+
+                        _stencilCalculationProgram.SetUniform("shadowLightCentre", lightPos);
+                        GL.DrawElements(GetQuadGLPrimitiveType(), _occlusionDataLength, DrawElementsType.UnsignedShort, 0);
+                        _debugStats.LastGLDrawCalls += 1;
+
+                        // Advance stencil number
+                        stencilFlag <<= 1;
+                    }
+
+                    // Light Draw
+
+                    // Now prepare the actual light draw.
+                    lightShader.Use();
+                    // NOTE: WE DO NOT PERFORM SetupGlobalUniformsImmediate HERE BECAUSE IT IS NOT NECESSARY HERE, SEE PREHEAT.
+
+                    GL.StencilMask(0);
+
+                    stencilFlag = 1;
+                    for (var j = i; j < endOfBatch; j++)
+                    {
+                        var (component, lightPos) = lights[j];
+
+                        // This can overwrite. It doesn't matter.
+                        GL.StencilFunc(StencilFunction.Equal, 0, stencilFlag);
+
+                        _drawActualLight(component, lightPos);
+
+                        // Advance stencil number
+                        stencilFlag <<= 1;
+                    }
+                    // Cleanup. Critically necessary for next clear.
+                    GL.StencilMask(-1);
+                }
             }
 
             ResetBlendFunc();
