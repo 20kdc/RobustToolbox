@@ -35,6 +35,7 @@ namespace Robust.Client.Graphics
             _configurationManager.OnValueChanged(CVars.DisplayWindowMode, _windowModeChanged, true);
             _configurationManager.OnValueChanged(CVars.DisplayLightMapDivider, LightmapDividerChanged, true);
             _configurationManager.OnValueChanged(CVars.DisplaySoftShadows, SoftShadowsChanged, true);
+            _configurationManager.OnValueChanged(CVars.DisplayStencilShadows, StencilShadowsChanged, true);
 
             return true;
         }
@@ -77,6 +78,10 @@ namespace Robust.Client.Graphics
         }
 
         protected virtual void SoftShadowsChanged(bool newValue)
+        {
+        }
+
+        protected virtual void StencilShadowsChanged(bool newValue)
         {
         }
     }

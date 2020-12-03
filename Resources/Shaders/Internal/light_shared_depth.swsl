@@ -1,0 +1,9 @@
+uniform sampler2D shadowMap;
+
+highp float shadowContrib(highp vec2 diff)
+{
+    highp float dist = length(diff);
+
+    return smoothstep(0.0, 1.0, ChebyshevUpperBound(occludeDepth(diff, shadowMap, lightIndex), dist));
+}
+

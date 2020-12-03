@@ -14,6 +14,7 @@ using Robust.Shared.Map;
 using Robust.Shared.Maths;
 using static Robust.Client.GameObjects.ClientOccluderComponent;
 using OGLTextureWrapMode = OpenToolkit.Graphics.OpenGL.TextureWrapMode;
+using StencilOp = OpenToolkit.Graphics.OpenGL4.StencilOp;
 
 namespace Robust.Client.Graphics.Clyde
 {
@@ -39,6 +40,7 @@ namespace Robust.Client.Graphics.Clyde
         // They're all .swsl now.
         private ClydeHandle _lightSoftShaderHandle;
         private ClydeHandle _lightHardShaderHandle;
+        private ClydeHandle _lightStencilShaderHandle;
         private ClydeHandle _fovShaderHandle;
         private ClydeHandle _fovLightShaderHandle;
         private ClydeHandle _wallBleedBlurShaderHandle;
@@ -51,6 +53,9 @@ namespace Robust.Client.Graphics.Clyde
         // Shader program used to calculate depth for shadows/FOV.
         // Sadly not .swsl since it has a different vertex format and such.
         private GLShaderProgram _fovCalculationProgram = default!;
+
+        // Shader program used to draw stencils for shadows/FOV.
+        private GLShaderProgram _stencilCalculationProgram = default!;
 
         // Occlusion geometry used to render shadows and FOV.
 
@@ -171,12 +176,16 @@ namespace Robust.Client.Graphics.Clyde
             var depthVert = ReadEmbeddedShader("shadow-depth.vert");
             var depthFrag = ReadEmbeddedShader("shadow-depth.frag");
 
+            var stencilVert = ReadEmbeddedShader("shadow-stencil.vert");
+            var stencilFrag = ReadEmbeddedShader("shadow-stencil.frag");
+
             (string, uint)[] attribLocations = {
                 ("aPos", 0),
                 ("subVertex", 1)
             };
 
             _fovCalculationProgram = _compileProgram(depthVert, depthFrag, attribLocations, "Shadow Depth Program");
+            _stencilCalculationProgram = _compileProgram(stencilVert, stencilFrag, attribLocations, "Shadow Stencil Program");
 
             var debugShader = _resourceCache.GetResource<ShaderSourceResource>("/Shaders/Internal/depth-debug.swsl");
             _fovDebugShaderInstance = (ClydeShaderInstance) InstanceShader(debugShader.ClydeHandle);
@@ -198,6 +207,7 @@ namespace Robust.Client.Graphics.Clyde
 
             _lightSoftShaderHandle = LoadShaderHandle("/Shaders/Internal/light-soft.swsl");
             _lightHardShaderHandle = LoadShaderHandle("/Shaders/Internal/light-hard.swsl");
+            _lightStencilShaderHandle = LoadShaderHandle("/Shaders/Internal/light-stencil.swsl");
             _fovShaderHandle = LoadShaderHandle("/Shaders/Internal/fov.swsl");
             _fovLightShaderHandle = LoadShaderHandle("/Shaders/Internal/fov-lighting.swsl");
             _wallBleedBlurShaderHandle = LoadShaderHandle("/Shaders/Internal/wall-bleed-blur.swsl");
@@ -319,20 +329,20 @@ namespace Robust.Client.Graphics.Clyde
             CheckGlError();
         }
 
-        private void DrawLightsAndFov(Viewport viewport, Box2 worldBounds, IEye eye)
+        /// <summary>
+        /// Updates all shadow depth buffers.
+        /// As such, this function is specific to the depth-draw paths (hard/soft) and is not used in stencil shadow mode.
+        /// </summary>
+        private void UpdateRelevantShadowAndFOVDepthBuffers(Viewport viewport, IEye eye, (PointLightComponent light, Vector2 pos)[] lights, int count, Box2 expandedBounds)
         {
-            if (!_lightManager.Enabled)
-            {
-                return;
-            }
-
-            var map = eye.Position.MapId;
-
-            var (lights, count, expandedBounds) = GetLightsToRender(map, worldBounds);
-
-            UpdateOcclusionGeometry(map, expandedBounds, eye.Position.Position);
-
             DrawFov(viewport, eye);
+
+            // Stencil shadows have to draw inline with the actual lights because otherwise there isn't enough bit-space.
+            // This, combined with optimal shader use arrangement,
+            /// conveniently means that in stencil shadow mode, the entire depth draw area is contained,
+            //  and can be turned off.
+            if (_enableStencilShadows)
+                return;
 
             using (DebugGroup("Draw shadow depth"))
             {
@@ -352,24 +362,94 @@ namespace Robust.Client.Graphics.Clyde
 
                 FinalizeDepthDraw();
             }
+        }
+
+        private void PerformDepthStencil(Vector2 lightPos)
+        {
+            GL.Disable(EnableCap.Blend);
+            CheckGlError();
+
+            BindVertexArray(_occlusionVao.Handle);
+            CheckGlError();
+
+            _stencilCalculationProgram.Use();
+
+            SetupGlobalUniformsImmediate(_stencilCalculationProgram, null);
+
+            _stencilCalculationProgram.SetUniform("shadowLightCentre", lightPos);
+            GL.DrawElements(GetQuadGLPrimitiveType(), _occlusionDataLength, DrawElementsType.UnsignedShort, 0);
+            CheckGlError();
+            _debugStats.LastGLDrawCalls += 1;
+
+            GL.Enable(EnableCap.Blend);
+            CheckGlError();
+        }
+
+        private void DrawLightsAndFov(Viewport viewport, Box2 worldBounds, IEye eye)
+        {
+            if (!_lightManager.Enabled)
+            {
+                return;
+            }
+
+            var map = eye.Position.MapId;
+
+            var (lights, count, expandedBounds) = GetLightsToRender(map, worldBounds);
+
+            UpdateOcclusionGeometry(map, expandedBounds, eye.Position.Position);
+
+            UpdateRelevantShadowAndFOVDepthBuffers(viewport, eye, lights, count, expandedBounds);
 
             BindRenderTargetImmediate(RtToLoaded(viewport.LightRenderTarget));
             CheckGlError();
+            GL.ClearStencil(0);
             GLClearColor(Color.FromSrgb(AmbientLightColor));
-            GL.Clear(ClearBufferMask.ColorBufferBit);
+            if (!_enableStencilShadows)
+            {
+                GL.Clear(ClearBufferMask.ColorBufferBit);
+            }
+            else
+            {
+                GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.StencilBufferBit);
+            }
             CheckGlError();
 
             var (lightW, lightH) = GetLightMapSize(viewport.Size);
             GL.Viewport(0, 0, lightW, lightH);
             CheckGlError();
 
-            var lightShader = _loadedShaders[_enableSoftShadows ? _lightSoftShaderHandle : _lightHardShaderHandle].Program;
-            lightShader.Use();
+            // All lighting draws (both passes) perform with stencilling on in stencil shadows mode.
+            // In regular mode, each light is a single non-stencil pass.
+            // In stencil shadows mode with shadows off, to simplify the code,
+            //  we still use the stencil shadow technique but with the actual stencilling disabled,
+            //  and with the shadow draw disabled.
+            var lightShader = _loadedShaders[_lightStencilShaderHandle].Program;
+            if (!_enableStencilShadows)
+            {
+                lightShader = _loadedShaders[_enableSoftShadows ? _lightSoftShaderHandle : _lightHardShaderHandle].Program;
+                lightShader.Use();
 
-            SetupGlobalUniformsImmediate(lightShader, ShadowTexture);
+                SetupGlobalUniformsImmediate(lightShader, ShadowTexture);
 
-            SetTexture(TextureUnit.Texture1, ShadowTexture);
-            lightShader.SetUniformTextureMaybe("shadowMap", TextureUnit.Texture1);
+                SetTexture(TextureUnit.Texture1, ShadowTexture);
+                lightShader.SetUniformTextureMaybe("shadowMap", TextureUnit.Texture1);
+            }
+            else
+            {
+                if (_lightManager.DrawShadows)
+                {
+                    SetStencillingImmediate(true);
+                }
+                else
+                {
+                    // We set stuff up for stencil shadows, but we don't actually need to USE the stencil shadows mode.
+                    // So essentially, the actual stenciller is disabled.
+                    // But the shadow map is unsafe to use, so we can't just switch into the depth shadow mode.
+                    // So use the stencil shadow lighting shader (which doesn't use a shadow map).
+                    lightShader.Use();
+                    SetupGlobalUniformsImmediate(lightShader, null);
+                }
+            }
 
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.One);
             CheckGlError();
@@ -379,9 +459,39 @@ namespace Robust.Client.Graphics.Clyde
             var lastColor = new Color(float.NaN, float.NaN, float.NaN, float.NaN);
             Texture? lastMask = null;
 
+            // This is the used value in the stencil buffer for the given light.
+            // Note that the stencil buffer is NOT cleared between lights, or between lights and FOV.
+            var stencilNumber = 1;
+
             for (var i = 0; i < count; i++)
             {
                 var (component, lightPos) = lights[i];
+
+                if (_enableStencilShadows && _lightManager.DrawShadows)
+                {
+                    // Need to perform stencil draw.
+
+                    GL.StencilMask(-1);
+                    CheckGlError();
+                    GL.StencilFunc(StencilFunction.Never, stencilNumber, -1);
+                    CheckGlError();
+                    GL.StencilOp(StencilOp.Replace, StencilOp.Replace, StencilOp.Replace);
+                    CheckGlError();
+
+                    PerformDepthStencil(lightPos);
+
+                    // Now prepare the actual light draw.
+                    lightShader.Use();
+
+                    SetupGlobalUniformsImmediate(lightShader, null);
+
+                    // This can overwrite. It doesn't matter.
+                    GL.StencilFunc(StencilFunction.Notequal, stencilNumber, -1);
+                    CheckGlError();
+
+                    // Advance stencil number
+                    stencilNumber++;
+                }
 
                 var transform = component.Owner.Transform;
 
@@ -450,6 +560,9 @@ namespace Robust.Client.Graphics.Clyde
             ResetBlendFunc();
 
             CheckGlError();
+
+            if (_enableStencilShadows)
+                SetStencillingImmediate(false);
 
             ApplyLightingFovToBuffer(viewport, eye);
 
@@ -613,7 +726,6 @@ namespace Robust.Client.Graphics.Clyde
         private void ApplyFovToBuffer(Viewport viewport, IEye eye)
         {
             // Applies FOV to the final framebuffer.
-
             var fovShader = _loadedShaders[_fovShaderHandle].Program;
             fovShader.Use();
 
@@ -908,7 +1020,8 @@ namespace Robust.Client.Graphics.Clyde
             viewport.WallMaskRenderTarget = CreateRenderTarget(viewport.Size, RenderTargetColorFormat.R8,
                 name: $"{viewport.Name}-{nameof(viewport.WallMaskRenderTarget)}");
 
-            viewport.LightRenderTarget = CreateRenderTarget(lightMapSize, lightMapColorFormat,
+            viewport.LightRenderTarget = CreateRenderTarget(lightMapSize,
+                new RenderTargetFormatParameters(lightMapColorFormat, _enableStencilShadows),
                 lightMapSampleParameters,
                 $"{viewport.Name}-{nameof(viewport.LightRenderTarget)}");
 
@@ -955,6 +1068,12 @@ namespace Robust.Client.Graphics.Clyde
         protected override void SoftShadowsChanged(bool newValue)
         {
             _enableSoftShadows = newValue;
+        }
+
+        protected override void StencilShadowsChanged(bool newValue)
+        {
+            _enableStencilShadows = newValue;
+            RegenAllLightRts();
         }
     }
 }

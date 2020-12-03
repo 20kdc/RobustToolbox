@@ -14,7 +14,6 @@ uniform highp vec2 lightCenter;
 uniform highp float lightRange;
 uniform highp float lightPower;
 uniform highp float lightIndex;
-uniform sampler2D shadowMap;
 
 void vertex()
 {
@@ -23,13 +22,6 @@ void vertex()
     transformed = projectionMatrix * viewMatrix * transformed;
 
     VERTEX = transformed.xy;
-}
-
-highp float shadowContrib(highp vec2 diff)
-{
-    highp float dist = length(diff);
-
-    return smoothstep(0.0, 1.0, ChebyshevUpperBound(occludeDepth(diff, shadowMap, lightIndex), dist));
 }
 
 void fragment()

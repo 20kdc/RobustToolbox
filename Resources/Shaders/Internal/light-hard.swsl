@@ -1,4 +1,5 @@
 #include "/Shaders/Internal/light_shared.swsl"
+#include "/Shaders/Internal/light_shared_depth.swsl"
 
 highp float createOcclusion(highp vec2 diff)
 {

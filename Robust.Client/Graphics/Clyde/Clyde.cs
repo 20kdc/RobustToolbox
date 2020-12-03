@@ -64,6 +64,7 @@ namespace Robust.Client.Graphics.Clyde
 
         private int _lightmapDivider = 2;
         private bool _enableSoftShadows = true;
+        private bool _enableStencilShadows = false;
 
         private bool _checkGLErrors;
 
@@ -134,6 +135,7 @@ namespace Robust.Client.Graphics.Clyde
             base.ReadConfig();
             _lightmapDivider = _configurationManager.GetCVar(CVars.DisplayLightMapDivider);
             _enableSoftShadows = _configurationManager.GetCVar(CVars.DisplaySoftShadows);
+            _enableStencilShadows = _configurationManager.GetCVar(CVars.DisplayStencilShadows);
         }
 
         protected override void ReloadConfig()

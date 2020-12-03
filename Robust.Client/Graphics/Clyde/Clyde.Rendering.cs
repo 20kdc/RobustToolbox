@@ -368,6 +368,25 @@ namespace Robust.Client.Graphics.Clyde
             CheckGlError();
         }
 
+        private void SetStencillingImmediate(bool isStencil)
+        {
+            if (isStencil)
+            {
+                if (!_isStencilling)
+                {
+                    GL.Enable(EnableCap.StencilTest);
+                    CheckGlError();
+                    _isStencilling = true;
+                }
+            }
+            else if (_isStencilling)
+            {
+                GL.Disable(EnableCap.StencilTest);
+                CheckGlError();
+                _isStencilling = false;
+            }
+        }
+
         private (GLShaderProgram, LoadedShader) ActivateShaderInstance(ClydeHandle handle)
         {
             var instance = _shaderInstances[handle];
@@ -425,27 +444,15 @@ namespace Robust.Client.Graphics.Clyde
 
             // Handle stencil parameters.
 
+            SetStencillingImmediate(instance.Stencil.Enabled);
             if (instance.Stencil.Enabled)
             {
-                if (!_isStencilling)
-                {
-                    GL.Enable(EnableCap.StencilTest);
-                    CheckGlError();
-                    _isStencilling = true;
-                }
-
                 GL.StencilMask(instance.Stencil.WriteMask);
                 CheckGlError();
                 GL.StencilFunc(ToGLStencilFunc(instance.Stencil.Func), instance.Stencil.Ref, instance.Stencil.ReadMask);
                 CheckGlError();
                 GL.StencilOp(StencilOp.Keep, StencilOp.Keep, ToGLStencilOp(instance.Stencil.Op));
                 CheckGlError();
-            }
-            else if (_isStencilling)
-            {
-                GL.Disable(EnableCap.StencilTest);
-                CheckGlError();
-                _isStencilling = false;
             }
 
             return (program, shader);
