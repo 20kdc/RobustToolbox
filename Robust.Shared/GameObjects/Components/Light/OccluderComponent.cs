@@ -13,6 +13,7 @@ namespace Robust.Shared.GameObjects
         public sealed override uint? NetID => NetIDs.OCCLUDER;
 
         private bool _enabled = true;
+        private bool _internallyHidden = false;
         private Box2 _boundingBox = new(-0.5f, -0.5f, 0.5f, 0.5f);
 
         [ViewVariables(VVAccess.ReadWrite)]
@@ -46,6 +47,20 @@ namespace Robust.Shared.GameObjects
             }
         }
 
+        [ViewVariables(VVAccess.ReadWrite)]
+        public virtual bool InternallyHidden
+        {
+            get => _internallyHidden;
+            set
+            {
+                if (_internallyHidden == value)
+                    return;
+
+                _internallyHidden = value;
+                Dirty();
+            }
+        }
+
         protected override void Startup()
         {
             base.Startup();
@@ -58,6 +73,7 @@ namespace Robust.Shared.GameObjects
             base.ExposeData(serializer);
 
             serializer.DataField(ref _enabled, "enabled", true);
+            serializer.DataField(ref _internallyHidden, "internallyHidden", false);
             serializer.DataField(ref _boundingBox, "boundingBox", new Box2(-0.5f, -0.5f, 0.5f, 0.5f));
         }
 

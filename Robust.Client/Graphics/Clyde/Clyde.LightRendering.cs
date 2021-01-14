@@ -815,6 +815,8 @@ namespace Robust.Client.Graphics.Clyde
                         // Further handling is in the shadow depth vertex shader.
                         // (I have broken this so many times. - 20kdc)
 
+                        int deflectionFlag = occluder.InternallyHidden ? 2 : 0;
+
                         void WriteFaceOfBuffer(Vector4 vec)
                         {
                             var aiBase = ai;
@@ -825,7 +827,7 @@ namespace Robust.Client.Graphics.Clyde
                                 // DddD
                                 // HHhh
                                 // deflection
-                                arrayVIBuffer[avi++] = (byte) ((((vi + 1) & 2) != 0) ? 0 : 255);
+                                arrayVIBuffer[avi++] = (byte) ((((vi + 1) & 2) != deflectionFlag) ? 0 : 255);
                                 // height
                                 arrayVIBuffer[avi++] = (byte) (((vi & 2) != 0) ? 0 : 255);
                             }

@@ -27,6 +27,17 @@ namespace Robust.Client.GameObjects
             }
         }
 
+        public override bool InternallyHidden
+        {
+            get => base.InternallyHidden;
+            set
+            {
+                base.InternallyHidden = value;
+
+                SendDirty();
+            }
+        }
+
         protected override void Startup()
         {
             base.Startup();
@@ -80,7 +91,7 @@ namespace Robust.Client.GameObjects
             {
                 foreach (var neighbor in SnapGrid.GetInDir(dir))
                 {
-                    if (neighbor.TryGetComponent(out ClientOccluderComponent? comp) && comp.Enabled)
+                    if (neighbor.TryGetComponent(out ClientOccluderComponent? comp) && comp.Enabled && (comp.InternallyHidden == InternallyHidden))
                     {
                         Occluding |= oclDir;
                         break;
