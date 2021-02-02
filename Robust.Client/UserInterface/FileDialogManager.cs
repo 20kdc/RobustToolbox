@@ -19,7 +19,7 @@ namespace Robust.Client.UserInterface
     [SuppressMessage("ReSharper", "IdentifierTypo")]
     [SuppressMessage("ReSharper", "CommentTypo")]
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
-    internal sealed class FileDialogManager : IFileDialogManager
+    internal sealed class FileDialogManager : IFileDialogManagerInternal
     {
         // Uses nativefiledialog to open the file dialogs cross platform.
         // On Linux, if the kdialog command is found, it will be used instead.
@@ -53,7 +53,7 @@ namespace Robust.Client.UserInterface
             return File.Open(name, FileMode.Open);
         }
 
-        private async Task<string?> GetOpenFileName(FileDialogFilters? filters)
+        public async Task<string?> GetOpenFileName(FileDialogFilters? filters)
         {
 #if LINUX
             if (await IsKDialogAvailable())
@@ -82,7 +82,7 @@ namespace Robust.Client.UserInterface
             }
         }
 
-        private async Task<string?> GetSaveFileName()
+        public async Task<string?> GetSaveFileName()
         {
 #if LINUX
             if (await IsKDialogAvailable())

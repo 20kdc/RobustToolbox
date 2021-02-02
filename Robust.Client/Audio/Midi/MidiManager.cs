@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Threading.Tasks;
 using NFluidsynth;
 using Robust.Client.Interfaces.Graphics.ClientEye;
 using Robust.Client.Interfaces.ResourceManagement;
+using Robust.Client.Interfaces.UserInterface;
 using Robust.Shared.Interfaces.GameObjects;
 using Robust.Shared.Interfaces.Log;
 using Robust.Shared.Interfaces.Physics;
@@ -52,6 +54,16 @@ namespace Robust.Client.Audio.Midi
         */
 
         /// <summary>
+        ///     Opens a dialog to set the custom soundfont.
+        /// </summary>
+        Task<bool> CustomSoundfontOpenDialog();
+
+        /// <summary>
+        ///     Clears the custom soundfont.
+        /// </summary>
+        void CustomSoundfontClear();
+
+        /// <summary>
         ///     Method called every frame.
         ///     Should be used to update positional audio.
         /// </summary>
@@ -71,6 +83,7 @@ namespace Robust.Client.Audio.Midi
         [Dependency] private readonly IEyeManager _eyeManager = default!;
         [Dependency] private readonly IResourceManagerInternal _resourceManager = default!;
         [Dependency] private readonly IEntityManager _entityManager = default!;
+        [Dependency] private readonly IFileDialogManagerInternal _fileDialogManager = default!;
 
         public bool IsAvailable
         {
@@ -115,6 +128,8 @@ namespace Robust.Client.Audio.Midi
         private ISawmill _sawmill = default!;
 
         public int OcclusionCollisionMask { get; set; }
+
+        private string CustomSoundfontPath = "";
 
         private void InitializeFluidsynth()
         {
@@ -183,6 +198,23 @@ namespace Robust.Client.Audio.Midi
         }
         */
 
+        public async Task<bool> CustomSoundfontOpenDialog()
+        {
+            var newPath = await _fileDialogManager.GetOpenFileName(new FileDialogFilters(new FileDialogFilters.Group(new string[] {"sf2", "dls"})));
+            if (newPath == null)
+            {
+                return false;
+            }
+            // If this does anything more complicated in future, like updating a CVar, check if it might need to be forwarded to main thread!
+            CustomSoundfontPath = newPath;
+            return true;
+        }
+
+        public void CustomSoundfontClear()
+        {
+            CustomSoundfontPath = "";
+        }
+
         public IMidiRenderer? GetNewRenderer()
         {
             if (!FluidsynthInitialized)
@@ -243,6 +275,12 @@ namespace Robust.Client.Audio.Midi
                 {
                     if (File.Exists(WindowsSoundfont) && SoundFont.IsSoundFont(WindowsSoundfont))
                         renderer.LoadSoundfont(WindowsSoundfont, true);
+                }
+
+                // Above all else, user's choice takes priority
+                if (CustomSoundfontPath != "")
+                {
+                    renderer.LoadSoundfont(CustomSoundfontPath);
                 }
 
                 lock (_renderers)
