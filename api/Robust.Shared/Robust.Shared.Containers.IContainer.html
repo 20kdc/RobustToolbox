@@ -1,0 +1,823 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Interface IContainer
+   </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Interface IContainer
+   ">
+    <meta name="generator" content="docfx 2.56.7.0">
+    
+    <link rel="shortcut icon" href="../../favicon.ico">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="Robust.Shared.Containers.IContainer">
+  
+  
+  <h1 id="Robust_Shared_Containers_IContainer" data-uid="Robust.Shared.Containers.IContainer" class="text-break">Interface IContainer
+  </h1>
+  <div class="markdown level0 summary"><p>A container is a way to &quot;contain&quot; entities inside other entities, in a logical way.
+This is alike BYOND's <code>contents</code> system, except more advanced.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="Robust.Shared.Containers.html">Robust.Shared.Containers</a></h6>
+  <h6><strong>Assembly</strong>: Robust.Shared.dll</h6>
+  <h5 id="Robust_Shared_Containers_IContainer_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public interface IContainer</code></pre>
+  </div>
+  <h5 id="Robust_Shared_Containers_IContainer_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>
+Containers are logical separations of entities contained inside another entity.
+for example, a crate with two separated compartments would have two separate containers.
+If an entity inside compartment A drops something,
+the dropped entity would be placed in compartment A too,
+and compartment B would be completely untouched.
+</p>
+<p>
+Containers are managed by an entity&apos;s <a class="xref" href="Robust.Shared.Containers.IContainerManager.html">IContainerManager</a>,
+and have an ID to be referenced by.
+</p>
+</div>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_Containers_IContainer_ContainedEntities.md&amp;value=---%0Auid%3A%20Robust.Shared.Containers.IContainer.ContainedEntities%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/Containers/IContainer.cs/#L35">View Source</a>
+  </span>
+  <a id="Robust_Shared_Containers_IContainer_ContainedEntities_" data-uid="Robust.Shared.Containers.IContainer.ContainedEntities*"></a>
+  <h4 id="Robust_Shared_Containers_IContainer_ContainedEntities" data-uid="Robust.Shared.Containers.IContainer.ContainedEntities">ContainedEntities</h4>
+  <div class="markdown level1 summary"><p>Readonly collection of all the entities contained within this specific container</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">IReadOnlyList&lt;EntityUid&gt; ContainedEntities { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IReadOnlyList</span>&lt;<a class="xref" href="Robust.Shared.GameObjects.EntityUid.html">EntityUid</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_Containers_IContainer_ContainerType.md&amp;value=---%0Auid%3A%20Robust.Shared.Containers.IContainer.ContainerType%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/Containers/IContainer.cs/#L42">View Source</a>
+  </span>
+  <a id="Robust_Shared_Containers_IContainer_ContainerType_" data-uid="Robust.Shared.Containers.IContainer.ContainerType*"></a>
+  <h4 id="Robust_Shared_Containers_IContainer_ContainerType" data-uid="Robust.Shared.Containers.IContainer.ContainerType">ContainerType</h4>
+  <div class="markdown level1 summary"><p>The type of this container.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">string ContainerType { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_Containers_IContainer_Deleted.md&amp;value=---%0Auid%3A%20Robust.Shared.Containers.IContainer.Deleted%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/Containers/IContainer.cs/#L47">View Source</a>
+  </span>
+  <a id="Robust_Shared_Containers_IContainer_Deleted_" data-uid="Robust.Shared.Containers.IContainer.Deleted*"></a>
+  <h4 id="Robust_Shared_Containers_IContainer_Deleted" data-uid="Robust.Shared.Containers.IContainer.Deleted">Deleted</h4>
+  <div class="markdown level1 summary"><p>True if the container has been shut down via <a class="xref" href="Robust.Shared.Containers.IContainer.html#Robust_Shared_Containers_IContainer_Shutdown">Shutdown()</a></p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">bool Deleted { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_Containers_IContainer_ExpectedEntities.md&amp;value=---%0Auid%3A%20Robust.Shared.Containers.IContainer.ExpectedEntities%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/Containers/IContainer.cs/#L37">View Source</a>
+  </span>
+  <a id="Robust_Shared_Containers_IContainer_ExpectedEntities_" data-uid="Robust.Shared.Containers.IContainer.ExpectedEntities*"></a>
+  <h4 id="Robust_Shared_Containers_IContainer_ExpectedEntities" data-uid="Robust.Shared.Containers.IContainer.ExpectedEntities">ExpectedEntities</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">List&lt;EntityUid&gt; ExpectedEntities { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">List</span>&lt;<a class="xref" href="Robust.Shared.GameObjects.EntityUid.html">EntityUid</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_Containers_IContainer_ID.md&amp;value=---%0Auid%3A%20Robust.Shared.Containers.IContainer.ID%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/Containers/IContainer.cs/#L52">View Source</a>
+  </span>
+  <a id="Robust_Shared_Containers_IContainer_ID_" data-uid="Robust.Shared.Containers.IContainer.ID*"></a>
+  <h4 id="Robust_Shared_Containers_IContainer_ID" data-uid="Robust.Shared.Containers.IContainer.ID">ID</h4>
+  <div class="markdown level1 summary"><p>The ID of this container.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">string ID { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_Containers_IContainer_Manager.md&amp;value=---%0Auid%3A%20Robust.Shared.Containers.IContainer.Manager%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/Containers/IContainer.cs/#L57">View Source</a>
+  </span>
+  <a id="Robust_Shared_Containers_IContainer_Manager_" data-uid="Robust.Shared.Containers.IContainer.Manager*"></a>
+  <h4 id="Robust_Shared_Containers_IContainer_Manager" data-uid="Robust.Shared.Containers.IContainer.Manager">Manager</h4>
+  <div class="markdown level1 summary"><p>The container manager owning this container.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">IContainerManager Manager { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Containers.IContainerManager.html">IContainerManager</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_Containers_IContainer_OccludesLight.md&amp;value=---%0Auid%3A%20Robust.Shared.Containers.IContainer.OccludesLight%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/Containers/IContainer.cs/#L62">View Source</a>
+  </span>
+  <a id="Robust_Shared_Containers_IContainer_OccludesLight_" data-uid="Robust.Shared.Containers.IContainer.OccludesLight*"></a>
+  <h4 id="Robust_Shared_Containers_IContainer_OccludesLight" data-uid="Robust.Shared.Containers.IContainer.OccludesLight">OccludesLight</h4>
+  <div class="markdown level1 summary"><p>Prevents light from escaping the container, from ex. a flashlight.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">bool OccludesLight { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_Containers_IContainer_Owner.md&amp;value=---%0Auid%3A%20Robust.Shared.Containers.IContainer.Owner%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/Containers/IContainer.cs/#L67">View Source</a>
+  </span>
+  <a id="Robust_Shared_Containers_IContainer_Owner_" data-uid="Robust.Shared.Containers.IContainer.Owner*"></a>
+  <h4 id="Robust_Shared_Containers_IContainer_Owner" data-uid="Robust.Shared.Containers.IContainer.Owner">Owner</h4>
+  <div class="markdown level1 summary"><p>The entity owning this container.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">EntityUid Owner { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.EntityUid.html">EntityUid</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_Containers_IContainer_ShowContents.md&amp;value=---%0Auid%3A%20Robust.Shared.Containers.IContainer.ShowContents%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/Containers/IContainer.cs/#L73">View Source</a>
+  </span>
+  <a id="Robust_Shared_Containers_IContainer_ShowContents_" data-uid="Robust.Shared.Containers.IContainer.ShowContents*"></a>
+  <h4 id="Robust_Shared_Containers_IContainer_ShowContents" data-uid="Robust.Shared.Containers.IContainer.ShowContents">ShowContents</h4>
+  <div class="markdown level1 summary"><p>Should the contents of this container be shown? False for closed containers like lockers, true for
+things like glass display cases.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">bool ShowContents { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_Containers_IContainer_CanInsert_Robust_Shared_GameObjects_EntityUid_Robust_Shared_GameObjects_IEntityManager_.md&amp;value=---%0Auid%3A%20Robust.Shared.Containers.IContainer.CanInsert(Robust.Shared.GameObjects.EntityUid%2CRobust.Shared.GameObjects.IEntityManager)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/Containers/IContainer.cs/#L81">View Source</a>
+  </span>
+  <a id="Robust_Shared_Containers_IContainer_CanInsert_" data-uid="Robust.Shared.Containers.IContainer.CanInsert*"></a>
+  <h4 id="Robust_Shared_Containers_IContainer_CanInsert_Robust_Shared_GameObjects_EntityUid_Robust_Shared_GameObjects_IEntityManager_" data-uid="Robust.Shared.Containers.IContainer.CanInsert(Robust.Shared.GameObjects.EntityUid,Robust.Shared.GameObjects.IEntityManager)">CanInsert(EntityUid, IEntityManager)</h4>
+  <div class="markdown level1 summary"><p>Checks if the entity can be inserted into this container.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">bool CanInsert(EntityUid toinsert, IEntityManager entMan = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.EntityUid.html">EntityUid</a></td>
+        <td><span class="parametername">toinsert</span></td>
+        <td><p>The entity to attempt to insert.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.IEntityManager.html">IEntityManager</a></td>
+        <td><span class="parametername">entMan</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td><p>True if the entity can be inserted, false otherwise.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_Containers_IContainer_CanRemove_Robust_Shared_GameObjects_EntityUid_Robust_Shared_GameObjects_IEntityManager_.md&amp;value=---%0Auid%3A%20Robust.Shared.Containers.IContainer.CanRemove(Robust.Shared.GameObjects.EntityUid%2CRobust.Shared.GameObjects.IEntityManager)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/Containers/IContainer.cs/#L105">View Source</a>
+  </span>
+  <a id="Robust_Shared_Containers_IContainer_CanRemove_" data-uid="Robust.Shared.Containers.IContainer.CanRemove*"></a>
+  <h4 id="Robust_Shared_Containers_IContainer_CanRemove_Robust_Shared_GameObjects_EntityUid_Robust_Shared_GameObjects_IEntityManager_" data-uid="Robust.Shared.Containers.IContainer.CanRemove(Robust.Shared.GameObjects.EntityUid,Robust.Shared.GameObjects.IEntityManager)">CanRemove(EntityUid, IEntityManager)</h4>
+  <div class="markdown level1 summary"><p>Checks if the entity can be removed from this container.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">bool CanRemove(EntityUid toremove, IEntityManager entMan = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.EntityUid.html">EntityUid</a></td>
+        <td><span class="parametername">toremove</span></td>
+        <td><p>The entity to check.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.IEntityManager.html">IEntityManager</a></td>
+        <td><span class="parametername">entMan</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td><p>True if the entity can be removed, false otherwise.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_Containers_IContainer_Contains_Robust_Shared_GameObjects_EntityUid_.md&amp;value=---%0Auid%3A%20Robust.Shared.Containers.IContainer.Contains(Robust.Shared.GameObjects.EntityUid)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/Containers/IContainer.cs/#L129">View Source</a>
+  </span>
+  <a id="Robust_Shared_Containers_IContainer_Contains_" data-uid="Robust.Shared.Containers.IContainer.Contains*"></a>
+  <h4 id="Robust_Shared_Containers_IContainer_Contains_Robust_Shared_GameObjects_EntityUid_" data-uid="Robust.Shared.Containers.IContainer.Contains(Robust.Shared.GameObjects.EntityUid)">Contains(EntityUid)</h4>
+  <div class="markdown level1 summary"><p>Checks if the entity is contained in this container.
+This is not recursive, so containers of children are not checked.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">bool Contains(EntityUid contained)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.EntityUid.html">EntityUid</a></td>
+        <td><span class="parametername">contained</span></td>
+        <td><p>The entity to check.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td><p>True if the entity is immediately contained in this container, false otherwise.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_Containers_IContainer_ForceRemove_Robust_Shared_GameObjects_EntityUid_Robust_Shared_GameObjects_IEntityManager_Robust_Shared_GameObjects_MetaDataComponent_.md&amp;value=---%0Auid%3A%20Robust.Shared.Containers.IContainer.ForceRemove(Robust.Shared.GameObjects.EntityUid%2CRobust.Shared.GameObjects.IEntityManager%2CRobust.Shared.GameObjects.MetaDataComponent)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/Containers/IContainer.cs/#L121">View Source</a>
+  </span>
+  <a id="Robust_Shared_Containers_IContainer_ForceRemove_" data-uid="Robust.Shared.Containers.IContainer.ForceRemove*"></a>
+  <h4 id="Robust_Shared_Containers_IContainer_ForceRemove_Robust_Shared_GameObjects_EntityUid_Robust_Shared_GameObjects_IEntityManager_Robust_Shared_GameObjects_MetaDataComponent_" data-uid="Robust.Shared.Containers.IContainer.ForceRemove(Robust.Shared.GameObjects.EntityUid,Robust.Shared.GameObjects.IEntityManager,Robust.Shared.GameObjects.MetaDataComponent)">ForceRemove(EntityUid, IEntityManager, MetaDataComponent)</h4>
+  <div class="markdown level1 summary"><p>Forcefully removes an entity from the container. Normally you would want to use <a class="xref" href="Robust.Shared.Containers.IContainer.html#Robust_Shared_Containers_IContainer_Remove_Robust_Shared_GameObjects_EntityUid_Robust_Shared_GameObjects_IEntityManager_Robust_Shared_GameObjects_TransformComponent_Robust_Shared_GameObjects_MetaDataComponent_">Remove(EntityUid, IEntityManager, TransformComponent, MetaDataComponent)</a>,
+this function should be avoided.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">void ForceRemove(EntityUid toRemove, IEntityManager entMan = null, MetaDataComponent meta = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.EntityUid.html">EntityUid</a></td>
+        <td><span class="parametername">toRemove</span></td>
+        <td><p>The entity to attempt to remove.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.IEntityManager.html">IEntityManager</a></td>
+        <td><span class="parametername">entMan</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.MetaDataComponent.html">MetaDataComponent</a></td>
+        <td><span class="parametername">meta</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_Containers_IContainer_Insert_Robust_Shared_GameObjects_EntityUid_Robust_Shared_GameObjects_IEntityManager_Robust_Shared_GameObjects_TransformComponent_Robust_Shared_GameObjects_TransformComponent_Robust_Shared_GameObjects_MetaDataComponent_.md&amp;value=---%0Auid%3A%20Robust.Shared.Containers.IContainer.Insert(Robust.Shared.GameObjects.EntityUid%2CRobust.Shared.GameObjects.IEntityManager%2CRobust.Shared.GameObjects.TransformComponent%2CRobust.Shared.GameObjects.TransformComponent%2CRobust.Shared.GameObjects.MetaDataComponent)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/Containers/IContainer.cs/#L97">View Source</a>
+  </span>
+  <a id="Robust_Shared_Containers_IContainer_Insert_" data-uid="Robust.Shared.Containers.IContainer.Insert*"></a>
+  <h4 id="Robust_Shared_Containers_IContainer_Insert_Robust_Shared_GameObjects_EntityUid_Robust_Shared_GameObjects_IEntityManager_Robust_Shared_GameObjects_TransformComponent_Robust_Shared_GameObjects_TransformComponent_Robust_Shared_GameObjects_MetaDataComponent_" data-uid="Robust.Shared.Containers.IContainer.Insert(Robust.Shared.GameObjects.EntityUid,Robust.Shared.GameObjects.IEntityManager,Robust.Shared.GameObjects.TransformComponent,Robust.Shared.GameObjects.TransformComponent,Robust.Shared.GameObjects.MetaDataComponent)">Insert(EntityUid, IEntityManager, TransformComponent, TransformComponent, MetaDataComponent)</h4>
+  <div class="markdown level1 summary"><p>Attempts to insert the entity into this container.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">bool Insert(EntityUid toinsert, IEntityManager entMan = null, TransformComponent transform = null, TransformComponent ownerTransform = null, MetaDataComponent meta = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.EntityUid.html">EntityUid</a></td>
+        <td><span class="parametername">toinsert</span></td>
+        <td><p>The entity to insert.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.IEntityManager.html">IEntityManager</a></td>
+        <td><span class="parametername">entMan</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.TransformComponent.html">TransformComponent</a></td>
+        <td><span class="parametername">transform</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.TransformComponent.html">TransformComponent</a></td>
+        <td><span class="parametername">ownerTransform</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.MetaDataComponent.html">MetaDataComponent</a></td>
+        <td><span class="parametername">meta</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td><p>False if the entity could not be inserted.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Robust_Shared_Containers_IContainer_Insert_Robust_Shared_GameObjects_EntityUid_Robust_Shared_GameObjects_IEntityManager_Robust_Shared_GameObjects_TransformComponent_Robust_Shared_GameObjects_TransformComponent_Robust_Shared_GameObjects_MetaDataComponent__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>If the insertion is successful, the inserted entity will end up parented to the
+container entity, and the inserted entity's local position will be set to the zero vector.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_Containers_IContainer_Remove_Robust_Shared_GameObjects_EntityUid_Robust_Shared_GameObjects_IEntityManager_Robust_Shared_GameObjects_TransformComponent_Robust_Shared_GameObjects_MetaDataComponent_.md&amp;value=---%0Auid%3A%20Robust.Shared.Containers.IContainer.Remove(Robust.Shared.GameObjects.EntityUid%2CRobust.Shared.GameObjects.IEntityManager%2CRobust.Shared.GameObjects.TransformComponent%2CRobust.Shared.GameObjects.MetaDataComponent)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/Containers/IContainer.cs/#L113">View Source</a>
+  </span>
+  <a id="Robust_Shared_Containers_IContainer_Remove_" data-uid="Robust.Shared.Containers.IContainer.Remove*"></a>
+  <h4 id="Robust_Shared_Containers_IContainer_Remove_Robust_Shared_GameObjects_EntityUid_Robust_Shared_GameObjects_IEntityManager_Robust_Shared_GameObjects_TransformComponent_Robust_Shared_GameObjects_MetaDataComponent_" data-uid="Robust.Shared.Containers.IContainer.Remove(Robust.Shared.GameObjects.EntityUid,Robust.Shared.GameObjects.IEntityManager,Robust.Shared.GameObjects.TransformComponent,Robust.Shared.GameObjects.MetaDataComponent)">Remove(EntityUid, IEntityManager, TransformComponent, MetaDataComponent)</h4>
+  <div class="markdown level1 summary"><p>Attempts to remove the entity from this container.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">bool Remove(EntityUid toremove, IEntityManager entMan = null, TransformComponent xform = null, MetaDataComponent meta = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.EntityUid.html">EntityUid</a></td>
+        <td><span class="parametername">toremove</span></td>
+        <td><p>The entity to attempt to remove.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.IEntityManager.html">IEntityManager</a></td>
+        <td><span class="parametername">entMan</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.TransformComponent.html">TransformComponent</a></td>
+        <td><span class="parametername">xform</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.MetaDataComponent.html">MetaDataComponent</a></td>
+        <td><span class="parametername">meta</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td><p>True if the entity was removed, false otherwise.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_Containers_IContainer_Shutdown.md&amp;value=---%0Auid%3A%20Robust.Shared.Containers.IContainer.Shutdown%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/Containers/IContainer.cs/#L134">View Source</a>
+  </span>
+  <a id="Robust_Shared_Containers_IContainer_Shutdown_" data-uid="Robust.Shared.Containers.IContainer.Shutdown*"></a>
+  <h4 id="Robust_Shared_Containers_IContainer_Shutdown" data-uid="Robust.Shared.Containers.IContainer.Shutdown">Shutdown()</h4>
+  <div class="markdown level1 summary"><p>Clears the container and marks it as deleted.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">void Shutdown()</code></pre>
+  </div>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="Robust.Shared.Containers.ContainerHelpers.html#Robust_Shared_Containers_ContainerHelpers_EmptyContainer_Robust_Shared_Containers_IContainer_System_Boolean_System_Nullable_Robust_Shared_Map_EntityCoordinates__System_Boolean_Robust_Shared_GameObjects_IEntityManager_">ContainerHelpers.EmptyContainer(IContainer, Boolean, Nullable&lt;EntityCoordinates&gt;, Boolean, IEntityManager)</a>
+  </div>
+  <div>
+      <a class="xref" href="Robust.Shared.Containers.ContainerHelpers.html#Robust_Shared_Containers_ContainerHelpers_CleanContainer_Robust_Shared_Containers_IContainer_Robust_Shared_GameObjects_IEntityManager_">ContainerHelpers.CleanContainer(IContainer, IEntityManager)</a>
+  </div>
+  <h3 id="seealso">See Also</h3>
+  <div class="seealso">
+      <div><a class="xref" href="Robust.Shared.Containers.IContainerManager.html">IContainerManager</a></div>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_Containers_IContainer.md&amp;value=---%0Auid%3A%20Robust.Shared.Containers.IContainer%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/Containers/IContainer.cs/#L28" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+          
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In This Article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+              
+              <span>Generated by <strong>DocFX</strong></span>
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../../styles/toggle-theme.js"></script>
+      </footer>    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

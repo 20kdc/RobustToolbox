@@ -1,0 +1,2076 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class EntityLookupSystem
+   </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class EntityLookupSystem
+   ">
+    <meta name="generator" content="docfx 2.56.7.0">
+    
+    <link rel="shortcut icon" href="../../favicon.ico">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="Robust.Shared.GameObjects.EntityLookupSystem">
+  
+  
+  <h1 id="Robust_Shared_GameObjects_EntityLookupSystem" data-uid="Robust.Shared.GameObjects.EntityLookupSystem" class="text-break">Class EntityLookupSystem
+  </h1>
+  <div class="markdown level0 summary"></div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><span class="xref">System.Object</span></div>
+    <div class="level1"><a class="xref" href="Robust.Shared.GameObjects.EntitySystem.html">EntitySystem</a></div>
+    <div class="level2"><span class="xref">EntityLookupSystem</span></div>
+  </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="Robust.Shared.GameObjects.IEntitySystem.html">IEntitySystem</a></div>
+    <div><a class="xref" href="Robust.Shared.GameObjects.IEntityEventSubscriber.html">IEntityEventSubscriber</a></div>
+  </div>
+  <div class="inheritedMembers">
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="Robust.Shared.GameObjects.html">Robust.Shared.GameObjects</a></h6>
+  <h6><strong>Assembly</strong>: Robust.Shared.dll</h6>
+  <h5 id="Robust_Shared_GameObjects_EntityLookupSystem_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed class EntityLookupSystem : EntitySystem, IEntitySystem, IEntityEventSubscriber</code></pre>
+  </div>
+  <h3 id="fields">Fields
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_GameObjects_EntityLookupSystem_DefaultFlags.md&amp;value=---%0Auid%3A%20Robust.Shared.GameObjects.EntityLookupSystem.DefaultFlags%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/GameObjects/Systems/EntityLookupSystem.cs/#L47">View Source</a>
+  </span>
+  <h4 id="Robust_Shared_GameObjects_EntityLookupSystem_DefaultFlags" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.DefaultFlags">DefaultFlags</h4>
+  <div class="markdown level1 summary"><p>Returns all non-grid entities. Consider using your own flags if you wish for a faster query.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const LookupFlags DefaultFlags = default(LookupFlags)</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.LookupFlags.html">LookupFlags</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_GameObjects_EntityLookupSystem_AnyEntitiesInRange_Robust_Shared_GameObjects_EntityUid_System_Single_Robust_Shared_GameObjects_LookupFlags_.md&amp;value=---%0Auid%3A%20Robust.Shared.GameObjects.EntityLookupSystem.AnyEntitiesInRange(Robust.Shared.GameObjects.EntityUid%2CSystem.Single%2CRobust.Shared.GameObjects.LookupFlags)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/GameObjects/Systems/EntityLookup.Queries.cs/#L326">View Source</a>
+  </span>
+  <a id="Robust_Shared_GameObjects_EntityLookupSystem_AnyEntitiesInRange_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.AnyEntitiesInRange*"></a>
+  <h4 id="Robust_Shared_GameObjects_EntityLookupSystem_AnyEntitiesInRange_Robust_Shared_GameObjects_EntityUid_System_Single_Robust_Shared_GameObjects_LookupFlags_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.AnyEntitiesInRange(Robust.Shared.GameObjects.EntityUid,System.Single,Robust.Shared.GameObjects.LookupFlags)">AnyEntitiesInRange(EntityUid, Single, LookupFlags)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool AnyEntitiesInRange(EntityUid uid, float range, LookupFlags flags = default(LookupFlags))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.EntityUid.html">EntityUid</a></td>
+        <td><span class="parametername">uid</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Single</span></td>
+        <td><span class="parametername">range</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.LookupFlags.html">LookupFlags</a></td>
+        <td><span class="parametername">flags</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_GameObjects_EntityLookupSystem_AnyEntitiesInRange_Robust_Shared_Map_EntityCoordinates_System_Single_Robust_Shared_GameObjects_LookupFlags_.md&amp;value=---%0Auid%3A%20Robust.Shared.GameObjects.EntityLookupSystem.AnyEntitiesInRange(Robust.Shared.Map.EntityCoordinates%2CSystem.Single%2CRobust.Shared.GameObjects.LookupFlags)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/GameObjects/Systems/EntityLookup.Queries.cs/#L380">View Source</a>
+  </span>
+  <a id="Robust_Shared_GameObjects_EntityLookupSystem_AnyEntitiesInRange_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.AnyEntitiesInRange*"></a>
+  <h4 id="Robust_Shared_GameObjects_EntityLookupSystem_AnyEntitiesInRange_Robust_Shared_Map_EntityCoordinates_System_Single_Robust_Shared_GameObjects_LookupFlags_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.AnyEntitiesInRange(Robust.Shared.Map.EntityCoordinates,System.Single,Robust.Shared.GameObjects.LookupFlags)">AnyEntitiesInRange(EntityCoordinates, Single, LookupFlags)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool AnyEntitiesInRange(EntityCoordinates coordinates, float range, LookupFlags flags = default(LookupFlags))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Map.EntityCoordinates.html">EntityCoordinates</a></td>
+        <td><span class="parametername">coordinates</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Single</span></td>
+        <td><span class="parametername">range</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.LookupFlags.html">LookupFlags</a></td>
+        <td><span class="parametername">flags</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_GameObjects_EntityLookupSystem_AnyEntitiesInRange_Robust_Shared_Map_MapCoordinates_System_Single_Robust_Shared_GameObjects_LookupFlags_.md&amp;value=---%0Auid%3A%20Robust.Shared.GameObjects.EntityLookupSystem.AnyEntitiesInRange(Robust.Shared.Map.MapCoordinates%2CSystem.Single%2CRobust.Shared.GameObjects.LookupFlags)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/GameObjects/Systems/EntityLookup.Queries.cs/#L412">View Source</a>
+  </span>
+  <a id="Robust_Shared_GameObjects_EntityLookupSystem_AnyEntitiesInRange_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.AnyEntitiesInRange*"></a>
+  <h4 id="Robust_Shared_GameObjects_EntityLookupSystem_AnyEntitiesInRange_Robust_Shared_Map_MapCoordinates_System_Single_Robust_Shared_GameObjects_LookupFlags_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.AnyEntitiesInRange(Robust.Shared.Map.MapCoordinates,System.Single,Robust.Shared.GameObjects.LookupFlags)">AnyEntitiesInRange(MapCoordinates, Single, LookupFlags)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool AnyEntitiesInRange(MapCoordinates coordinates, float range, LookupFlags flags = default(LookupFlags))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Map.MapCoordinates.html">MapCoordinates</a></td>
+        <td><span class="parametername">coordinates</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Single</span></td>
+        <td><span class="parametername">range</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.LookupFlags.html">LookupFlags</a></td>
+        <td><span class="parametername">flags</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_GameObjects_EntityLookupSystem_AnyEntitiesIntersecting_Robust_Shared_GameObjects_EntityUid_Robust_Shared_GameObjects_LookupFlags_.md&amp;value=---%0Auid%3A%20Robust.Shared.GameObjects.EntityLookupSystem.AnyEntitiesIntersecting(Robust.Shared.GameObjects.EntityUid%2CRobust.Shared.GameObjects.LookupFlags)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/GameObjects/Systems/EntityLookup.Queries.cs/#L306">View Source</a>
+  </span>
+  <a id="Robust_Shared_GameObjects_EntityLookupSystem_AnyEntitiesIntersecting_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.AnyEntitiesIntersecting*"></a>
+  <h4 id="Robust_Shared_GameObjects_EntityLookupSystem_AnyEntitiesIntersecting_Robust_Shared_GameObjects_EntityUid_Robust_Shared_GameObjects_LookupFlags_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.AnyEntitiesIntersecting(Robust.Shared.GameObjects.EntityUid,Robust.Shared.GameObjects.LookupFlags)">AnyEntitiesIntersecting(EntityUid, LookupFlags)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool AnyEntitiesIntersecting(EntityUid uid, LookupFlags flags = default(LookupFlags))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.EntityUid.html">EntityUid</a></td>
+        <td><span class="parametername">uid</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.LookupFlags.html">LookupFlags</a></td>
+        <td><span class="parametername">flags</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_GameObjects_EntityLookupSystem_AnyEntitiesIntersecting_Robust_Shared_Map_EntityCoordinates_Robust_Shared_GameObjects_LookupFlags_.md&amp;value=---%0Auid%3A%20Robust.Shared.GameObjects.EntityLookupSystem.AnyEntitiesIntersecting(Robust.Shared.Map.EntityCoordinates%2CRobust.Shared.GameObjects.LookupFlags)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/GameObjects/Systems/EntityLookup.Queries.cs/#L372">View Source</a>
+  </span>
+  <a id="Robust_Shared_GameObjects_EntityLookupSystem_AnyEntitiesIntersecting_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.AnyEntitiesIntersecting*"></a>
+  <h4 id="Robust_Shared_GameObjects_EntityLookupSystem_AnyEntitiesIntersecting_Robust_Shared_Map_EntityCoordinates_Robust_Shared_GameObjects_LookupFlags_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.AnyEntitiesIntersecting(Robust.Shared.Map.EntityCoordinates,Robust.Shared.GameObjects.LookupFlags)">AnyEntitiesIntersecting(EntityCoordinates, LookupFlags)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool AnyEntitiesIntersecting(EntityCoordinates coordinates, LookupFlags flags = default(LookupFlags))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Map.EntityCoordinates.html">EntityCoordinates</a></td>
+        <td><span class="parametername">coordinates</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.LookupFlags.html">LookupFlags</a></td>
+        <td><span class="parametername">flags</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_GameObjects_EntityLookupSystem_AnyEntitiesIntersecting_Robust_Shared_Map_MapCoordinates_Robust_Shared_GameObjects_LookupFlags_.md&amp;value=---%0Auid%3A%20Robust.Shared.GameObjects.EntityLookupSystem.AnyEntitiesIntersecting(Robust.Shared.Map.MapCoordinates%2CRobust.Shared.GameObjects.LookupFlags)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/GameObjects/Systems/EntityLookup.Queries.cs/#L404">View Source</a>
+  </span>
+  <a id="Robust_Shared_GameObjects_EntityLookupSystem_AnyEntitiesIntersecting_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.AnyEntitiesIntersecting*"></a>
+  <h4 id="Robust_Shared_GameObjects_EntityLookupSystem_AnyEntitiesIntersecting_Robust_Shared_Map_MapCoordinates_Robust_Shared_GameObjects_LookupFlags_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.AnyEntitiesIntersecting(Robust.Shared.Map.MapCoordinates,Robust.Shared.GameObjects.LookupFlags)">AnyEntitiesIntersecting(MapCoordinates, LookupFlags)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool AnyEntitiesIntersecting(MapCoordinates coordinates, LookupFlags flags = default(LookupFlags))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Map.MapCoordinates.html">MapCoordinates</a></td>
+        <td><span class="parametername">coordinates</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.LookupFlags.html">LookupFlags</a></td>
+        <td><span class="parametername">flags</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_GameObjects_EntityLookupSystem_AnyEntitiesIntersecting_Robust_Shared_Map_MapId_Robust_Shared_Maths_Box2_Robust_Shared_GameObjects_LookupFlags_.md&amp;value=---%0Auid%3A%20Robust.Shared.GameObjects.EntityLookupSystem.AnyEntitiesIntersecting(Robust.Shared.Map.MapId%2CRobust.Shared.Maths.Box2%2CRobust.Shared.GameObjects.LookupFlags)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/GameObjects/Systems/EntityLookup.Queries.cs/#L198">View Source</a>
+  </span>
+  <a id="Robust_Shared_GameObjects_EntityLookupSystem_AnyEntitiesIntersecting_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.AnyEntitiesIntersecting*"></a>
+  <h4 id="Robust_Shared_GameObjects_EntityLookupSystem_AnyEntitiesIntersecting_Robust_Shared_Map_MapId_Robust_Shared_Maths_Box2_Robust_Shared_GameObjects_LookupFlags_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.AnyEntitiesIntersecting(Robust.Shared.Map.MapId,Robust.Shared.Maths.Box2,Robust.Shared.GameObjects.LookupFlags)">AnyEntitiesIntersecting(MapId, Box2, LookupFlags)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool AnyEntitiesIntersecting(MapId mapId, Box2 worldAABB, LookupFlags flags = default(LookupFlags))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Map.MapId.html">MapId</a></td>
+        <td><span class="parametername">mapId</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="../Robust.Shared.Maths/Robust.Shared.Maths.Box2.html">Box2</a></td>
+        <td><span class="parametername">worldAABB</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.LookupFlags.html">LookupFlags</a></td>
+        <td><span class="parametername">flags</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_GameObjects_EntityLookupSystem_AnyEntitiesIntersecting_Robust_Shared_Map_MapId_Robust_Shared_Maths_Box2Rotated_Robust_Shared_GameObjects_LookupFlags_.md&amp;value=---%0Auid%3A%20Robust.Shared.GameObjects.EntityLookupSystem.AnyEntitiesIntersecting(Robust.Shared.Map.MapId%2CRobust.Shared.Maths.Box2Rotated%2CRobust.Shared.GameObjects.LookupFlags)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/GameObjects/Systems/EntityLookup.Queries.cs/#L252">View Source</a>
+  </span>
+  <a id="Robust_Shared_GameObjects_EntityLookupSystem_AnyEntitiesIntersecting_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.AnyEntitiesIntersecting*"></a>
+  <h4 id="Robust_Shared_GameObjects_EntityLookupSystem_AnyEntitiesIntersecting_Robust_Shared_Map_MapId_Robust_Shared_Maths_Box2Rotated_Robust_Shared_GameObjects_LookupFlags_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.AnyEntitiesIntersecting(Robust.Shared.Map.MapId,Robust.Shared.Maths.Box2Rotated,Robust.Shared.GameObjects.LookupFlags)">AnyEntitiesIntersecting(MapId, Box2Rotated, LookupFlags)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool AnyEntitiesIntersecting(MapId mapId, Box2Rotated worldBounds, LookupFlags flags = default(LookupFlags))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Map.MapId.html">MapId</a></td>
+        <td><span class="parametername">mapId</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="../Robust.Shared.Maths/Robust.Shared.Maths.Box2Rotated.html">Box2Rotated</a></td>
+        <td><span class="parametername">worldBounds</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.LookupFlags.html">LookupFlags</a></td>
+        <td><span class="parametername">flags</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_GameObjects_EntityLookupSystem_FindLookupsIntersecting_Robust_Shared_Map_MapId_Robust_Shared_Maths_Box2_.md&amp;value=---%0Auid%3A%20Robust.Shared.GameObjects.EntityLookupSystem.FindLookupsIntersecting(Robust.Shared.Map.MapId%2CRobust.Shared.Maths.Box2)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/GameObjects/Systems/EntityLookup.Queries.cs/#L630">View Source</a>
+  </span>
+  <a id="Robust_Shared_GameObjects_EntityLookupSystem_FindLookupsIntersecting_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.FindLookupsIntersecting*"></a>
+  <h4 id="Robust_Shared_GameObjects_EntityLookupSystem_FindLookupsIntersecting_Robust_Shared_Map_MapId_Robust_Shared_Maths_Box2_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.FindLookupsIntersecting(Robust.Shared.Map.MapId,Robust.Shared.Maths.Box2)">FindLookupsIntersecting(MapId, Box2)</h4>
+  <div class="markdown level1 summary"><p>Gets the relevant <a class="xref" href="Robust.Shared.GameObjects.EntityLookupComponent.html">EntityLookupComponent</a> that intersects the specified area.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IEnumerable&lt;EntityLookupComponent&gt; FindLookupsIntersecting(MapId mapId, Box2 worldAABB)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Map.MapId.html">MapId</a></td>
+        <td><span class="parametername">mapId</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="../Robust.Shared.Maths/Robust.Shared.Maths.Box2.html">Box2</a></td>
+        <td><span class="parametername">worldAABB</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IEnumerable</span>&lt;<a class="xref" href="Robust.Shared.GameObjects.EntityLookupComponent.html">EntityLookupComponent</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_GameObjects_EntityLookupSystem_FindLookupsIntersecting_Robust_Shared_Map_MapId_Robust_Shared_Maths_Box2Rotated_.md&amp;value=---%0Auid%3A%20Robust.Shared.GameObjects.EntityLookupSystem.FindLookupsIntersecting(Robust.Shared.Map.MapId%2CRobust.Shared.Maths.Box2Rotated)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/GameObjects/Systems/EntityLookup.Queries.cs/#L647">View Source</a>
+  </span>
+  <a id="Robust_Shared_GameObjects_EntityLookupSystem_FindLookupsIntersecting_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.FindLookupsIntersecting*"></a>
+  <h4 id="Robust_Shared_GameObjects_EntityLookupSystem_FindLookupsIntersecting_Robust_Shared_Map_MapId_Robust_Shared_Maths_Box2Rotated_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.FindLookupsIntersecting(Robust.Shared.Map.MapId,Robust.Shared.Maths.Box2Rotated)">FindLookupsIntersecting(MapId, Box2Rotated)</h4>
+  <div class="markdown level1 summary"><p>Gets the relevant <a class="xref" href="Robust.Shared.GameObjects.EntityLookupComponent.html">EntityLookupComponent</a> that intersects the specified area.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IEnumerable&lt;EntityLookupComponent&gt; FindLookupsIntersecting(MapId mapId, Box2Rotated worldBounds)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Map.MapId.html">MapId</a></td>
+        <td><span class="parametername">mapId</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="../Robust.Shared.Maths/Robust.Shared.Maths.Box2Rotated.html">Box2Rotated</a></td>
+        <td><span class="parametername">worldBounds</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IEnumerable</span>&lt;<a class="xref" href="Robust.Shared.GameObjects.EntityLookupComponent.html">EntityLookupComponent</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesInArc_Robust_Shared_Map_EntityCoordinates_System_Single_Robust_Shared_Maths_Angle_System_Single_Robust_Shared_GameObjects_LookupFlags_.md&amp;value=---%0Auid%3A%20Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesInArc(Robust.Shared.Map.EntityCoordinates%2CSystem.Single%2CRobust.Shared.Maths.Angle%2CSystem.Single%2CRobust.Shared.GameObjects.LookupFlags)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/GameObjects/Systems/EntityLookup.Queries.cs/#L164">View Source</a>
+  </span>
+  <a id="Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesInArc_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesInArc*"></a>
+  <h4 id="Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesInArc_Robust_Shared_Map_EntityCoordinates_System_Single_Robust_Shared_Maths_Angle_System_Single_Robust_Shared_GameObjects_LookupFlags_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesInArc(Robust.Shared.Map.EntityCoordinates,System.Single,Robust.Shared.Maths.Angle,System.Single,Robust.Shared.GameObjects.LookupFlags)">GetEntitiesInArc(EntityCoordinates, Single, Angle, Single, LookupFlags)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IEnumerable&lt;EntityUid&gt; GetEntitiesInArc(EntityCoordinates coordinates, float range, Angle direction, float arcWidth, LookupFlags flags = default(LookupFlags))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Map.EntityCoordinates.html">EntityCoordinates</a></td>
+        <td><span class="parametername">coordinates</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Single</span></td>
+        <td><span class="parametername">range</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="../Robust.Shared.Maths/Robust.Shared.Maths.Angle.html">Angle</a></td>
+        <td><span class="parametername">direction</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Single</span></td>
+        <td><span class="parametername">arcWidth</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.LookupFlags.html">LookupFlags</a></td>
+        <td><span class="parametername">flags</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IEnumerable</span>&lt;<a class="xref" href="Robust.Shared.GameObjects.EntityUid.html">EntityUid</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesInArc_Robust_Shared_Map_MapCoordinates_System_Single_Robust_Shared_Maths_Angle_System_Single_Robust_Shared_GameObjects_LookupFlags_.md&amp;value=---%0Auid%3A%20Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesInArc(Robust.Shared.Map.MapCoordinates%2CSystem.Single%2CRobust.Shared.Maths.Angle%2CSystem.Single%2CRobust.Shared.GameObjects.LookupFlags)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/GameObjects/Systems/EntityLookup.Queries.cs/#L176">View Source</a>
+  </span>
+  <a id="Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesInArc_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesInArc*"></a>
+  <h4 id="Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesInArc_Robust_Shared_Map_MapCoordinates_System_Single_Robust_Shared_Maths_Angle_System_Single_Robust_Shared_GameObjects_LookupFlags_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesInArc(Robust.Shared.Map.MapCoordinates,System.Single,Robust.Shared.Maths.Angle,System.Single,Robust.Shared.GameObjects.LookupFlags)">GetEntitiesInArc(MapCoordinates, Single, Angle, Single, LookupFlags)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IEnumerable&lt;EntityUid&gt; GetEntitiesInArc(MapCoordinates coordinates, float range, Angle direction, float arcWidth, LookupFlags flags = default(LookupFlags))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Map.MapCoordinates.html">MapCoordinates</a></td>
+        <td><span class="parametername">coordinates</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Single</span></td>
+        <td><span class="parametername">range</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="../Robust.Shared.Maths/Robust.Shared.Maths.Angle.html">Angle</a></td>
+        <td><span class="parametername">direction</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Single</span></td>
+        <td><span class="parametername">arcWidth</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.LookupFlags.html">LookupFlags</a></td>
+        <td><span class="parametername">flags</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IEnumerable</span>&lt;<a class="xref" href="Robust.Shared.GameObjects.EntityUid.html">EntityUid</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesInRange_Robust_Shared_GameObjects_EntityUid_System_Single_Robust_Shared_GameObjects_LookupFlags_.md&amp;value=---%0Auid%3A%20Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesInRange(Robust.Shared.GameObjects.EntityUid%2CSystem.Single%2CRobust.Shared.GameObjects.LookupFlags)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/GameObjects/Systems/EntityLookup.Queries.cs/#L346">View Source</a>
+  </span>
+  <a id="Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesInRange_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesInRange*"></a>
+  <h4 id="Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesInRange_Robust_Shared_GameObjects_EntityUid_System_Single_Robust_Shared_GameObjects_LookupFlags_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesInRange(Robust.Shared.GameObjects.EntityUid,System.Single,Robust.Shared.GameObjects.LookupFlags)">GetEntitiesInRange(EntityUid, Single, LookupFlags)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public HashSet&lt;EntityUid&gt; GetEntitiesInRange(EntityUid uid, float range, LookupFlags flags = default(LookupFlags))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.EntityUid.html">EntityUid</a></td>
+        <td><span class="parametername">uid</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Single</span></td>
+        <td><span class="parametername">range</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.LookupFlags.html">LookupFlags</a></td>
+        <td><span class="parametername">flags</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">HashSet</span>&lt;<a class="xref" href="Robust.Shared.GameObjects.EntityUid.html">EntityUid</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesInRange_Robust_Shared_Map_EntityCoordinates_System_Single_Robust_Shared_GameObjects_LookupFlags_.md&amp;value=---%0Auid%3A%20Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesInRange(Robust.Shared.Map.EntityCoordinates%2CSystem.Single%2CRobust.Shared.GameObjects.LookupFlags)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/GameObjects/Systems/EntityLookup.Queries.cs/#L394">View Source</a>
+  </span>
+  <a id="Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesInRange_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesInRange*"></a>
+  <h4 id="Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesInRange_Robust_Shared_Map_EntityCoordinates_System_Single_Robust_Shared_GameObjects_LookupFlags_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesInRange(Robust.Shared.Map.EntityCoordinates,System.Single,Robust.Shared.GameObjects.LookupFlags)">GetEntitiesInRange(EntityCoordinates, Single, LookupFlags)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public HashSet&lt;EntityUid&gt; GetEntitiesInRange(EntityCoordinates coordinates, float range, LookupFlags flags = default(LookupFlags))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Map.EntityCoordinates.html">EntityCoordinates</a></td>
+        <td><span class="parametername">coordinates</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Single</span></td>
+        <td><span class="parametername">range</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.LookupFlags.html">LookupFlags</a></td>
+        <td><span class="parametername">flags</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">HashSet</span>&lt;<a class="xref" href="Robust.Shared.GameObjects.EntityUid.html">EntityUid</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesInRange_Robust_Shared_Map_MapCoordinates_System_Single_Robust_Shared_GameObjects_LookupFlags_.md&amp;value=---%0Auid%3A%20Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesInRange(Robust.Shared.Map.MapCoordinates%2CSystem.Single%2CRobust.Shared.GameObjects.LookupFlags)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/GameObjects/Systems/EntityLookup.Queries.cs/#L429">View Source</a>
+  </span>
+  <a id="Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesInRange_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesInRange*"></a>
+  <h4 id="Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesInRange_Robust_Shared_Map_MapCoordinates_System_Single_Robust_Shared_GameObjects_LookupFlags_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesInRange(Robust.Shared.Map.MapCoordinates,System.Single,Robust.Shared.GameObjects.LookupFlags)">GetEntitiesInRange(MapCoordinates, Single, LookupFlags)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public HashSet&lt;EntityUid&gt; GetEntitiesInRange(MapCoordinates coordinates, float range, LookupFlags flags = default(LookupFlags))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Map.MapCoordinates.html">MapCoordinates</a></td>
+        <td><span class="parametername">coordinates</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Single</span></td>
+        <td><span class="parametername">range</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.LookupFlags.html">LookupFlags</a></td>
+        <td><span class="parametername">flags</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">HashSet</span>&lt;<a class="xref" href="Robust.Shared.GameObjects.EntityUid.html">EntityUid</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesInRange_Robust_Shared_Map_MapId_Robust_Shared_Maths_Vector2_System_Single_Robust_Shared_GameObjects_LookupFlags_.md&amp;value=---%0Auid%3A%20Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesInRange(Robust.Shared.Map.MapId%2CRobust.Shared.Maths.Vector2%2CSystem.Single%2CRobust.Shared.GameObjects.LookupFlags)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/GameObjects/Systems/EntityLookup.Queries.cs/#L438">View Source</a>
+  </span>
+  <a id="Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesInRange_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesInRange*"></a>
+  <h4 id="Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesInRange_Robust_Shared_Map_MapId_Robust_Shared_Maths_Vector2_System_Single_Robust_Shared_GameObjects_LookupFlags_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesInRange(Robust.Shared.Map.MapId,Robust.Shared.Maths.Vector2,System.Single,Robust.Shared.GameObjects.LookupFlags)">GetEntitiesInRange(MapId, Vector2, Single, LookupFlags)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public HashSet&lt;EntityUid&gt; GetEntitiesInRange(MapId mapId, Vector2 worldPos, float range, LookupFlags flags = default(LookupFlags))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Map.MapId.html">MapId</a></td>
+        <td><span class="parametername">mapId</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="../Robust.Shared.Maths/Robust.Shared.Maths.Vector2.html">Vector2</a></td>
+        <td><span class="parametername">worldPos</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Single</span></td>
+        <td><span class="parametername">range</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.LookupFlags.html">LookupFlags</a></td>
+        <td><span class="parametername">flags</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">HashSet</span>&lt;<a class="xref" href="Robust.Shared.GameObjects.EntityUid.html">EntityUid</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesIntersecting_Robust_Shared_GameObjects_EntityLookupComponent_Robust_Shared_Maths_Box2__Robust_Shared_GameObjects_LookupFlags_.md&amp;value=---%0Auid%3A%20Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesIntersecting(Robust.Shared.GameObjects.EntityLookupComponent%2CRobust.Shared.Maths.Box2%40%2CRobust.Shared.GameObjects.LookupFlags)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/GameObjects/Systems/EntityLookup.Queries.cs/#L577">View Source</a>
+  </span>
+  <a id="Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesIntersecting_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesIntersecting*"></a>
+  <h4 id="Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesIntersecting_Robust_Shared_GameObjects_EntityLookupComponent_Robust_Shared_Maths_Box2__Robust_Shared_GameObjects_LookupFlags_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesIntersecting(Robust.Shared.GameObjects.EntityLookupComponent,Robust.Shared.Maths.Box2@,Robust.Shared.GameObjects.LookupFlags)">GetEntitiesIntersecting(EntityLookupComponent, ref Box2, LookupFlags)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public HashSet&lt;EntityUid&gt; GetEntitiesIntersecting(EntityLookupComponent component, ref Box2 worldAABB, LookupFlags flags = default(LookupFlags))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.EntityLookupComponent.html">EntityLookupComponent</a></td>
+        <td><span class="parametername">component</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="../Robust.Shared.Maths/Robust.Shared.Maths.Box2.html">Box2</a></td>
+        <td><span class="parametername">worldAABB</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.LookupFlags.html">LookupFlags</a></td>
+        <td><span class="parametername">flags</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">HashSet</span>&lt;<a class="xref" href="Robust.Shared.GameObjects.EntityUid.html">EntityUid</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesIntersecting_Robust_Shared_GameObjects_EntityUid_Robust_Shared_GameObjects_LookupFlags_.md&amp;value=---%0Auid%3A%20Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesIntersecting(Robust.Shared.GameObjects.EntityUid%2CRobust.Shared.GameObjects.LookupFlags)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/GameObjects/Systems/EntityLookup.Queries.cs/#L357">View Source</a>
+  </span>
+  <a id="Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesIntersecting_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesIntersecting*"></a>
+  <h4 id="Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesIntersecting_Robust_Shared_GameObjects_EntityUid_Robust_Shared_GameObjects_LookupFlags_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesIntersecting(Robust.Shared.GameObjects.EntityUid,Robust.Shared.GameObjects.LookupFlags)">GetEntitiesIntersecting(EntityUid, LookupFlags)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public HashSet&lt;EntityUid&gt; GetEntitiesIntersecting(EntityUid uid, LookupFlags flags = default(LookupFlags))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.EntityUid.html">EntityUid</a></td>
+        <td><span class="parametername">uid</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.LookupFlags.html">LookupFlags</a></td>
+        <td><span class="parametername">flags</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">HashSet</span>&lt;<a class="xref" href="Robust.Shared.GameObjects.EntityUid.html">EntityUid</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesIntersecting_Robust_Shared_Map_EntityCoordinates_Robust_Shared_GameObjects_LookupFlags_.md&amp;value=---%0Auid%3A%20Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesIntersecting(Robust.Shared.Map.EntityCoordinates%2CRobust.Shared.GameObjects.LookupFlags)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/GameObjects/Systems/EntityLookup.Queries.cs/#L388">View Source</a>
+  </span>
+  <a id="Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesIntersecting_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesIntersecting*"></a>
+  <h4 id="Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesIntersecting_Robust_Shared_Map_EntityCoordinates_Robust_Shared_GameObjects_LookupFlags_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesIntersecting(Robust.Shared.Map.EntityCoordinates,Robust.Shared.GameObjects.LookupFlags)">GetEntitiesIntersecting(EntityCoordinates, LookupFlags)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public HashSet&lt;EntityUid&gt; GetEntitiesIntersecting(EntityCoordinates coordinates, LookupFlags flags = default(LookupFlags))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Map.EntityCoordinates.html">EntityCoordinates</a></td>
+        <td><span class="parametername">coordinates</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.LookupFlags.html">LookupFlags</a></td>
+        <td><span class="parametername">flags</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">HashSet</span>&lt;<a class="xref" href="Robust.Shared.GameObjects.EntityUid.html">EntityUid</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesIntersecting_Robust_Shared_Map_GridId_IEnumerable_Robust_Shared_Maths_Vector2i__Robust_Shared_GameObjects_LookupFlags_.md&amp;value=---%0Auid%3A%20Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesIntersecting(Robust.Shared.Map.GridId%2CIEnumerable%7BRobust.Shared.Maths.Vector2i%7D%2CRobust.Shared.GameObjects.LookupFlags)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/GameObjects/Systems/EntityLookup.Queries.cs/#L458">View Source</a>
+  </span>
+  <a id="Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesIntersecting_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesIntersecting*"></a>
+  <h4 id="Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesIntersecting_Robust_Shared_Map_GridId_IEnumerable_Robust_Shared_Maths_Vector2i__Robust_Shared_GameObjects_LookupFlags_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesIntersecting(Robust.Shared.Map.GridId,IEnumerable{Robust.Shared.Maths.Vector2i},Robust.Shared.GameObjects.LookupFlags)">GetEntitiesIntersecting(GridId, IEnumerable&lt;Vector2i&gt;, LookupFlags)</h4>
+  <div class="markdown level1 summary"><p>Returns the entities intersecting any of the supplied tiles. Faster than doing each tile individually.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public HashSet&lt;EntityUid&gt; GetEntitiesIntersecting(GridId gridId, IEnumerable&lt;Vector2i&gt; gridIndices, LookupFlags flags = default(LookupFlags))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Map.GridId.html">GridId</a></td>
+        <td><span class="parametername">gridId</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">IEnumerable</span>&lt;<a class="xref" href="../Robust.Shared.Maths/Robust.Shared.Maths.Vector2i.html">Vector2i</a>&gt;</td>
+        <td><span class="parametername">gridIndices</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.LookupFlags.html">LookupFlags</a></td>
+        <td><span class="parametername">flags</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">HashSet</span>&lt;<a class="xref" href="Robust.Shared.GameObjects.EntityUid.html">EntityUid</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesIntersecting_Robust_Shared_Map_GridId_Robust_Shared_Maths_Box2_Robust_Shared_GameObjects_LookupFlags_.md&amp;value=---%0Auid%3A%20Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesIntersecting(Robust.Shared.Map.GridId%2CRobust.Shared.Maths.Box2%2CRobust.Shared.GameObjects.LookupFlags)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/GameObjects/Systems/EntityLookup.Queries.cs/#L522">View Source</a>
+  </span>
+  <a id="Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesIntersecting_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesIntersecting*"></a>
+  <h4 id="Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesIntersecting_Robust_Shared_Map_GridId_Robust_Shared_Maths_Box2_Robust_Shared_GameObjects_LookupFlags_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesIntersecting(Robust.Shared.Map.GridId,Robust.Shared.Maths.Box2,Robust.Shared.GameObjects.LookupFlags)">GetEntitiesIntersecting(GridId, Box2, LookupFlags)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public HashSet&lt;EntityUid&gt; GetEntitiesIntersecting(GridId gridId, Box2 worldAABB, LookupFlags flags = default(LookupFlags))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Map.GridId.html">GridId</a></td>
+        <td><span class="parametername">gridId</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="../Robust.Shared.Maths/Robust.Shared.Maths.Box2.html">Box2</a></td>
+        <td><span class="parametername">worldAABB</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.LookupFlags.html">LookupFlags</a></td>
+        <td><span class="parametername">flags</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">HashSet</span>&lt;<a class="xref" href="Robust.Shared.GameObjects.EntityUid.html">EntityUid</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesIntersecting_Robust_Shared_Map_GridId_Robust_Shared_Maths_Box2Rotated_Robust_Shared_GameObjects_LookupFlags_.md&amp;value=---%0Auid%3A%20Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesIntersecting(Robust.Shared.Map.GridId%2CRobust.Shared.Maths.Box2Rotated%2CRobust.Shared.GameObjects.LookupFlags)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/GameObjects/Systems/EntityLookup.Queries.cs/#L544">View Source</a>
+  </span>
+  <a id="Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesIntersecting_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesIntersecting*"></a>
+  <h4 id="Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesIntersecting_Robust_Shared_Map_GridId_Robust_Shared_Maths_Box2Rotated_Robust_Shared_GameObjects_LookupFlags_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesIntersecting(Robust.Shared.Map.GridId,Robust.Shared.Maths.Box2Rotated,Robust.Shared.GameObjects.LookupFlags)">GetEntitiesIntersecting(GridId, Box2Rotated, LookupFlags)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public HashSet&lt;EntityUid&gt; GetEntitiesIntersecting(GridId gridId, Box2Rotated worldBounds, LookupFlags flags = default(LookupFlags))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Map.GridId.html">GridId</a></td>
+        <td><span class="parametername">gridId</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="../Robust.Shared.Maths/Robust.Shared.Maths.Box2Rotated.html">Box2Rotated</a></td>
+        <td><span class="parametername">worldBounds</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.LookupFlags.html">LookupFlags</a></td>
+        <td><span class="parametername">flags</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">HashSet</span>&lt;<a class="xref" href="Robust.Shared.GameObjects.EntityUid.html">EntityUid</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesIntersecting_Robust_Shared_Map_GridId_Robust_Shared_Maths_Vector2i_Robust_Shared_GameObjects_LookupFlags_.md&amp;value=---%0Auid%3A%20Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesIntersecting(Robust.Shared.Map.GridId%2CRobust.Shared.Maths.Vector2i%2CRobust.Shared.GameObjects.LookupFlags)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/GameObjects/Systems/EntityLookup.Queries.cs/#L492">View Source</a>
+  </span>
+  <a id="Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesIntersecting_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesIntersecting*"></a>
+  <h4 id="Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesIntersecting_Robust_Shared_Map_GridId_Robust_Shared_Maths_Vector2i_Robust_Shared_GameObjects_LookupFlags_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesIntersecting(Robust.Shared.Map.GridId,Robust.Shared.Maths.Vector2i,Robust.Shared.GameObjects.LookupFlags)">GetEntitiesIntersecting(GridId, Vector2i, LookupFlags)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public HashSet&lt;EntityUid&gt; GetEntitiesIntersecting(GridId gridId, Vector2i gridIndices, LookupFlags flags = default(LookupFlags))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Map.GridId.html">GridId</a></td>
+        <td><span class="parametername">gridId</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="../Robust.Shared.Maths/Robust.Shared.Maths.Vector2i.html">Vector2i</a></td>
+        <td><span class="parametername">gridIndices</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.LookupFlags.html">LookupFlags</a></td>
+        <td><span class="parametername">flags</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">HashSet</span>&lt;<a class="xref" href="Robust.Shared.GameObjects.EntityUid.html">EntityUid</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesIntersecting_Robust_Shared_Map_MapCoordinates_Robust_Shared_GameObjects_LookupFlags_.md&amp;value=---%0Auid%3A%20Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesIntersecting(Robust.Shared.Map.MapCoordinates%2CRobust.Shared.GameObjects.LookupFlags)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/GameObjects/Systems/EntityLookup.Queries.cs/#L421">View Source</a>
+  </span>
+  <a id="Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesIntersecting_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesIntersecting*"></a>
+  <h4 id="Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesIntersecting_Robust_Shared_Map_MapCoordinates_Robust_Shared_GameObjects_LookupFlags_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesIntersecting(Robust.Shared.Map.MapCoordinates,Robust.Shared.GameObjects.LookupFlags)">GetEntitiesIntersecting(MapCoordinates, LookupFlags)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public HashSet&lt;EntityUid&gt; GetEntitiesIntersecting(MapCoordinates coordinates, LookupFlags flags = default(LookupFlags))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Map.MapCoordinates.html">MapCoordinates</a></td>
+        <td><span class="parametername">coordinates</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.LookupFlags.html">LookupFlags</a></td>
+        <td><span class="parametername">flags</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">HashSet</span>&lt;<a class="xref" href="Robust.Shared.GameObjects.EntityUid.html">EntityUid</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesIntersecting_Robust_Shared_Map_MapId_Robust_Shared_Maths_Box2_Robust_Shared_GameObjects_LookupFlags_.md&amp;value=---%0Auid%3A%20Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesIntersecting(Robust.Shared.Map.MapId%2CRobust.Shared.Maths.Box2%2CRobust.Shared.GameObjects.LookupFlags)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/GameObjects/Systems/EntityLookup.Queries.cs/#L216">View Source</a>
+  </span>
+  <a id="Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesIntersecting_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesIntersecting*"></a>
+  <h4 id="Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesIntersecting_Robust_Shared_Map_MapId_Robust_Shared_Maths_Box2_Robust_Shared_GameObjects_LookupFlags_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesIntersecting(Robust.Shared.Map.MapId,Robust.Shared.Maths.Box2,Robust.Shared.GameObjects.LookupFlags)">GetEntitiesIntersecting(MapId, Box2, LookupFlags)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public HashSet&lt;EntityUid&gt; GetEntitiesIntersecting(MapId mapId, Box2 worldAABB, LookupFlags flags = default(LookupFlags))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Map.MapId.html">MapId</a></td>
+        <td><span class="parametername">mapId</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="../Robust.Shared.Maths/Robust.Shared.Maths.Box2.html">Box2</a></td>
+        <td><span class="parametername">worldAABB</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.LookupFlags.html">LookupFlags</a></td>
+        <td><span class="parametername">flags</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">HashSet</span>&lt;<a class="xref" href="Robust.Shared.GameObjects.EntityUid.html">EntityUid</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesIntersecting_Robust_Shared_Map_MapId_Robust_Shared_Maths_Box2Rotated_Robust_Shared_GameObjects_LookupFlags_.md&amp;value=---%0Auid%3A%20Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesIntersecting(Robust.Shared.Map.MapId%2CRobust.Shared.Maths.Box2Rotated%2CRobust.Shared.GameObjects.LookupFlags)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/GameObjects/Systems/EntityLookup.Queries.cs/#L268">View Source</a>
+  </span>
+  <a id="Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesIntersecting_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesIntersecting*"></a>
+  <h4 id="Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesIntersecting_Robust_Shared_Map_MapId_Robust_Shared_Maths_Box2Rotated_Robust_Shared_GameObjects_LookupFlags_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesIntersecting(Robust.Shared.Map.MapId,Robust.Shared.Maths.Box2Rotated,Robust.Shared.GameObjects.LookupFlags)">GetEntitiesIntersecting(MapId, Box2Rotated, LookupFlags)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public HashSet&lt;EntityUid&gt; GetEntitiesIntersecting(MapId mapId, Box2Rotated worldBounds, LookupFlags flags = default(LookupFlags))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Map.MapId.html">MapId</a></td>
+        <td><span class="parametername">mapId</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="../Robust.Shared.Maths/Robust.Shared.Maths.Box2Rotated.html">Box2Rotated</a></td>
+        <td><span class="parametername">worldBounds</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.LookupFlags.html">LookupFlags</a></td>
+        <td><span class="parametername">flags</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">HashSet</span>&lt;<a class="xref" href="Robust.Shared.GameObjects.EntityUid.html">EntityUid</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesIntersecting_Robust_Shared_Map_TileRef_Robust_Shared_GameObjects_LookupFlags_.md&amp;value=---%0Auid%3A%20Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesIntersecting(Robust.Shared.Map.TileRef%2CRobust.Shared.GameObjects.LookupFlags)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/GameObjects/Systems/EntityLookup.Queries.cs/#L567">View Source</a>
+  </span>
+  <a id="Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesIntersecting_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesIntersecting*"></a>
+  <h4 id="Robust_Shared_GameObjects_EntityLookupSystem_GetEntitiesIntersecting_Robust_Shared_Map_TileRef_Robust_Shared_GameObjects_LookupFlags_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.GetEntitiesIntersecting(Robust.Shared.Map.TileRef,Robust.Shared.GameObjects.LookupFlags)">GetEntitiesIntersecting(TileRef, LookupFlags)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IEnumerable&lt;EntityUid&gt; GetEntitiesIntersecting(TileRef tileRef, LookupFlags flags = default(LookupFlags))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Map.TileRef.html">TileRef</a></td>
+        <td><span class="parametername">tileRef</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.LookupFlags.html">LookupFlags</a></td>
+        <td><span class="parametername">flags</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IEnumerable</span>&lt;<a class="xref" href="Robust.Shared.GameObjects.EntityUid.html">EntityUid</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_GameObjects_EntityLookupSystem_GetLocalBounds_Robust_Shared_Map_TileRef_System_UInt16_.md&amp;value=---%0Auid%3A%20Robust.Shared.GameObjects.EntityLookupSystem.GetLocalBounds(Robust.Shared.Map.TileRef%2CSystem.UInt16)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/GameObjects/Systems/EntityLookup.Queries.cs/#L672">View Source</a>
+  </span>
+  <a id="Robust_Shared_GameObjects_EntityLookupSystem_GetLocalBounds_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.GetLocalBounds*"></a>
+  <h4 id="Robust_Shared_GameObjects_EntityLookupSystem_GetLocalBounds_Robust_Shared_Map_TileRef_System_UInt16_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.GetLocalBounds(Robust.Shared.Map.TileRef,System.UInt16)">GetLocalBounds(TileRef, UInt16)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Box2 GetLocalBounds(TileRef tileRef, ushort tileSize)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Map.TileRef.html">TileRef</a></td>
+        <td><span class="parametername">tileRef</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.UInt16</span></td>
+        <td><span class="parametername">tileSize</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="../Robust.Shared.Maths/Robust.Shared.Maths.Box2.html">Box2</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_GameObjects_EntityLookupSystem_GetLocalBounds_Robust_Shared_Maths_Vector2i_System_UInt16_.md&amp;value=---%0Auid%3A%20Robust.Shared.GameObjects.EntityLookupSystem.GetLocalBounds(Robust.Shared.Maths.Vector2i%2CSystem.UInt16)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/GameObjects/Systems/EntityLookup.Queries.cs/#L666">View Source</a>
+  </span>
+  <a id="Robust_Shared_GameObjects_EntityLookupSystem_GetLocalBounds_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.GetLocalBounds*"></a>
+  <h4 id="Robust_Shared_GameObjects_EntityLookupSystem_GetLocalBounds_Robust_Shared_Maths_Vector2i_System_UInt16_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.GetLocalBounds(Robust.Shared.Maths.Vector2i,System.UInt16)">GetLocalBounds(Vector2i, UInt16)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Box2 GetLocalBounds(Vector2i gridIndices, ushort tileSize)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="../Robust.Shared.Maths/Robust.Shared.Maths.Vector2i.html">Vector2i</a></td>
+        <td><span class="parametername">gridIndices</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.UInt16</span></td>
+        <td><span class="parametername">tileSize</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="../Robust.Shared.Maths/Robust.Shared.Maths.Box2.html">Box2</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_GameObjects_EntityLookupSystem_GetLocalEntitiesIntersecting_Robust_Shared_GameObjects_EntityLookupComponent_Robust_Shared_Maths_Box2__Robust_Shared_GameObjects_LookupFlags_.md&amp;value=---%0Auid%3A%20Robust.Shared.GameObjects.EntityLookupSystem.GetLocalEntitiesIntersecting(Robust.Shared.GameObjects.EntityLookupComponent%2CRobust.Shared.Maths.Box2%40%2CRobust.Shared.GameObjects.LookupFlags)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/GameObjects/Systems/EntityLookup.Queries.cs/#L601">View Source</a>
+  </span>
+  <a id="Robust_Shared_GameObjects_EntityLookupSystem_GetLocalEntitiesIntersecting_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.GetLocalEntitiesIntersecting*"></a>
+  <h4 id="Robust_Shared_GameObjects_EntityLookupSystem_GetLocalEntitiesIntersecting_Robust_Shared_GameObjects_EntityLookupComponent_Robust_Shared_Maths_Box2__Robust_Shared_GameObjects_LookupFlags_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.GetLocalEntitiesIntersecting(Robust.Shared.GameObjects.EntityLookupComponent,Robust.Shared.Maths.Box2@,Robust.Shared.GameObjects.LookupFlags)">GetLocalEntitiesIntersecting(EntityLookupComponent, ref Box2, LookupFlags)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public HashSet&lt;EntityUid&gt; GetLocalEntitiesIntersecting(EntityLookupComponent component, ref Box2 localAABB, LookupFlags flags = default(LookupFlags))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.EntityLookupComponent.html">EntityLookupComponent</a></td>
+        <td><span class="parametername">component</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="../Robust.Shared.Maths/Robust.Shared.Maths.Box2.html">Box2</a></td>
+        <td><span class="parametername">localAABB</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.LookupFlags.html">LookupFlags</a></td>
+        <td><span class="parametername">flags</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">HashSet</span>&lt;<a class="xref" href="Robust.Shared.GameObjects.EntityUid.html">EntityUid</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_GameObjects_EntityLookupSystem_GetWorldAABB_Robust_Shared_GameObjects_EntityUid_Robust_Shared_GameObjects_TransformComponent_.md&amp;value=---%0Auid%3A%20Robust.Shared.GameObjects.EntityLookupSystem.GetWorldAABB(Robust.Shared.GameObjects.EntityUid%2CRobust.Shared.GameObjects.TransformComponent)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/GameObjects/Systems/EntityLookupSystem.cs/#L474">View Source</a>
+  </span>
+  <a id="Robust_Shared_GameObjects_EntityLookupSystem_GetWorldAABB_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.GetWorldAABB*"></a>
+  <h4 id="Robust_Shared_GameObjects_EntityLookupSystem_GetWorldAABB_Robust_Shared_GameObjects_EntityUid_Robust_Shared_GameObjects_TransformComponent_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.GetWorldAABB(Robust.Shared.GameObjects.EntityUid,Robust.Shared.GameObjects.TransformComponent)">GetWorldAABB(EntityUid, TransformComponent)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Box2 GetWorldAABB(EntityUid uid, TransformComponent xform = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.EntityUid.html">EntityUid</a></td>
+        <td><span class="parametername">uid</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.TransformComponent.html">TransformComponent</a></td>
+        <td><span class="parametername">xform</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="../Robust.Shared.Maths/Robust.Shared.Maths.Box2.html">Box2</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_GameObjects_EntityLookupSystem_GetWorldBounds_Robust_Shared_Map_TileRef_System_Nullable_Robust_Shared_Maths_Matrix3__System_Nullable_Robust_Shared_Maths_Angle__.md&amp;value=---%0Auid%3A%20Robust.Shared.GameObjects.EntityLookupSystem.GetWorldBounds(Robust.Shared.Map.TileRef%2CSystem.Nullable%7BRobust.Shared.Maths.Matrix3%7D%2CSystem.Nullable%7BRobust.Shared.Maths.Angle%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/GameObjects/Systems/EntityLookup.Queries.cs/#L678">View Source</a>
+  </span>
+  <a id="Robust_Shared_GameObjects_EntityLookupSystem_GetWorldBounds_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.GetWorldBounds*"></a>
+  <h4 id="Robust_Shared_GameObjects_EntityLookupSystem_GetWorldBounds_Robust_Shared_Map_TileRef_System_Nullable_Robust_Shared_Maths_Matrix3__System_Nullable_Robust_Shared_Maths_Angle__" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.GetWorldBounds(Robust.Shared.Map.TileRef,System.Nullable{Robust.Shared.Maths.Matrix3},System.Nullable{Robust.Shared.Maths.Angle})">GetWorldBounds(TileRef, Nullable&lt;Matrix3&gt;, Nullable&lt;Angle&gt;)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Box2Rotated GetWorldBounds(TileRef tileRef, Matrix3? worldMatrix = null, Angle? angle = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Map.TileRef.html">TileRef</a></td>
+        <td><span class="parametername">tileRef</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Nullable</span>&lt;<a class="xref" href="../Robust.Shared.Maths/Robust.Shared.Maths.Matrix3.html">Matrix3</a>&gt;</td>
+        <td><span class="parametername">worldMatrix</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Nullable</span>&lt;<a class="xref" href="../Robust.Shared.Maths/Robust.Shared.Maths.Angle.html">Angle</a>&gt;</td>
+        <td><span class="parametername">angle</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="../Robust.Shared.Maths/Robust.Shared.Maths.Box2Rotated.html">Box2Rotated</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_GameObjects_EntityLookupSystem_Initialize.md&amp;value=---%0Auid%3A%20Robust.Shared.GameObjects.EntityLookupSystem.Initialize%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/GameObjects/Systems/EntityLookupSystem.cs/#L59">View Source</a>
+  </span>
+  <a id="Robust_Shared_GameObjects_EntityLookupSystem_Initialize_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.Initialize*"></a>
+  <h4 id="Robust_Shared_GameObjects_EntityLookupSystem_Initialize" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.Initialize">Initialize()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override void Initialize()</code></pre>
+  </div>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="Robust.Shared.GameObjects.EntitySystem.html#Robust_Shared_GameObjects_EntitySystem_Initialize">EntitySystem.Initialize()</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_GameObjects_EntityLookupSystem_Shutdown.md&amp;value=---%0Auid%3A%20Robust.Shared.GameObjects.EntityLookupSystem.Shutdown%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/GameObjects/Systems/EntityLookupSystem.cs/#L82">View Source</a>
+  </span>
+  <a id="Robust_Shared_GameObjects_EntityLookupSystem_Shutdown_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.Shutdown*"></a>
+  <h4 id="Robust_Shared_GameObjects_EntityLookupSystem_Shutdown" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.Shutdown">Shutdown()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override void Shutdown()</code></pre>
+  </div>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="Robust.Shared.GameObjects.EntitySystem.html#Robust_Shared_GameObjects_EntitySystem_Shutdown">EntitySystem.Shutdown()</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_GameObjects_EntityLookupSystem_UpdateBounds_Robust_Shared_GameObjects_EntityUid_Robust_Shared_GameObjects_TransformComponent_Robust_Shared_GameObjects_MetaDataComponent_.md&amp;value=---%0Auid%3A%20Robust.Shared.GameObjects.EntityLookupSystem.UpdateBounds(Robust.Shared.GameObjects.EntityUid%2CRobust.Shared.GameObjects.TransformComponent%2CRobust.Shared.GameObjects.MetaDataComponent)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/GameObjects/Systems/EntityLookupSystem.cs/#L91">View Source</a>
+  </span>
+  <a id="Robust_Shared_GameObjects_EntityLookupSystem_UpdateBounds_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.UpdateBounds*"></a>
+  <h4 id="Robust_Shared_GameObjects_EntityLookupSystem_UpdateBounds_Robust_Shared_GameObjects_EntityUid_Robust_Shared_GameObjects_TransformComponent_Robust_Shared_GameObjects_MetaDataComponent_" data-uid="Robust.Shared.GameObjects.EntityLookupSystem.UpdateBounds(Robust.Shared.GameObjects.EntityUid,Robust.Shared.GameObjects.TransformComponent,Robust.Shared.GameObjects.MetaDataComponent)">UpdateBounds(EntityUid, TransformComponent, MetaDataComponent)</h4>
+  <div class="markdown level1 summary"><p>Updates the entity's AABB. Uses <a class="xref" href="Robust.Shared.GameObjects.ILookupWorldBox2Component.html">ILookupWorldBox2Component</a></p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void UpdateBounds(EntityUid uid, TransformComponent xform = null, MetaDataComponent meta = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.EntityUid.html">EntityUid</a></td>
+        <td><span class="parametername">uid</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.TransformComponent.html">TransformComponent</a></td>
+        <td><span class="parametername">xform</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.GameObjects.MetaDataComponent.html">MetaDataComponent</a></td>
+        <td><span class="parametername">meta</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="Robust.Shared.GameObjects.IEntitySystem.html">IEntitySystem</a>
+  </div>
+  <div>
+      <a class="xref" href="Robust.Shared.GameObjects.IEntityEventSubscriber.html">IEntityEventSubscriber</a>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_GameObjects_EntityLookupSystem.md&amp;value=---%0Auid%3A%20Robust.Shared.GameObjects.EntityLookupSystem%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/GameObjects/Systems/EntityLookupSystem.cs/#L38" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+          
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In This Article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+              
+              <span>Generated by <strong>DocFX</strong></span>
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../../styles/toggle-theme.js"></script>
+      </footer>    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,1688 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Interface ISerializationManager
+   </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Interface ISerializationManager
+   ">
+    <meta name="generator" content="docfx 2.56.7.0">
+    
+    <link rel="shortcut icon" href="../../favicon.ico">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager">
+  
+  
+  <h1 id="Robust_Shared_Serialization_Manager_ISerializationManager" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager" class="text-break">Interface ISerializationManager
+  </h1>
+  <div class="markdown level0 summary"></div>
+  <div class="markdown level0 conceptual"></div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="Robust.Shared.Serialization.Manager.html">Robust.Shared.Serialization.Manager</a></h6>
+  <h6><strong>Assembly</strong>: Robust.Shared.dll</h6>
+  <h5 id="Robust_Shared_Serialization_Manager_ISerializationManager_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public interface ISerializationManager</code></pre>
+  </div>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_Serialization_Manager_ISerializationManager_Copy_System_Nullable_System_Object__System_Nullable_System_Object__Robust_Shared_Serialization_Manager_ISerializationContext_System_Boolean_.md&amp;value=---%0Auid%3A%20Robust.Shared.Serialization.Manager.ISerializationManager.Copy(System.Nullable%7BSystem.Object%7D%2CSystem.Nullable%7BSystem.Object%7D%2CRobust.Shared.Serialization.Manager.ISerializationContext%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/Serialization/Manager/ISerializationManager.cs/#L143">View Source</a>
+  </span>
+  <a id="Robust_Shared_Serialization_Manager_ISerializationManager_Copy_" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.Copy*"></a>
+  <h4 id="Robust_Shared_Serialization_Manager_ISerializationManager_Copy_System_Nullable_System_Object__System_Nullable_System_Object__Robust_Shared_Serialization_Manager_ISerializationContext_System_Boolean_" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.Copy(System.Nullable{System.Object},System.Nullable{System.Object},Robust.Shared.Serialization.Manager.ISerializationContext,System.Boolean)">Copy(Nullable&lt;Object&gt;, Nullable&lt;Object&gt;, ISerializationContext, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Copies the values of one object into another.
+This does not guarantee that the object passed as <see cref="!:target"></see>
+is actually mutated.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">object? Copy(object? source, object? target, ISerializationContext context = null, bool skipHook = false)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Nullable</span>&lt;<span class="xref">System.Object</span>&gt;</td>
+        <td><span class="parametername">source</span></td>
+        <td><p>The object to copy values from.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Nullable</span>&lt;<span class="xref">System.Object</span>&gt;</td>
+        <td><span class="parametername">target</span></td>
+        <td><p>The object to copy values into.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Serialization.Manager.ISerializationContext.html">ISerializationContext</a></td>
+        <td><span class="parametername">context</span></td>
+        <td><p>The context to use, if any.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td><span class="parametername">skipHook</span></td>
+        <td><p>Whether or not to skip running <a class="xref" href="Robust.Shared.Serialization.ISerializationHooks.html">ISerializationHooks</a></p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Nullable</span>&lt;<span class="xref">System.Object</span>&gt;</td>
+        <td><p>The object with the copied values.
+This object is not necessarily the same instance as the one passed
+as <see cref="!:target"></see>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_Serialization_Manager_ISerializationManager_Copy__1___0___0_Robust_Shared_Serialization_Manager_ISerializationContext_System_Boolean_.md&amp;value=---%0Auid%3A%20Robust.Shared.Serialization.Manager.ISerializationManager.Copy%60%601(%60%600%2C%60%600%2CRobust.Shared.Serialization.Manager.ISerializationContext%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/Serialization/Manager/ISerializationManager.cs/#L161">View Source</a>
+  </span>
+  <a id="Robust_Shared_Serialization_Manager_ISerializationManager_Copy_" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.Copy*"></a>
+  <h4 id="Robust_Shared_Serialization_Manager_ISerializationManager_Copy__1___0___0_Robust_Shared_Serialization_Manager_ISerializationContext_System_Boolean_" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.Copy``1(``0,``0,Robust.Shared.Serialization.Manager.ISerializationContext,System.Boolean)">Copy&lt;T&gt;(T, T, ISerializationContext, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Copies the values of one object into another.
+This does not guarantee that the object passed as <see cref="!:target"></see>
+is actually mutated.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">T Copy&lt;T&gt;(T source, T target, ISerializationContext context = null, bool skipHook = false)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">source</span></td>
+        <td><p>The object to copy values from.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">target</span></td>
+        <td><p>The object to copy values into.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Serialization.Manager.ISerializationContext.html">ISerializationContext</a></td>
+        <td><span class="parametername">context</span></td>
+        <td><p>The context to use, if any.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td><span class="parametername">skipHook</span></td>
+        <td><p>Whether or not to skip running <a class="xref" href="Robust.Shared.Serialization.ISerializationHooks.html">ISerializationHooks</a></p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><p>The object with the copied values.
+This object is not necessarily the same instance as the one passed
+as <see cref="!:target"></see>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of the objects to copy from and into.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_Serialization_Manager_ISerializationManager_CopyWithTypeSerializer_Type_System_Nullable_System_Object__System_Nullable_System_Object__Robust_Shared_Serialization_Manager_ISerializationContext_System_Boolean_.md&amp;value=---%0Auid%3A%20Robust.Shared.Serialization.Manager.ISerializationManager.CopyWithTypeSerializer(Type%2CSystem.Nullable%7BSystem.Object%7D%2CSystem.Nullable%7BSystem.Object%7D%2CRobust.Shared.Serialization.Manager.ISerializationContext%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/Serialization/Manager/ISerializationManager.cs/#L164">View Source</a>
+  </span>
+  <a id="Robust_Shared_Serialization_Manager_ISerializationManager_CopyWithTypeSerializer_" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.CopyWithTypeSerializer*"></a>
+  <h4 id="Robust_Shared_Serialization_Manager_ISerializationManager_CopyWithTypeSerializer_Type_System_Nullable_System_Object__System_Nullable_System_Object__Robust_Shared_Serialization_Manager_ISerializationContext_System_Boolean_" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.CopyWithTypeSerializer(Type,System.Nullable{System.Object},System.Nullable{System.Object},Robust.Shared.Serialization.Manager.ISerializationContext,System.Boolean)">CopyWithTypeSerializer(Type, Nullable&lt;Object&gt;, Nullable&lt;Object&gt;, ISerializationContext, Boolean)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">object? CopyWithTypeSerializer(Type typeSerializer, object? source, object? target, ISerializationContext context = null, bool skipHook = false)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Type</span></td>
+        <td><span class="parametername">typeSerializer</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Nullable</span>&lt;<span class="xref">System.Object</span>&gt;</td>
+        <td><span class="parametername">source</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Nullable</span>&lt;<span class="xref">System.Object</span>&gt;</td>
+        <td><span class="parametername">target</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Serialization.Manager.ISerializationContext.html">ISerializationContext</a></td>
+        <td><span class="parametername">context</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td><span class="parametername">skipHook</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Nullable</span>&lt;<span class="xref">System.Object</span>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_Serialization_Manager_ISerializationManager_CreateCopy_System_Nullable_System_Object__Robust_Shared_Serialization_Manager_ISerializationContext_System_Boolean_.md&amp;value=---%0Auid%3A%20Robust.Shared.Serialization.Manager.ISerializationManager.CreateCopy(System.Nullable%7BSystem.Object%7D%2CRobust.Shared.Serialization.Manager.ISerializationContext%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/Serialization/Manager/ISerializationManager.cs/#L179">View Source</a>
+  </span>
+  <a id="Robust_Shared_Serialization_Manager_ISerializationManager_CreateCopy_" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.CreateCopy*"></a>
+  <h4 id="Robust_Shared_Serialization_Manager_ISerializationManager_CreateCopy_System_Nullable_System_Object__Robust_Shared_Serialization_Manager_ISerializationContext_System_Boolean_" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.CreateCopy(System.Nullable{System.Object},Robust.Shared.Serialization.Manager.ISerializationContext,System.Boolean)">CreateCopy(Nullable&lt;Object&gt;, ISerializationContext, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Creates a copy of the given object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">object? CreateCopy(object? source, ISerializationContext context = null, bool skipHook = false)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Nullable</span>&lt;<span class="xref">System.Object</span>&gt;</td>
+        <td><span class="parametername">source</span></td>
+        <td><p>The object to copy.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Serialization.Manager.ISerializationContext.html">ISerializationContext</a></td>
+        <td><span class="parametername">context</span></td>
+        <td><p>The context to use, if any.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td><span class="parametername">skipHook</span></td>
+        <td><p>Whether or not to skip running <a class="xref" href="Robust.Shared.Serialization.ISerializationHooks.html">ISerializationHooks</a></p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Nullable</span>&lt;<span class="xref">System.Object</span>&gt;</td>
+        <td><p>A copy of the given object.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_Serialization_Manager_ISerializationManager_CreateCopy__1___0_Robust_Shared_Serialization_Manager_ISerializationContext_System_Boolean_.md&amp;value=---%0Auid%3A%20Robust.Shared.Serialization.Manager.ISerializationManager.CreateCopy%60%601(%60%600%2CRobust.Shared.Serialization.Manager.ISerializationContext%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/Serialization/Manager/ISerializationManager.cs/#L189">View Source</a>
+  </span>
+  <a id="Robust_Shared_Serialization_Manager_ISerializationManager_CreateCopy_" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.CreateCopy*"></a>
+  <h4 id="Robust_Shared_Serialization_Manager_ISerializationManager_CreateCopy__1___0_Robust_Shared_Serialization_Manager_ISerializationContext_System_Boolean_" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.CreateCopy``1(``0,Robust.Shared.Serialization.Manager.ISerializationContext,System.Boolean)">CreateCopy&lt;T&gt;(T, ISerializationContext, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Creates a copy of the given object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">T CreateCopy&lt;T&gt;(T source, ISerializationContext context = null, bool skipHook = false)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">source</span></td>
+        <td><p>The object to copy.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Serialization.Manager.ISerializationContext.html">ISerializationContext</a></td>
+        <td><span class="parametername">context</span></td>
+        <td><p>The context to use, if any.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td><span class="parametername">skipHook</span></td>
+        <td><p>Whether or not to skip running <a class="xref" href="Robust.Shared.Serialization.ISerializationHooks.html">ISerializationHooks</a></p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><p>A copy of the given object.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of the object to copy.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_Serialization_Manager_ISerializationManager_GetConstantTypeFromTag_Type_.md&amp;value=---%0Auid%3A%20Robust.Shared.Serialization.Manager.ISerializationManager.GetConstantTypeFromTag(Type)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/Serialization/Manager/ISerializationManager.cs/#L199">View Source</a>
+  </span>
+  <a id="Robust_Shared_Serialization_Manager_ISerializationManager_GetConstantTypeFromTag_" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.GetConstantTypeFromTag*"></a>
+  <h4 id="Robust_Shared_Serialization_Manager_ISerializationManager_GetConstantTypeFromTag_Type_" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.GetConstantTypeFromTag(Type)">GetConstantTypeFromTag(Type)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Type GetConstantTypeFromTag(Type tagType)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Type</span></td>
+        <td><span class="parametername">tagType</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Type</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_Serialization_Manager_ISerializationManager_GetFlagHighestBit_Type_.md&amp;value=---%0Auid%3A%20Robust.Shared.Serialization.Manager.ISerializationManager.GetFlagHighestBit(Type)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/Serialization/Manager/ISerializationManager.cs/#L197">View Source</a>
+  </span>
+  <a id="Robust_Shared_Serialization_Manager_ISerializationManager_GetFlagHighestBit_" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.GetFlagHighestBit*"></a>
+  <h4 id="Robust_Shared_Serialization_Manager_ISerializationManager_GetFlagHighestBit_Type_" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.GetFlagHighestBit(Type)">GetFlagHighestBit(Type)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">int GetFlagHighestBit(Type tagType)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Type</span></td>
+        <td><span class="parametername">tagType</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_Serialization_Manager_ISerializationManager_GetFlagTypeFromTag_Type_.md&amp;value=---%0Auid%3A%20Robust.Shared.Serialization.Manager.ISerializationManager.GetFlagTypeFromTag(Type)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/Serialization/Manager/ISerializationManager.cs/#L195">View Source</a>
+  </span>
+  <a id="Robust_Shared_Serialization_Manager_ISerializationManager_GetFlagTypeFromTag_" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.GetFlagTypeFromTag*"></a>
+  <h4 id="Robust_Shared_Serialization_Manager_ISerializationManager_GetFlagTypeFromTag_Type_" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.GetFlagTypeFromTag(Type)">GetFlagTypeFromTag(Type)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Type GetFlagTypeFromTag(Type tagType)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Type</span></td>
+        <td><span class="parametername">tagType</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Type</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_Serialization_Manager_ISerializationManager_HasDataDefinition_Type_.md&amp;value=---%0Auid%3A%20Robust.Shared.Serialization.Manager.ISerializationManager.HasDataDefinition(Type)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/Serialization/Manager/ISerializationManager.cs/#L27">View Source</a>
+  </span>
+  <a id="Robust_Shared_Serialization_Manager_ISerializationManager_HasDataDefinition_" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.HasDataDefinition*"></a>
+  <h4 id="Robust_Shared_Serialization_Manager_ISerializationManager_HasDataDefinition_Type_" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.HasDataDefinition(Type)">HasDataDefinition(Type)</h4>
+  <div class="markdown level1 summary"><p>Checks if a type has a data definition defined for it.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">bool HasDataDefinition(Type type)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Type</span></td>
+        <td><span class="parametername">type</span></td>
+        <td><p>The type to check for.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td><p>True if it does, false otherwise.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_Serialization_Manager_ISerializationManager_Initialize.md&amp;value=---%0Auid%3A%20Robust.Shared.Serialization.Manager.ISerializationManager.Initialize%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/Serialization/Manager/ISerializationManager.cs/#L15">View Source</a>
+  </span>
+  <a id="Robust_Shared_Serialization_Manager_ISerializationManager_Initialize_" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.Initialize*"></a>
+  <h4 id="Robust_Shared_Serialization_Manager_ISerializationManager_Initialize" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.Initialize">Initialize()</h4>
+  <div class="markdown level1 summary"><p>Initializes the serialization manager.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">void Initialize()</code></pre>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_Serialization_Manager_ISerializationManager_PushComposition_Type_Robust_Shared_Serialization_Markdown_DataNode___Robust_Shared_Serialization_Markdown_DataNode_Robust_Shared_Serialization_Manager_ISerializationContext_.md&amp;value=---%0Auid%3A%20Robust.Shared.Serialization.Manager.ISerializationManager.PushComposition(Type%2CRobust.Shared.Serialization.Markdown.DataNode%5B%5D%2CRobust.Shared.Serialization.Markdown.DataNode%2CRobust.Shared.Serialization.Manager.ISerializationContext)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/Serialization/Manager/ISerializationManager.cs/#L205">View Source</a>
+  </span>
+  <a id="Robust_Shared_Serialization_Manager_ISerializationManager_PushComposition_" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.PushComposition*"></a>
+  <h4 id="Robust_Shared_Serialization_Manager_ISerializationManager_PushComposition_Type_Robust_Shared_Serialization_Markdown_DataNode___Robust_Shared_Serialization_Markdown_DataNode_Robust_Shared_Serialization_Manager_ISerializationContext_" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.PushComposition(Type,Robust.Shared.Serialization.Markdown.DataNode[],Robust.Shared.Serialization.Markdown.DataNode,Robust.Shared.Serialization.Manager.ISerializationContext)">PushComposition(Type, DataNode[], DataNode, ISerializationContext)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">DataNode PushComposition(Type type, DataNode[] parents, DataNode child, ISerializationContext context = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Type</span></td>
+        <td><span class="parametername">type</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Serialization.Markdown.DataNode.html">DataNode</a>[]</td>
+        <td><span class="parametername">parents</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Serialization.Markdown.DataNode.html">DataNode</a></td>
+        <td><span class="parametername">child</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Serialization.Manager.ISerializationContext.html">ISerializationContext</a></td>
+        <td><span class="parametername">context</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Serialization.Markdown.DataNode.html">DataNode</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_Serialization_Manager_ISerializationManager_PushComposition__2___1_____1_Robust_Shared_Serialization_Manager_ISerializationContext_.md&amp;value=---%0Auid%3A%20Robust.Shared.Serialization.Manager.ISerializationManager.PushComposition%60%602(%60%601%5B%5D%2C%60%601%2CRobust.Shared.Serialization.Manager.ISerializationContext)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/Serialization/Manager/ISerializationManager.cs/#L207">View Source</a>
+  </span>
+  <a id="Robust_Shared_Serialization_Manager_ISerializationManager_PushComposition_" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.PushComposition*"></a>
+  <h4 id="Robust_Shared_Serialization_Manager_ISerializationManager_PushComposition__2___1_____1_Robust_Shared_Serialization_Manager_ISerializationContext_" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.PushComposition``2(``1[],``1,Robust.Shared.Serialization.Manager.ISerializationContext)">PushComposition&lt;TType, TNode&gt;(TNode[], TNode, ISerializationContext)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">virtual TNode PushComposition&lt;TType, TNode&gt;(TNode[] parents, TNode child, ISerializationContext context = null)
+    where TNode : DataNode</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>TNode[]</td>
+        <td><span class="parametername">parents</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">TNode</span></td>
+        <td><span class="parametername">child</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Serialization.Manager.ISerializationContext.html">ISerializationContext</a></td>
+        <td><span class="parametername">context</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TNode</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TType</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="parametername">TNode</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_Serialization_Manager_ISerializationManager_PushCompositionWithGenericNode__1_Type___0_____0_Robust_Shared_Serialization_Manager_ISerializationContext_.md&amp;value=---%0Auid%3A%20Robust.Shared.Serialization.Manager.ISerializationManager.PushCompositionWithGenericNode%60%601(Type%2C%60%600%5B%5D%2C%60%600%2CRobust.Shared.Serialization.Manager.ISerializationContext)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/Serialization/Manager/ISerializationManager.cs/#L213">View Source</a>
+  </span>
+  <a id="Robust_Shared_Serialization_Manager_ISerializationManager_PushCompositionWithGenericNode_" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.PushCompositionWithGenericNode*"></a>
+  <h4 id="Robust_Shared_Serialization_Manager_ISerializationManager_PushCompositionWithGenericNode__1_Type___0_____0_Robust_Shared_Serialization_Manager_ISerializationContext_" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.PushCompositionWithGenericNode``1(Type,``0[],``0,Robust.Shared.Serialization.Manager.ISerializationContext)">PushCompositionWithGenericNode&lt;TNode&gt;(Type, TNode[], TNode, ISerializationContext)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">virtual TNode PushCompositionWithGenericNode&lt;TNode&gt;(Type type, TNode[] parents, TNode child, ISerializationContext context = null)
+    where TNode : DataNode</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Type</span></td>
+        <td><span class="parametername">type</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>TNode[]</td>
+        <td><span class="parametername">parents</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">TNode</span></td>
+        <td><span class="parametername">child</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Serialization.Manager.ISerializationContext.html">ISerializationContext</a></td>
+        <td><span class="parametername">context</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TNode</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TNode</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_Serialization_Manager_ISerializationManager_Read_Type_Robust_Shared_Serialization_Markdown_DataNode_Robust_Shared_Serialization_Manager_ISerializationContext_System_Boolean_System_Nullable_System_Object__.md&amp;value=---%0Auid%3A%20Robust.Shared.Serialization.Manager.ISerializationManager.Read(Type%2CRobust.Shared.Serialization.Markdown.DataNode%2CRobust.Shared.Serialization.Manager.ISerializationContext%2CSystem.Boolean%2CSystem.Nullable%7BSystem.Object%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/Serialization/Manager/ISerializationManager.cs/#L72">View Source</a>
+  </span>
+  <a id="Robust_Shared_Serialization_Manager_ISerializationManager_Read_" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.Read*"></a>
+  <h4 id="Robust_Shared_Serialization_Manager_ISerializationManager_Read_Type_Robust_Shared_Serialization_Markdown_DataNode_Robust_Shared_Serialization_Manager_ISerializationContext_System_Boolean_System_Nullable_System_Object__" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.Read(Type,Robust.Shared.Serialization.Markdown.DataNode,Robust.Shared.Serialization.Manager.ISerializationContext,System.Boolean,System.Nullable{System.Object})">Read(Type, DataNode, ISerializationContext, Boolean, Nullable&lt;Object&gt;)</h4>
+  <div class="markdown level1 summary"><p>Deserializes a node into an object, populating it.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">object? Read(Type type, DataNode node, ISerializationContext context = null, bool skipHook = false, object? value = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Type</span></td>
+        <td><span class="parametername">type</span></td>
+        <td><p>The type of object to deserialize into.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Serialization.Markdown.DataNode.html">DataNode</a></td>
+        <td><span class="parametername">node</span></td>
+        <td><p>The node to deserialize.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Serialization.Manager.ISerializationContext.html">ISerializationContext</a></td>
+        <td><span class="parametername">context</span></td>
+        <td><p>The context to use, if any.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td><span class="parametername">skipHook</span></td>
+        <td><p>Whether or not to skip running <a class="xref" href="Robust.Shared.Serialization.ISerializationHooks.html">ISerializationHooks</a></p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Nullable</span>&lt;<span class="xref">System.Object</span>&gt;</td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value to read into. If none is supplied, a new object will be created.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Nullable</span>&lt;<span class="xref">System.Object</span>&gt;</td>
+        <td><p>The deserialized object or null.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_Serialization_Manager_ISerializationManager_Read__1_Robust_Shared_Serialization_Markdown_DataNode_Robust_Shared_Serialization_Manager_ISerializationContext_System_Boolean___0_.md&amp;value=---%0Auid%3A%20Robust.Shared.Serialization.Manager.ISerializationManager.Read%60%601(Robust.Shared.Serialization.Markdown.DataNode%2CRobust.Shared.Serialization.Manager.ISerializationContext%2CSystem.Boolean%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/Serialization/Manager/ISerializationManager.cs/#L84">View Source</a>
+  </span>
+  <a id="Robust_Shared_Serialization_Manager_ISerializationManager_Read_" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.Read*"></a>
+  <h4 id="Robust_Shared_Serialization_Manager_ISerializationManager_Read__1_Robust_Shared_Serialization_Markdown_DataNode_Robust_Shared_Serialization_Manager_ISerializationContext_System_Boolean___0_" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.Read``1(Robust.Shared.Serialization.Markdown.DataNode,Robust.Shared.Serialization.Manager.ISerializationContext,System.Boolean,``0)">Read&lt;T&gt;(DataNode, ISerializationContext, Boolean, T)</h4>
+  <div class="markdown level1 summary"><p>Deserializes a node into a populated object of the given generic type <see cref="!:T"></see></p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">T Read&lt;T&gt;(DataNode node, ISerializationContext context = null, bool skipHook = false, T value = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Serialization.Markdown.DataNode.html">DataNode</a></td>
+        <td><span class="parametername">node</span></td>
+        <td><p>The node to deserialize.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Serialization.Manager.ISerializationContext.html">ISerializationContext</a></td>
+        <td><span class="parametername">context</span></td>
+        <td><p>The context to use, if any.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td><span class="parametername">skipHook</span></td>
+        <td><p>Whether or not to skip running <a class="xref" href="Robust.Shared.Serialization.ISerializationHooks.html">ISerializationHooks</a></p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value to read into. If none is supplied, a new object will be created.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><p>The deserialized object, or null.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of object to create and populate.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_Serialization_Manager_ISerializationManager_ReadWithTypeSerializer_Type_Type_Robust_Shared_Serialization_Markdown_DataNode_Robust_Shared_Serialization_Manager_ISerializationContext_System_Boolean_System_Nullable_System_Object__.md&amp;value=---%0Auid%3A%20Robust.Shared.Serialization.Manager.ISerializationManager.ReadWithTypeSerializer(Type%2CType%2CRobust.Shared.Serialization.Markdown.DataNode%2CRobust.Shared.Serialization.Manager.ISerializationContext%2CSystem.Boolean%2CSystem.Nullable%7BSystem.Object%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/Serialization/Manager/ISerializationManager.cs/#L86">View Source</a>
+  </span>
+  <a id="Robust_Shared_Serialization_Manager_ISerializationManager_ReadWithTypeSerializer_" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.ReadWithTypeSerializer*"></a>
+  <h4 id="Robust_Shared_Serialization_Manager_ISerializationManager_ReadWithTypeSerializer_Type_Type_Robust_Shared_Serialization_Markdown_DataNode_Robust_Shared_Serialization_Manager_ISerializationContext_System_Boolean_System_Nullable_System_Object__" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.ReadWithTypeSerializer(Type,Type,Robust.Shared.Serialization.Markdown.DataNode,Robust.Shared.Serialization.Manager.ISerializationContext,System.Boolean,System.Nullable{System.Object})">ReadWithTypeSerializer(Type, Type, DataNode, ISerializationContext, Boolean, Nullable&lt;Object&gt;)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">object? ReadWithTypeSerializer(Type type, Type serializer, DataNode node, ISerializationContext context = null, bool skipHook = false, object? value = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Type</span></td>
+        <td><span class="parametername">type</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">Type</span></td>
+        <td><span class="parametername">serializer</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Serialization.Markdown.DataNode.html">DataNode</a></td>
+        <td><span class="parametername">node</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Serialization.Manager.ISerializationContext.html">ISerializationContext</a></td>
+        <td><span class="parametername">context</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td><span class="parametername">skipHook</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Nullable</span>&lt;<span class="xref">System.Object</span>&gt;</td>
+        <td><span class="parametername">value</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Nullable</span>&lt;<span class="xref">System.Object</span>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_Serialization_Manager_ISerializationManager_Shutdown.md&amp;value=---%0Auid%3A%20Robust.Shared.Serialization.Manager.ISerializationManager.Shutdown%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/Serialization/Manager/ISerializationManager.cs/#L20">View Source</a>
+  </span>
+  <a id="Robust_Shared_Serialization_Manager_ISerializationManager_Shutdown_" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.Shutdown*"></a>
+  <h4 id="Robust_Shared_Serialization_Manager_ISerializationManager_Shutdown" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.Shutdown">Shutdown()</h4>
+  <div class="markdown level1 summary"><p>Shuts down the serialization manager.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">void Shutdown()</code></pre>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_Serialization_Manager_ISerializationManager_ValidateNode_Type_Robust_Shared_Serialization_Markdown_DataNode_Robust_Shared_Serialization_Manager_ISerializationContext_.md&amp;value=---%0Auid%3A%20Robust.Shared.Serialization.Manager.ISerializationManager.ValidateNode(Type%2CRobust.Shared.Serialization.Markdown.DataNode%2CRobust.Shared.Serialization.Manager.ISerializationContext)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/Serialization/Manager/ISerializationManager.cs/#L41">View Source</a>
+  </span>
+  <a id="Robust_Shared_Serialization_Manager_ISerializationManager_ValidateNode_" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.ValidateNode*"></a>
+  <h4 id="Robust_Shared_Serialization_Manager_ISerializationManager_ValidateNode_Type_Robust_Shared_Serialization_Markdown_DataNode_Robust_Shared_Serialization_Manager_ISerializationContext_" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.ValidateNode(Type,Robust.Shared.Serialization.Markdown.DataNode,Robust.Shared.Serialization.Manager.ISerializationContext)">ValidateNode(Type, DataNode, ISerializationContext)</h4>
+  <div class="markdown level1 summary"><p>Validates that a node has all the properties required by a certain type with its serializer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">ValidationNode ValidateNode(Type type, DataNode node, ISerializationContext context = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Type</span></td>
+        <td><span class="parametername">type</span></td>
+        <td><p>The type to check for.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Serialization.Markdown.DataNode.html">DataNode</a></td>
+        <td><span class="parametername">node</span></td>
+        <td><p>The node to check.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Serialization.Manager.ISerializationContext.html">ISerializationContext</a></td>
+        <td><span class="parametername">context</span></td>
+        <td><p>The context to use, if any.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Serialization.Markdown.Validation.ValidationNode.html">ValidationNode</a></td>
+        <td><p>A node with whether or not <see cref="!:node"></see> is valid and which of its fields
+are invalid, if any.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_Serialization_Manager_ISerializationManager_ValidateNode__1_Robust_Shared_Serialization_Markdown_DataNode_Robust_Shared_Serialization_Manager_ISerializationContext_.md&amp;value=---%0Auid%3A%20Robust.Shared.Serialization.Manager.ISerializationManager.ValidateNode%60%601(Robust.Shared.Serialization.Markdown.DataNode%2CRobust.Shared.Serialization.Manager.ISerializationContext)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/Serialization/Manager/ISerializationManager.cs/#L52">View Source</a>
+  </span>
+  <a id="Robust_Shared_Serialization_Manager_ISerializationManager_ValidateNode_" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.ValidateNode*"></a>
+  <h4 id="Robust_Shared_Serialization_Manager_ISerializationManager_ValidateNode__1_Robust_Shared_Serialization_Markdown_DataNode_Robust_Shared_Serialization_Manager_ISerializationContext_" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.ValidateNode``1(Robust.Shared.Serialization.Markdown.DataNode,Robust.Shared.Serialization.Manager.ISerializationContext)">ValidateNode&lt;T&gt;(DataNode, ISerializationContext)</h4>
+  <div class="markdown level1 summary"><p>Validates that a node has all the properties required by a certain type with its serializer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">ValidationNode ValidateNode&lt;T&gt;(DataNode node, ISerializationContext context = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Serialization.Markdown.DataNode.html">DataNode</a></td>
+        <td><span class="parametername">node</span></td>
+        <td><p>The node to check.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Serialization.Manager.ISerializationContext.html">ISerializationContext</a></td>
+        <td><span class="parametername">context</span></td>
+        <td><p>The context to use, if any.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Serialization.Markdown.Validation.ValidationNode.html">ValidationNode</a></td>
+        <td><p>A node with whether or not <see cref="!:node"></see> is valid and which of its fields
+are invalid, if any.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_Serialization_Manager_ISerializationManager_ValidateNodeWith_Type_Type_Robust_Shared_Serialization_Markdown_DataNode_Robust_Shared_Serialization_Manager_ISerializationContext_.md&amp;value=---%0Auid%3A%20Robust.Shared.Serialization.Manager.ISerializationManager.ValidateNodeWith(Type%2CType%2CRobust.Shared.Serialization.Markdown.DataNode%2CRobust.Shared.Serialization.Manager.ISerializationContext)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/Serialization/Manager/ISerializationManager.cs/#L54">View Source</a>
+  </span>
+  <a id="Robust_Shared_Serialization_Manager_ISerializationManager_ValidateNodeWith_" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.ValidateNodeWith*"></a>
+  <h4 id="Robust_Shared_Serialization_Manager_ISerializationManager_ValidateNodeWith_Type_Type_Robust_Shared_Serialization_Markdown_DataNode_Robust_Shared_Serialization_Manager_ISerializationContext_" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.ValidateNodeWith(Type,Type,Robust.Shared.Serialization.Markdown.DataNode,Robust.Shared.Serialization.Manager.ISerializationContext)">ValidateNodeWith(Type, Type, DataNode, ISerializationContext)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">ValidationNode ValidateNodeWith(Type type, Type typeSerializer, DataNode node, ISerializationContext context = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Type</span></td>
+        <td><span class="parametername">type</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">Type</span></td>
+        <td><span class="parametername">typeSerializer</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Serialization.Markdown.DataNode.html">DataNode</a></td>
+        <td><span class="parametername">node</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Serialization.Manager.ISerializationContext.html">ISerializationContext</a></td>
+        <td><span class="parametername">context</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Serialization.Markdown.Validation.ValidationNode.html">ValidationNode</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_Serialization_Manager_ISerializationManager_ValidateNodeWith__3___2_Robust_Shared_Serialization_Manager_ISerializationContext_.md&amp;value=---%0Auid%3A%20Robust.Shared.Serialization.Manager.ISerializationManager.ValidateNodeWith%60%603(%60%602%2CRobust.Shared.Serialization.Manager.ISerializationContext)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/Serialization/Manager/ISerializationManager.cs/#L56">View Source</a>
+  </span>
+  <a id="Robust_Shared_Serialization_Manager_ISerializationManager_ValidateNodeWith_" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.ValidateNodeWith*"></a>
+  <h4 id="Robust_Shared_Serialization_Manager_ISerializationManager_ValidateNodeWith__3___2_Robust_Shared_Serialization_Manager_ISerializationContext_" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.ValidateNodeWith``3(``2,Robust.Shared.Serialization.Manager.ISerializationContext)">ValidateNodeWith&lt;TType, TSerializer, TNode&gt;(TNode, ISerializationContext)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">ValidationNode ValidateNodeWith&lt;TType, TSerializer, TNode&gt;(TNode node, ISerializationContext context = null)
+    where TSerializer : ITypeValidator&lt;TType, TNode&gt; where TNode : DataNode</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TNode</span></td>
+        <td><span class="parametername">node</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Serialization.Manager.ISerializationContext.html">ISerializationContext</a></td>
+        <td><span class="parametername">context</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Serialization.Markdown.Validation.ValidationNode.html">ValidationNode</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TType</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="parametername">TSerializer</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="parametername">TNode</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_Serialization_Manager_ISerializationManager_WriteValue_Type_System_Nullable_System_Object__System_Boolean_Robust_Shared_Serialization_Manager_ISerializationContext_.md&amp;value=---%0Auid%3A%20Robust.Shared.Serialization.Manager.ISerializationManager.WriteValue(Type%2CSystem.Nullable%7BSystem.Object%7D%2CSystem.Boolean%2CRobust.Shared.Serialization.Manager.ISerializationContext)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/Serialization/Manager/ISerializationManager.cs/#L120">View Source</a>
+  </span>
+  <a id="Robust_Shared_Serialization_Manager_ISerializationManager_WriteValue_" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.WriteValue*"></a>
+  <h4 id="Robust_Shared_Serialization_Manager_ISerializationManager_WriteValue_Type_System_Nullable_System_Object__System_Boolean_Robust_Shared_Serialization_Manager_ISerializationContext_" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.WriteValue(Type,System.Nullable{System.Object},System.Boolean,Robust.Shared.Serialization.Manager.ISerializationContext)">WriteValue(Type, Nullable&lt;Object&gt;, Boolean, ISerializationContext)</h4>
+  <div class="markdown level1 summary"><p>Serializes a value into a node.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">DataNode WriteValue(Type type, object? value, bool alwaysWrite = false, ISerializationContext context = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Type</span></td>
+        <td><span class="parametername">type</span></td>
+        <td><p>The type of the <see cref="!:value"></see> to serialize as.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Nullable</span>&lt;<span class="xref">System.Object</span>&gt;</td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value to serialize.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td><span class="parametername">alwaysWrite</span></td>
+        <td><p>Whether or not to always write the given values into the resulting node,
+even if they are the default.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Serialization.Manager.ISerializationContext.html">ISerializationContext</a></td>
+        <td><span class="parametername">context</span></td>
+        <td><p>The context to use, if any.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Serialization.Markdown.DataNode.html">DataNode</a></td>
+        <td><p>A serialized datanode created from the given <see cref="!:value"></see>
+of type <see cref="!:type"></see>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_Serialization_Manager_ISerializationManager_WriteValue__1___0_System_Boolean_Robust_Shared_Serialization_Manager_ISerializationContext_.md&amp;value=---%0Auid%3A%20Robust.Shared.Serialization.Manager.ISerializationManager.WriteValue%60%601(%60%600%2CSystem.Boolean%2CRobust.Shared.Serialization.Manager.ISerializationContext)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/Serialization/Manager/ISerializationManager.cs/#L104">View Source</a>
+  </span>
+  <a id="Robust_Shared_Serialization_Manager_ISerializationManager_WriteValue_" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.WriteValue*"></a>
+  <h4 id="Robust_Shared_Serialization_Manager_ISerializationManager_WriteValue__1___0_System_Boolean_Robust_Shared_Serialization_Manager_ISerializationContext_" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.WriteValue``1(``0,System.Boolean,Robust.Shared.Serialization.Manager.ISerializationContext)">WriteValue&lt;T&gt;(T, Boolean, ISerializationContext)</h4>
+  <div class="markdown level1 summary"><p>Serializes a value into a node.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">DataNode WriteValue&lt;T&gt;(T value, bool alwaysWrite = false, ISerializationContext context = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value to serialize.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td><span class="parametername">alwaysWrite</span></td>
+        <td><p>Whether or not to always write the given values into the resulting node,
+even if they are the default.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Serialization.Manager.ISerializationContext.html">ISerializationContext</a></td>
+        <td><span class="parametername">context</span></td>
+        <td><p>The context to use, if any.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Serialization.Markdown.DataNode.html">DataNode</a></td>
+        <td><p>A serialized datanode created from the given <see cref="!:value"></see>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type to serialize.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_Serialization_Manager_ISerializationManager_WriteWithTypeSerializer_Type_Type_System_Nullable_System_Object__System_Boolean_Robust_Shared_Serialization_Manager_ISerializationContext_.md&amp;value=---%0Auid%3A%20Robust.Shared.Serialization.Manager.ISerializationManager.WriteWithTypeSerializer(Type%2CType%2CSystem.Nullable%7BSystem.Object%7D%2CSystem.Boolean%2CRobust.Shared.Serialization.Manager.ISerializationContext)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/Serialization/Manager/ISerializationManager.cs/#L122">View Source</a>
+  </span>
+  <a id="Robust_Shared_Serialization_Manager_ISerializationManager_WriteWithTypeSerializer_" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.WriteWithTypeSerializer*"></a>
+  <h4 id="Robust_Shared_Serialization_Manager_ISerializationManager_WriteWithTypeSerializer_Type_Type_System_Nullable_System_Object__System_Boolean_Robust_Shared_Serialization_Manager_ISerializationContext_" data-uid="Robust.Shared.Serialization.Manager.ISerializationManager.WriteWithTypeSerializer(Type,Type,System.Nullable{System.Object},System.Boolean,Robust.Shared.Serialization.Manager.ISerializationContext)">WriteWithTypeSerializer(Type, Type, Nullable&lt;Object&gt;, Boolean, ISerializationContext)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">DataNode WriteWithTypeSerializer(Type type, Type serializer, object? value, bool alwaysWrite = false, ISerializationContext context = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Type</span></td>
+        <td><span class="parametername">type</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">Type</span></td>
+        <td><span class="parametername">serializer</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Nullable</span>&lt;<span class="xref">System.Object</span>&gt;</td>
+        <td><span class="parametername">value</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td><span class="parametername">alwaysWrite</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Serialization.Manager.ISerializationContext.html">ISerializationContext</a></td>
+        <td><span class="parametername">context</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Robust.Shared.Serialization.Markdown.DataNode.html">DataNode</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="Robust.Shared.Serialization.Manager.SerializationManagerWriteExtensions.html#Robust_Shared_Serialization_Manager_SerializationManagerWriteExtensions_WriteValueAs__1_Robust_Shared_Serialization_Manager_ISerializationManager_System_Object_System_Boolean_Robust_Shared_Serialization_Manager_ISerializationContext_">SerializationManagerWriteExtensions.WriteValueAs&lt;T&gt;(ISerializationManager, Object, Boolean, ISerializationContext)</a>
+  </div>
+  <div>
+      <a class="xref" href="Robust.Shared.Serialization.Manager.SerializationManagerWriteExtensions.html#Robust_Shared_Serialization_Manager_SerializationManagerWriteExtensions_WriteValueAs__1_Robust_Shared_Serialization_Manager_ISerializationManager_Type_System_Object_System_Boolean_Robust_Shared_Serialization_Manager_ISerializationContext_">SerializationManagerWriteExtensions.WriteValueAs&lt;T&gt;(ISerializationManager, Type, Object, Boolean, ISerializationContext)</a>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Shared_Serialization_Manager_ISerializationManager.md&amp;value=---%0Auid%3A%20Robust.Shared.Serialization.Manager.ISerializationManager%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Shared/Serialization/Manager/ISerializationManager.cs/#L10" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+          
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In This Article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+              
+              <span>Generated by <strong>DocFX</strong></span>
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../../styles/toggle-theme.js"></script>
+      </footer>    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

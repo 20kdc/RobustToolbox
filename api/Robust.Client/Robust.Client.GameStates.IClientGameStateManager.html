@@ -1,0 +1,534 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Interface IClientGameStateManager
+   </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Interface IClientGameStateManager
+   ">
+    <meta name="generator" content="docfx 2.56.7.0">
+    
+    <link rel="shortcut icon" href="../../favicon.ico">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="Robust.Client.GameStates.IClientGameStateManager">
+  
+  
+  <h1 id="Robust_Client_GameStates_IClientGameStateManager" data-uid="Robust.Client.GameStates.IClientGameStateManager" class="text-break">Interface IClientGameStateManager
+  </h1>
+  <div class="markdown level0 summary"><p>Engine service that provides processing and management of game states.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="Robust.Client.GameStates.html">Robust.Client.GameStates</a></h6>
+  <h6><strong>Assembly</strong>: Robust.Client.dll</h6>
+  <h5 id="Robust_Client_GameStates_IClientGameStateManager_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public interface IClientGameStateManager</code></pre>
+  </div>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Client_GameStates_IClientGameStateManager_CurrentBufferSize.md&amp;value=---%0Auid%3A%20Robust.Client.GameStates.IClientGameStateManager.CurrentBufferSize%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Client/GameStates/IClientGameStateManager.cs/#L32">View Source</a>
+  </span>
+  <a id="Robust_Client_GameStates_IClientGameStateManager_CurrentBufferSize_" data-uid="Robust.Client.GameStates.IClientGameStateManager.CurrentBufferSize*"></a>
+  <h4 id="Robust_Client_GameStates_IClientGameStateManager_CurrentBufferSize" data-uid="Robust.Client.GameStates.IClientGameStateManager.CurrentBufferSize">CurrentBufferSize</h4>
+  <div class="markdown level1 summary"><p>Number of game states currently in the state buffer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">int CurrentBufferSize { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Client_GameStates_IClientGameStateManager_CurServerTick.md&amp;value=---%0Auid%3A%20Robust.Client.GameStates.IClientGameStateManager.CurServerTick%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Client/GameStates/IClientGameStateManager.cs/#L40">View Source</a>
+  </span>
+  <a id="Robust_Client_GameStates_IClientGameStateManager_CurServerTick_" data-uid="Robust.Client.GameStates.IClientGameStateManager.CurServerTick*"></a>
+  <h4 id="Robust_Client_GameStates_IClientGameStateManager_CurServerTick" data-uid="Robust.Client.GameStates.IClientGameStateManager.CurServerTick">CurServerTick</h4>
+  <div class="markdown level1 summary"><p>The current tick of the last server game state applied.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">GameTick CurServerTick { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="../Robust.Shared/Robust.Shared.Timing.GameTick.html">GameTick</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Robust_Client_GameStates_IClientGameStateManager_CurServerTick_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Use this to synchronize server-sent simulation events with the client's game loop.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Client_GameStates_IClientGameStateManager_IsPredictionEnabled.md&amp;value=---%0Auid%3A%20Robust.Client.GameStates.IClientGameStateManager.IsPredictionEnabled%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Client/GameStates/IClientGameStateManager.cs/#L53">View Source</a>
+  </span>
+  <a id="Robust_Client_GameStates_IClientGameStateManager_IsPredictionEnabled_" data-uid="Robust.Client.GameStates.IClientGameStateManager.IsPredictionEnabled*"></a>
+  <h4 id="Robust_Client_GameStates_IClientGameStateManager_IsPredictionEnabled" data-uid="Robust.Client.GameStates.IClientGameStateManager.IsPredictionEnabled">IsPredictionEnabled</h4>
+  <div class="markdown level1 summary"><p>Whether prediction is currently enabled on the client entirely.
+This is NOT equal to <a class="xref" href="../Robust.Shared/Robust.Shared.Timing.IGameTiming.html#Robust_Shared_Timing_IGameTiming_InPrediction">InPrediction</a> or <a class="xref" href="../Robust.Shared/Robust.Shared.Timing.IGameTiming.html#Robust_Shared_Timing_IGameTiming_IsFirstTimePredicted">IsFirstTimePredicted</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">bool IsPredictionEnabled { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Robust_Client_GameStates_IClientGameStateManager_IsPredictionEnabled_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This is effectively an alias of <a class="xref" href="../Robust.Shared/Robust.Shared.CVars.html#Robust_Shared_CVars_NetPredict">NetPredict</a>.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Client_GameStates_IClientGameStateManager_MinBufferSize.md&amp;value=---%0Auid%3A%20Robust.Client.GameStates.IClientGameStateManager.MinBufferSize%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Client/GameStates/IClientGameStateManager.cs/#L21">View Source</a>
+  </span>
+  <a id="Robust_Client_GameStates_IClientGameStateManager_MinBufferSize_" data-uid="Robust.Client.GameStates.IClientGameStateManager.MinBufferSize*"></a>
+  <h4 id="Robust_Client_GameStates_IClientGameStateManager_MinBufferSize" data-uid="Robust.Client.GameStates.IClientGameStateManager.MinBufferSize">MinBufferSize</h4>
+  <div class="markdown level1 summary"><p>Minimum number of states needed in the buffer for everything to work.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">int MinBufferSize { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Robust_Client_GameStates_IClientGameStateManager_MinBufferSize_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>With interpolation enabled minimum is 3 states in buffer for the system to work (last, cur, next).
+Without interpolation enabled minimum is 2 states in buffer for the system to work (last, cur).</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Client_GameStates_IClientGameStateManager_StateBufferMergeThreshold.md&amp;value=---%0Auid%3A%20Robust.Client.GameStates.IClientGameStateManager.StateBufferMergeThreshold%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Client/GameStates/IClientGameStateManager.cs/#L46">View Source</a>
+  </span>
+  <a id="Robust_Client_GameStates_IClientGameStateManager_StateBufferMergeThreshold_" data-uid="Robust.Client.GameStates.IClientGameStateManager.StateBufferMergeThreshold*"></a>
+  <h4 id="Robust_Client_GameStates_IClientGameStateManager_StateBufferMergeThreshold" data-uid="Robust.Client.GameStates.IClientGameStateManager.StateBufferMergeThreshold">StateBufferMergeThreshold</h4>
+  <div class="markdown level1 summary"><p>If the buffer size is this many states larger than the target buffer size,
+apply the overflow of states in a single tick.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">int StateBufferMergeThreshold { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Client_GameStates_IClientGameStateManager_TargetBufferSize.md&amp;value=---%0Auid%3A%20Robust.Client.GameStates.IClientGameStateManager.TargetBufferSize%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Client/GameStates/IClientGameStateManager.cs/#L27">View Source</a>
+  </span>
+  <a id="Robust_Client_GameStates_IClientGameStateManager_TargetBufferSize_" data-uid="Robust.Client.GameStates.IClientGameStateManager.TargetBufferSize*"></a>
+  <h4 id="Robust_Client_GameStates_IClientGameStateManager_TargetBufferSize" data-uid="Robust.Client.GameStates.IClientGameStateManager.TargetBufferSize">TargetBufferSize</h4>
+  <div class="markdown level1 summary"><p>The number of states the system is trying to keep in the buffer. This will always
+be greater or equal to <a class="xref" href="Robust.Client.GameStates.IClientGameStateManager.html#Robust_Client_GameStates_IClientGameStateManager_MinBufferSize">MinBufferSize</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">int TargetBufferSize { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Client_GameStates_IClientGameStateManager_ApplyGameState.md&amp;value=---%0Auid%3A%20Robust.Client.GameStates.IClientGameStateManager.ApplyGameState%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Client/GameStates/IClientGameStateManager.cs/#L73">View Source</a>
+  </span>
+  <a id="Robust_Client_GameStates_IClientGameStateManager_ApplyGameState_" data-uid="Robust.Client.GameStates.IClientGameStateManager.ApplyGameState*"></a>
+  <h4 id="Robust_Client_GameStates_IClientGameStateManager_ApplyGameState" data-uid="Robust.Client.GameStates.IClientGameStateManager.ApplyGameState">ApplyGameState()</h4>
+  <div class="markdown level1 summary"><p>Applies the game state for this tick.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">void ApplyGameState()</code></pre>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Client_GameStates_IClientGameStateManager_Initialize.md&amp;value=---%0Auid%3A%20Robust.Client.GameStates.IClientGameStateManager.Initialize%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Client/GameStates/IClientGameStateManager.cs/#L63">View Source</a>
+  </span>
+  <a id="Robust_Client_GameStates_IClientGameStateManager_Initialize_" data-uid="Robust.Client.GameStates.IClientGameStateManager.Initialize*"></a>
+  <h4 id="Robust_Client_GameStates_IClientGameStateManager_Initialize" data-uid="Robust.Client.GameStates.IClientGameStateManager.Initialize">Initialize()</h4>
+  <div class="markdown level1 summary"><p>One time initialization of the service.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">void Initialize()</code></pre>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Client_GameStates_IClientGameStateManager_InputCommandDispatched_Robust_Shared_Input_FullInputCmdMessage_.md&amp;value=---%0Auid%3A%20Robust.Client.GameStates.IClientGameStateManager.InputCommandDispatched(Robust.Shared.Input.FullInputCmdMessage)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Client/GameStates/IClientGameStateManager.cs/#L79">View Source</a>
+  </span>
+  <a id="Robust_Client_GameStates_IClientGameStateManager_InputCommandDispatched_" data-uid="Robust.Client.GameStates.IClientGameStateManager.InputCommandDispatched*"></a>
+  <h4 id="Robust_Client_GameStates_IClientGameStateManager_InputCommandDispatched_Robust_Shared_Input_FullInputCmdMessage_" data-uid="Robust.Client.GameStates.IClientGameStateManager.InputCommandDispatched(Robust.Shared.Input.FullInputCmdMessage)">InputCommandDispatched(FullInputCmdMessage)</h4>
+  <div class="markdown level1 summary"><p>An input command has been dispatched.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">void InputCommandDispatched(FullInputCmdMessage message)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="../Robust.Shared/Robust.Shared.Input.FullInputCmdMessage.html">FullInputCmdMessage</a></td>
+        <td><span class="parametername">message</span></td>
+        <td><p>Message being dispatched.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Client_GameStates_IClientGameStateManager_Reset.md&amp;value=---%0Auid%3A%20Robust.Client.GameStates.IClientGameStateManager.Reset%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Client/GameStates/IClientGameStateManager.cs/#L68">View Source</a>
+  </span>
+  <a id="Robust_Client_GameStates_IClientGameStateManager_Reset_" data-uid="Robust.Client.GameStates.IClientGameStateManager.Reset*"></a>
+  <h4 id="Robust_Client_GameStates_IClientGameStateManager_Reset" data-uid="Robust.Client.GameStates.IClientGameStateManager.Reset">Reset()</h4>
+  <div class="markdown level1 summary"><p>Resets the service back to its initial state.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">void Reset()</code></pre>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Client_GameStates_IClientGameStateManager_SystemMessageDispatched__1___0_.md&amp;value=---%0Auid%3A%20Robust.Client.GameStates.IClientGameStateManager.SystemMessageDispatched%60%601(%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Client/GameStates/IClientGameStateManager.cs/#L81">View Source</a>
+  </span>
+  <a id="Robust_Client_GameStates_IClientGameStateManager_SystemMessageDispatched_" data-uid="Robust.Client.GameStates.IClientGameStateManager.SystemMessageDispatched*"></a>
+  <h4 id="Robust_Client_GameStates_IClientGameStateManager_SystemMessageDispatched__1___0_" data-uid="Robust.Client.GameStates.IClientGameStateManager.SystemMessageDispatched``1(``0)">SystemMessageDispatched&lt;T&gt;(T)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">uint SystemMessageDispatched&lt;T&gt;(T message)
+    where T : EntityEventArgs</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">message</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.UInt32</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="events">Events
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Client_GameStates_IClientGameStateManager_GameStateApplied.md&amp;value=---%0Auid%3A%20Robust.Client.GameStates.IClientGameStateManager.GameStateApplied%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Client/GameStates/IClientGameStateManager.cs/#L58">View Source</a>
+  </span>
+  <h4 id="Robust_Client_GameStates_IClientGameStateManager_GameStateApplied" data-uid="Robust.Client.GameStates.IClientGameStateManager.GameStateApplied">GameStateApplied</h4>
+  <div class="markdown level1 summary"><p>This is called after the game state has been applied for the current tick.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">event Action&lt;GameStateAppliedArgs&gt; GameStateApplied</code></pre>
+  </div>
+  <h5 class="eventType">Event Type</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Action</span>&lt;<a class="xref" href="Robust.Client.GameStates.GameStateAppliedArgs.html">GameStateAppliedArgs</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/space-wizards/RobustToolbox/new/master/apiSpec/new?filename=Robust_Client_GameStates_IClientGameStateManager.md&amp;value=---%0Auid%3A%20Robust.Client.GameStates.IClientGameStateManager%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/space-wizards/RobustToolbox/blob/master/Robust.Client/GameStates/IClientGameStateManager.cs/#L12" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+          
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In This Article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+              
+              <span>Generated by <strong>DocFX</strong></span>
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../../styles/toggle-theme.js"></script>
+      </footer>    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>
