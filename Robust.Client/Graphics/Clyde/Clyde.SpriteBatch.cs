@@ -38,11 +38,14 @@ internal partial class Clyde
         private ValueList<RhiBindGroup> _tempBindGroups;
         private RhiCommandEncoder? _commandEncoder;
         private RhiRenderPassEncoder? _passEncoder;
+        private Vector2i _currentPassSize = Vector2i.Zero;
+        private UIBox2i _currentDefaultScissorBox = UIBox2i.FromDimensions(Vector2i.Zero, Vector2i.Zero);
 
         // Active batch state
         private int _curBatchSize = 0;
         private int _vertexIdx = 0;
         private ClydeHandle _currentTexture;
+        private UIBox2i _currentScissorBox = UIBox2i.FromDimensions(Vector2i.Zero, Vector2i.Zero);
 
         // Other state
         private Matrix3x2 _modelTransform;
@@ -225,6 +228,10 @@ internal partial class Clyde
             ));
 
             _passEncoder.SetBindGroup(1, passGroup);
+
+            _currentPassSize = size;
+            _currentDefaultScissorBox = UIBox2i.FromDimensions(Vector2i.Zero, size);
+            _currentScissorBox = _currentDefaultScissorBox;
         }
 
         public void EndPass()
@@ -249,6 +256,22 @@ internal partial class Clyde
             Clear();
         }
 
+        private void EnsureScissorBox(in UIBox2i? scissorBox)
+        {
+            // Scissor box must be contained within the attachment.
+            // There's also cheesiness where GPUIntegerCoordinate is unsigned.
+            // Keep that in mind when reading the specification.
+            var scissorBoxAdjusted = scissorBox != null ? (scissorBox!.Value.Intersection(_currentDefaultScissorBox) ?? UIBox2i.FromDimensions(Vector2i.Zero, Vector2i.Zero)) : _currentDefaultScissorBox;
+            if (!scissorBoxAdjusted.Equals(_currentScissorBox))
+            {
+                FlushBatch();
+
+                _passEncoder!.SetScissorRect((uint) scissorBoxAdjusted.Left, (uint) scissorBoxAdjusted.Top, (uint) scissorBoxAdjusted.Width, (uint) scissorBoxAdjusted.Height);
+
+                _currentScissorBox = scissorBoxAdjusted;
+            }
+        }
+
         public void Draw(ClydeTexture texture, RVector2 position, Color color)
         {
             var textureHandle = texture.TextureId;
@@ -271,6 +294,8 @@ internal partial class Clyde
 
                 _currentTexture = textureHandle;
             }
+
+            EnsureScissorBox(_currentDefaultScissorBox);
 
             var width = texture.Width;
             var height = texture.Height;
@@ -302,7 +327,8 @@ internal partial class Clyde
             ClydeTexture texture,
             RVector2 bl, RVector2 br, RVector2 tl, RVector2 tr,
             in Color color,
-            in Box2 region)
+            in Box2 region,
+            in UIBox2i? scissorBox = null)
         {
             var textureHandle = texture.TextureId;
             if (textureHandle != _currentTexture)
@@ -324,6 +350,8 @@ internal partial class Clyde
 
                 _currentTexture = textureHandle;
             }
+
+            EnsureScissorBox(scissorBox ?? _currentDefaultScissorBox);
 
             var asColor = Unsafe.As<Color, SVector4>(ref Unsafe.AsRef(color));
 

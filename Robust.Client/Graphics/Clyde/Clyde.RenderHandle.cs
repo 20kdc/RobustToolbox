@@ -21,6 +21,8 @@ namespace Robust.Client.Graphics.Clyde
             private readonly IEntityManager _entities;
             private readonly SpriteBatch _spriteBatch;
 
+            private UIBox2i? _scissorBox = default;
+
             public DrawingHandleScreen DrawingHandleScreen { get; }
             public DrawingHandleWorld DrawingHandleWorld { get; }
 
@@ -66,7 +68,7 @@ namespace Robust.Client.Graphics.Clyde
                 var (w, h) = clydeTexture.Size;
                 var sr = new Box2(csr.Left / w, (h - csr.Top) / h, csr.Right / w, (h - csr.Bottom) / h);
 
-                _spriteBatch.Draw(clydeTexture, bl, br, tl, tr, modulate, sr);
+                _spriteBatch.Draw(clydeTexture, bl, br, tl, tr, modulate, sr, _scissorBox);
                 // _clyde.DrawTexture(clydeTexture.TextureId, bl, br, tl, tr, in modulate, in sr);
             }
 
@@ -147,9 +149,9 @@ namespace Robust.Client.Graphics.Clyde
                 _spriteBatch.EndPass();
             }
 
-            public void SetScissor(UIBox2i? scissorBox)
+            public void SetScissor(UIBox2i? newScissorBox)
             {
-                // _clyde.DrawSetScissor(scissorBox);
+                _scissorBox = newScissorBox;
             }
 
             /// <summary>
