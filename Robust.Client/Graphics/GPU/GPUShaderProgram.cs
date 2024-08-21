@@ -151,6 +151,15 @@ public abstract class GPUShaderProgram : GPUResource
         }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void SetUniformMaybe(string uniformName, bool[] value)
+    {
+        if (TryGetUniform(uniformName, out var slot))
+        {
+            SetUniformDirect(slot, value);
+        }
+    }
+
     // -- SetUniform --
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -175,6 +184,8 @@ public abstract class GPUShaderProgram : GPUResource
     public void SetUniform(string uniformName, Matrix4 value) => SetUniformDirect(GetUniform(uniformName), value);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void SetUniform(string uniformName, Color value) => SetUniformDirect(GetUniform(uniformName), value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void SetUniform(string uniformName, bool[] value) => SetUniformDirect(GetUniform(uniformName), value);
 
     // -- SetUniformDirect --
 
@@ -190,6 +201,7 @@ public abstract class GPUShaderProgram : GPUResource
     public abstract void SetUniformDirect(int uniformId, in Matrix3x2 value);
     public abstract void SetUniformDirect(int uniformId, in Matrix4 value, bool transpose = true);
     public abstract void SetUniformDirect(int uniformId, in Color value, bool convertToLinear = true);
+    public abstract void SetUniformDirect(int uniformId, bool[] value);
 
     // Added functions need to be added to the string SetUniform/SetUniformMaybe functions here,
     //  and also to the InternedUniform variants in PAL.GLShaderProgram.

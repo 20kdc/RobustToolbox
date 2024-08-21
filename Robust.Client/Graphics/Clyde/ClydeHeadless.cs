@@ -354,6 +354,10 @@ namespace Robust.Client.Graphics.Clyde
             {
             }
 
+            public override void SetUniformDirect(int uniformId, bool[] value)
+            {
+            }
+
             public override bool TryGetTextureUnit(string name, out int index)
             {
                 // It can cause errors to fail to find these.

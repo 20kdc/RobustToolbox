@@ -350,6 +350,15 @@ internal sealed class GLShaderProgram : GPUShaderProgram
         }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void SetUniformMaybe(InternedUniform uniformName, bool[] value)
+    {
+        if (TryGetUniform(uniformName, out var slot))
+        {
+            SetUniformDirect(slot, value);
+        }
+    }
+
     // -- SetUniform --
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -374,6 +383,8 @@ internal sealed class GLShaderProgram : GPUShaderProgram
     public void SetUniform(InternedUniform uniformName, Matrix4 value) => SetUniformDirect(GetUniform(uniformName), value);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void SetUniform(InternedUniform uniformName, Color value) => SetUniformDirect(GetUniform(uniformName), value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void SetUniform(InternedUniform uniformName, bool[] value) => SetUniformDirect(GetUniform(uniformName), value);
 
     // -- SetUniformDirect --
 
@@ -604,6 +615,37 @@ internal sealed class GLShaderProgram : GPUShaderProgram
             {
                 GL.Uniform4(slot, 1, (float*) &converted);
                 _pal.CheckGlError();
+            }
+        }
+    }
+
+    public override void SetUniformDirect(int uniformId, bool[] bools)
+    {
+        Span<int> intBools = stackalloc int[bools.Length];
+
+        for (var i = 0; i < bools.Length; i++)
+        {
+            intBools[i] = bools[i] ? 1 : 0;
+        }
+
+        unsafe
+        {
+            fixed (int* intBoolsPtr = intBools)
+            {
+                if (_pal._backupProgram != Handle)
+                {
+                    GL.UseProgram(Handle);
+                    _pal.CheckGlError();
+                    GL.Uniform1(uniformId, bools.Length, intBoolsPtr);
+                    _pal.CheckGlError();
+                    GL.UseProgram(_pal._backupProgram);
+                    _pal.CheckGlError();
+                }
+                else
+                {
+                    GL.Uniform1(uniformId, bools.Length, intBoolsPtr);
+                    _pal.CheckGlError();
+                }
             }
         }
     }
