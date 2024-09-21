@@ -1,6 +1,8 @@
-# Multiverse Engine
+# Multiverse Engine (KERB branch)
 
-Multiverse fork of Robust Toolbox.
+20kdc experimental research branch of the [Multiverse fork](https://github.com/Space-Station-Multiverse/RobustToolbox) of Robust Toolbox.
+
+_the point of this branch is to basically just throw commits at the wall and see if it can be done with no intention of being PRable anywhere_
 
 (Upstream info follows)
 

@@ -18,6 +18,8 @@ Furthermore, the following contributors have agreed to retroactively relicense t
 
 * PJB3005
 
+Any original work in commits specifically authored for the 20kdc experimental research branch (KERB) is licensed under a custom license, unless otherwise stated. See `LICENSE-KERB.TXT`.
+
 ## Warranty
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
