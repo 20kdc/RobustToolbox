@@ -47,5 +47,10 @@ namespace Robust.Client.Graphics.Clyde
             GLES3 = 3,
             GLES2 = 4,
         }
+
+        private static bool OpenGLVersionIsGLES(RendererOpenGLVersion version) => version is RendererOpenGLVersion.GLES2 or RendererOpenGLVersion.GLES3;
+
+        private static bool OpenGLVersionIsCore(RendererOpenGLVersion version) => version is RendererOpenGLVersion.GL33;
+
     }
 }

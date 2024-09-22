@@ -89,7 +89,7 @@ namespace Robust.Client.Graphics.Clyde
             var size = ClydeBase.ClampSubRegion(fbSize, subRegion);
 
             var bufferLength = size.X * size.Y;
-            if (!(_hasGLFenceSync && HasGLAnyMapBuffer && _hasGLPixelBufferObjects))
+            if (!(_hasGL.FenceSync && _hasGL.AnyMapBuffer && _hasGL.PixelBufferObjects))
             {
                 _sawmillOgl.Debug("clyde.ogl",
                     "Necessary features for async screenshots not available, falling back to blocking path.");

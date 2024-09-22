@@ -46,9 +46,9 @@ namespace Robust.Client.Graphics.Clyde
             // so if somebody creates a framebuffer while drawing it won't ruin everything.
             // Note that this means _currentBoundRenderTarget goes temporarily out of sync here
             var boundDrawBuffer = GL.GetInteger(
-                _isGLES2 ? GetPName.FramebufferBinding : GetPName.DrawFramebufferBinding);
+                _hasGL.GLES2 ? GetPName.FramebufferBinding : GetPName.DrawFramebufferBinding);
             var boundReadBuffer = 0;
-            if (_hasGLReadFramebuffer)
+            if (_hasGL.ReadFramebuffer)
             {
                 boundReadBuffer = GL.GetInteger(GetPName.ReadFramebufferBinding);
             }
@@ -80,7 +80,7 @@ namespace Robust.Client.Graphics.Clyde
                 ApplySampleParameters(sampleParameters);
 
                 var colorFormat = format.ColorFormat;
-                if ((!_hasGLSrgb) && (colorFormat == RTCF.Rgba8Srgb))
+                if ((!_hasGL.Srgb) && (colorFormat == RTCF.Rgba8Srgb))
                 {
                     // If SRGB is not supported, switch formats.
                     // The shaders will have to compensate.
@@ -88,7 +88,7 @@ namespace Robust.Client.Graphics.Clyde
                     colorFormat = RTCF.Rgba8;
                 }
                 // This isn't good
-                if (!_hasGLFloatFramebuffers)
+                if (!_hasGL.FloatFramebuffers)
                 {
                     switch (colorFormat)
                     {
@@ -118,7 +118,7 @@ namespace Robust.Client.Graphics.Clyde
                 };
                 // @formatter:on
 
-                if (_isGLES2)
+                if (_hasGL.GLES2)
                 {
                     (internalFormat, pixFormat, pixType) = colorFormat switch
                     {
@@ -134,7 +134,7 @@ namespace Robust.Client.Graphics.Clyde
                     pixType, IntPtr.Zero);
                 CheckGlError();
 
-                if (!_isGLES)
+                if (!_hasGL.GLES)
                 {
                     GL.FramebufferTexture(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0,
                         texture.Handle,
@@ -183,10 +183,10 @@ namespace Robust.Client.Graphics.Clyde
 
             // Re-bind previous framebuffers (thus _currentBoundRenderTarget is back in sync)
             GL.BindFramebuffer(
-                _isGLES2 ? FramebufferTarget.Framebuffer : FramebufferTarget.DrawFramebuffer,
+                _hasGL.GLES2 ? FramebufferTarget.Framebuffer : FramebufferTarget.DrawFramebuffer,
                 boundDrawBuffer);
             CheckGlError();
-            if (_hasGLReadFramebuffer)
+            if (_hasGL.ReadFramebuffer)
             {
                 GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, boundReadBuffer);
                 CheckGlError();

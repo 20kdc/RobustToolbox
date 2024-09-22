@@ -52,7 +52,7 @@ namespace Robust.Client.Graphics.Clyde
             var actualParams = loadParams ?? TextureLoadParameters.Default;
             var pixelType = typeof(T);
 
-            if (!_hasGLTextureSwizzle)
+            if (!_hasGL.TextureSwizzle)
             {
                 // If texture swizzle isn't available we have to pre-process the images to apply it ourselves
                 // and then upload as RGBA8.
@@ -99,7 +99,7 @@ namespace Robust.Client.Graphics.Clyde
             where T : unmanaged, IPixel<T>
         {
             var actualParams = loadParams ?? TextureLoadParameters.Default;
-            if (!_hasGLTextureSwizzle)
+            if (!_hasGL.TextureSwizzle)
             {
                 // Actually create RGBA32 texture if missing texture swizzle.
                 // This is fine (TexturePixelType that's stored) because all other APIs do the same.
@@ -162,7 +162,7 @@ namespace Robust.Client.Graphics.Clyde
             }
             else if (pixelType == typeof(A8))
             {
-                DebugTools.Assert(_hasGLTextureSwizzle);
+                DebugTools.Assert(_hasGL.TextureSwizzle);
 
                 // TODO: Does it make sense to default to 1 for RGB parameters?
                 // It might make more sense to pass some options to change swizzling.
@@ -177,7 +177,7 @@ namespace Robust.Client.Graphics.Clyde
             }
             else if (pixelType == typeof(L8) && !loadParams.Srgb)
             {
-                DebugTools.Assert(_hasGLTextureSwizzle);
+                DebugTools.Assert(_hasGL.TextureSwizzle);
 
                 // Can only use R8 for L8 if sRGB is OFF.
                 // Because OpenGL doesn't provide sRGB single/dual channel image formats.
@@ -260,7 +260,7 @@ namespace Robust.Client.Graphics.Clyde
         private (PIF pif, PF pf, PT pt) PixelEnums<T>(bool srgb)
             where T : unmanaged, IPixel<T>
         {
-            if (_isGLES2)
+            if (_hasGL.GLES2)
             {
                 return default(T) switch
                 {
@@ -274,7 +274,7 @@ namespace Robust.Client.Graphics.Clyde
             {
                 // Note that if _hasGLSrgb is off, we import an sRGB texture as non-sRGB.
                 // Shaders are expected to compensate for this
-                Rgba32 => (srgb && _hasGLSrgb ? PIF.Srgb8Alpha8 : PIF.Rgba8, PF.Rgba, PT.UnsignedByte),
+                Rgba32 => (srgb && _hasGL.Srgb ? PIF.Srgb8Alpha8 : PIF.Rgba8, PF.Rgba, PT.UnsignedByte),
                 A8 or L8 => (PIF.R8, PF.Red, PT.UnsignedByte),
                 _ => throw new NotSupportedException("Unsupported pixel type."),
             };
@@ -390,7 +390,7 @@ namespace Robust.Client.Graphics.Clyde
             ReadOnlySpan<T> buf)
             where T : unmanaged, IPixel<T>
         {
-            if (!_hasGLTextureSwizzle && (typeof(T) == typeof(A8) || typeof(T) == typeof(L8)))
+            if (!_hasGL.TextureSwizzle && (typeof(T) == typeof(A8) || typeof(T) == typeof(L8)))
             {
                 var swizzleBuf = ArrayPool<Rgba32>.Shared.Rent(buf.Length);
 

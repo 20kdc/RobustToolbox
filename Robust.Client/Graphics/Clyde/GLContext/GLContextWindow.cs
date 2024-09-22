@@ -53,7 +53,7 @@ namespace Robust.Client.Graphics.Clyde
 
             public override bool RequireWindowGL => true;
             // ANGLE does not support main window sRGB.
-            public override bool HasBrokenWindowSrgb => Clyde._isGLES && OperatingSystem.IsWindows();
+            public override bool HasBrokenWindowSrgb(RendererOpenGLVersion version) => OpenGLVersionIsGLES(version) && OperatingSystem.IsWindows();
 
             public GLContextWindow(Clyde clyde) : base(clyde)
             {
@@ -161,7 +161,7 @@ namespace Robust.Client.Graphics.Clyde
                 if (Clyde._windows.Count == 1)
                     return;
 
-                if (!Clyde._hasGLFenceSync && Clyde._cfg.GetCVar(CVars.DisplayForceSyncWindows))
+                if (!Clyde._hasGL.FenceSync && Clyde._cfg.GetCVar(CVars.DisplayForceSyncWindows))
                 {
                     GL.Finish();
                 }
@@ -195,7 +195,7 @@ namespace Robust.Client.Graphics.Clyde
 
             private void BlitThreadDoSecondaryWindowBlit(WindowData window)
             {
-                if (Clyde._hasGLFenceSync)
+                if (Clyde._hasGL.FenceSync)
                 {
                     // 0xFFFFFFFFFFFFFFFFUL is GL_TIMEOUT_IGNORED
                     var rt = window.Reg.RenderTarget;
@@ -223,7 +223,7 @@ namespace Robust.Client.Graphics.Clyde
 
                 Clyde.SetupDebugCallback();
 
-                if (!Clyde._isGLES)
+                if (!Clyde._hasGL.GLES)
                     GL.Enable(EnableCap.FramebufferSrgb);
 
                 var vao = GL.GenVertexArray();

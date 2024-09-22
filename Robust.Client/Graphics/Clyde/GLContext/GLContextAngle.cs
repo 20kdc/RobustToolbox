@@ -54,7 +54,7 @@ namespace Robust.Client.Graphics.Clyde
             public override GLContextSpec[] SpecsToTry => Array.Empty<GLContextSpec>();
             public override bool RequireWindowGL => false;
             public override bool EarlyContextInit => true;
-            public override bool HasBrokenWindowSrgb => false;
+            public override bool HasBrokenWindowSrgb(RendererOpenGLVersion version) => false;
 
             public GLContextAngle(Clyde clyde) : base(clyde)
             {
@@ -144,7 +144,7 @@ namespace Robust.Client.Graphics.Clyde
                     {
                         Width = (uint) data.Reg.FramebufferSize.X,
                         Height = (uint) data.Reg.FramebufferSize.Y,
-                        Format =  Clyde._hasGLSrgb ? DXGI_FORMAT_R8G8B8A8_UNORM_SRGB : DXGI_FORMAT_R8G8B8A8_UNORM
+                        Format =  Clyde._hasGL.Srgb ? DXGI_FORMAT_R8G8B8A8_UNORM_SRGB : DXGI_FORMAT_R8G8B8A8_UNORM
                     },
                     SampleDesc =
                     {
@@ -468,7 +468,7 @@ namespace Robust.Client.Graphics.Clyde
                 ThrowIfFailed("ResizeBuffers", data.SwapChain->ResizeBuffers(
                     2,
                     (uint) reg.FramebufferSize.X, (uint) reg.FramebufferSize.Y,
-                    Clyde._hasGLSrgb ? DXGI_FORMAT_R8G8B8A8_UNORM_SRGB : DXGI_FORMAT_R8G8B8A8_UNORM,
+                    Clyde._hasGL.Srgb ? DXGI_FORMAT_R8G8B8A8_UNORM_SRGB : DXGI_FORMAT_R8G8B8A8_UNORM,
                     0));
 
                 SetupBackbuffer(data);

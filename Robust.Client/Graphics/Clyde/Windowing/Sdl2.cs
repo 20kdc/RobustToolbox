@@ -164,7 +164,7 @@ internal partial class Clyde
             {
                 obj._sawmillSdl2.Info(Environment.StackTrace);
             }
-            
+
             var categoryName = SdlLogCategoryName(category);
             obj._sawmillSdl2.Log(level, $"[{categoryName}] {msg}");
         }

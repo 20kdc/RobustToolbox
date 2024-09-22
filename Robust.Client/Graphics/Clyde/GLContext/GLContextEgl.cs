@@ -26,7 +26,7 @@ namespace Robust.Client.Graphics.Clyde
             private void* _eglContext;
             private void* _eglConfig;
 
-            public override bool HasBrokenWindowSrgb => Clyde._isGLES && OperatingSystem.IsWindows();
+            public override bool HasBrokenWindowSrgb(RendererOpenGLVersion version) => OpenGLVersionIsGLES(version) && OperatingSystem.IsWindows();
 
             public GLContextEgl(Clyde clyde) : base(clyde)
             {

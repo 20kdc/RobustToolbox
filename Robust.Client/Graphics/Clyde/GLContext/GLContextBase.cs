@@ -39,7 +39,9 @@ namespace Robust.Client.Graphics.Clyde
 
             public abstract GLContextSpec[] SpecsToTry { get; }
             public abstract bool RequireWindowGL { get;  }
-            public abstract bool HasBrokenWindowSrgb { get; }
+
+            /// If this context manager has broken sRGB on the given renderer version.
+            public abstract bool HasBrokenWindowSrgb(RendererOpenGLVersion version);
 
             protected static GLContextSpec GetVersionSpec(RendererOpenGLVersion version)
             {

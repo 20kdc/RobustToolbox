@@ -83,6 +83,8 @@ namespace Robust.Client.Graphics.Clyde
         private bool _earlyGLInit;
         private bool _threadWindowApi;
 
+        private ClydeGLFeatures _hasGL = default!;
+
         public Clyde()
         {
             _currentBoundRenderTarget = default!;
@@ -169,7 +171,7 @@ namespace Robust.Client.Graphics.Clyde
         {
             // This cvar does not modify the actual GL version requested or anything,
             // it overrides the version we detect to detect GL features.
-            RegisterBlockCVars();
+            ClydeGLFeatures.RegisterBlockCVars(_cfg);
         }
 
         public void RegisterGridEcsEvents()
@@ -200,11 +202,11 @@ namespace Robust.Client.Graphics.Clyde
 
         private void InitOpenGL()
         {
-            _isGLES = _openGLVersion is RendererOpenGLVersion.GLES2 or RendererOpenGLVersion.GLES3;
-            _isGLES2 = _openGLVersion is RendererOpenGLVersion.GLES2;
-            _isCore = _openGLVersion is RendererOpenGLVersion.GL33;
+            bool isGLES = OpenGLVersionIsGLES(_openGLVersion);
+            bool isGLES2 = _openGLVersion is RendererOpenGLVersion.GLES2;
+            bool isCore = OpenGLVersionIsCore(_openGLVersion);
 
-            GLInitBindings(_isGLES);
+            GLInitBindings(isGLES);
 
             var vendor = GL.GetString(StringName.Vendor);
             var renderer = GL.GetString(StringName.Renderer);
@@ -225,12 +227,11 @@ namespace Robust.Client.Graphics.Clyde
                 _sawmillOgl.Debug("OVERRIDING detected GL version to: {0}.{1}", major, minor);
             }
 
-            DetectOpenGLFeatures(major, minor);
+            var hasBrokenWindowSrgb = _glContext!.HasBrokenWindowSrgb(_openGLVersion);
+            _hasGL = new ClydeGLFeatures(major, minor, isGLES, isGLES2, isCore, hasBrokenWindowSrgb, _deps);
             SetupDebugCallback();
 
-            LoadVendorSettings(vendor, renderer, version);
-
-            var glVersion = new OpenGLVersion((byte) major, (byte) minor, _isGLES, _isCore);
+            var glVersion = new OpenGLVersion((byte) major, (byte) minor, isGLES, isCore);
 
             DebugInfo = new ClydeDebugInfo(
                 glVersion,
@@ -241,24 +242,24 @@ namespace Robust.Client.Graphics.Clyde
                 _windowing!.GetDescription());
 
             GL.Enable(EnableCap.Blend);
-            if (_hasGLSrgb && !_isGLES)
+            if (_hasGL.Srgb && !isGLES)
             {
                 GL.Enable(EnableCap.FramebufferSrgb);
                 CheckGlError();
             }
-            if (_hasGLPrimitiveRestart)
+            if (_hasGL.PrimitiveRestart)
             {
                 GL.Enable(EnableCap.PrimitiveRestart);
                 CheckGlError();
                 GL.PrimitiveRestartIndex(PrimitiveRestartIndex);
                 CheckGlError();
             }
-            if (_hasGLPrimitiveRestartFixedIndex)
+            if (_hasGL.PrimitiveRestartFixedIndex)
             {
                 GL.Enable(EnableCap.PrimitiveRestartFixedIndex);
                 CheckGlError();
             }
-            if (!HasGLAnyVertexArrayObjects)
+            if (!_hasGL.AnyVertexArrayObjects)
             {
                 _sawmillOgl.Warning("NO VERTEX ARRAY OBJECTS! Things will probably go terribly, terribly wrong (no fallback path yet)");
             }
@@ -393,7 +394,7 @@ namespace Robust.Client.Graphics.Clyde
         [Conditional("DEBUG")]
         private unsafe void SetupDebugCallback()
         {
-            if (!_hasGLKhrDebug)
+            if (!_hasGL.KhrDebug)
             {
                 _sawmillOgl.Debug("KHR_debug not present, OpenGL debug logging not enabled.");
                 return;
@@ -406,7 +407,7 @@ namespace Robust.Client.Graphics.Clyde
 
             // OpenTK seemed to have trouble marshalling the delegate so do it manually.
 
-            var procName = _isGLKhrDebugESExtension ? "glDebugMessageCallbackKHR" : "glDebugMessageCallback";
+            var procName = _hasGL.KhrDebugESExtension ? "glDebugMessageCallbackKHR" : "glDebugMessageCallback";
             var glDebugMessageCallback = (delegate* unmanaged[Stdcall] <nint, nint, void>) LoadGLProc(procName);
             var funcPtr = Marshal.GetFunctionPointerForDelegate(_debugMessageCallbackInstance);
             glDebugMessageCallback(funcPtr, new IntPtr(0x3005));
@@ -481,10 +482,10 @@ namespace Robust.Client.Graphics.Clyde
                 return;
             }
 
-            if (!_hasGLKhrDebug || !_glDebuggerPresent)
+            if (!_hasGL.KhrDebug || !_hasGL.DebuggerPresent)
                 return;
 
-            if (_isGLKhrDebugESExtension)
+            if (_hasGL.KhrDebugESExtension)
             {
                 GL.Khr.ObjectLabel((ObjectIdentifier) identifier, name, label.Length, label);
             }
@@ -510,10 +511,10 @@ namespace Robust.Client.Graphics.Clyde
         private void PushDebugGroupMaybe(string group)
         {
             // ANGLE spams console log messages when using debug groups, so let's only use them if we're debugging GL.
-            if (!_hasGLKhrDebug || !_glDebuggerPresent)
+            if (!_hasGL.KhrDebug || !_hasGL.DebuggerPresent)
                 return;
 
-            if (_isGLKhrDebugESExtension)
+            if (_hasGL.KhrDebugESExtension)
             {
                 GL.Khr.PushDebugGroup((DebugSource) DebugSourceExternal.DebugSourceApplication, 0, group.Length, group);
             }
@@ -526,10 +527,10 @@ namespace Robust.Client.Graphics.Clyde
         [Conditional("DEBUG")]
         private void PopDebugGroupMaybe()
         {
-            if (!_hasGLKhrDebug || !_glDebuggerPresent)
+            if (!_hasGL.KhrDebug || !_hasGL.DebuggerPresent)
                 return;
 
-            if (_isGLKhrDebugESExtension)
+            if (_hasGL.KhrDebugESExtension)
             {
                 GL.Khr.PopDebugGroup();
             }

@@ -95,7 +95,7 @@ namespace Robust.Client.Graphics.Clyde
 
             var program = _compileProgram(vertBody, fragBody, BaseShaderAttribLocations, name, defines: defines);
 
-            if (_hasGLUniformBuffers)
+            if (_hasGL.UniformBuffers)
             {
                 program.BindBlock(UniProjViewMatrices, BindingIndexProjView);
                 program.BindBlock(UniUniformConstants, BindingIndexUniformConstants);
@@ -123,7 +123,7 @@ namespace Robust.Client.Graphics.Clyde
 
             loaded.Program = program;
 
-            if (_hasGLUniformBuffers)
+            if (_hasGL.UniformBuffers)
             {
                 program.BindBlock(UniProjViewMatrices, BindingIndexProjView);
                 program.BindBlock(UniUniformConstants, BindingIndexUniformConstants);
@@ -182,9 +182,9 @@ namespace Robust.Client.Graphics.Clyde
 
             var versionHeader = "#version 140\n#define HAS_MOD\n";
 
-            if (_isGLES)
+            if (_hasGL.GLES)
             {
-                if (_hasGLES3Shaders)
+                if (_hasGL.GLES3Shaders)
                 {
                     versionHeader = "#version 300 es\n";
                 }
@@ -192,7 +192,7 @@ namespace Robust.Client.Graphics.Clyde
                 {
                     // GLES2 uses a different GLSL versioning scheme to desktop GL.
                     versionHeader = "#version 100\n#define HAS_VARYING_ATTRIBUTE\n";
-                    if (_hasGLStandardDerivatives)
+                    if (_hasGL.StandardDerivatives)
                     {
                         versionHeader += "#extension GL_OES_standard_derivatives : enable\n";
                     }
@@ -202,22 +202,22 @@ namespace Robust.Client.Graphics.Clyde
 
             }
 
-            if (_hasGLStandardDerivatives)
+            if (_hasGL.StandardDerivatives)
             {
                 versionHeader += "#define HAS_DFDX\n";
             }
 
-            if (_hasGLFloatFramebuffers)
+            if (_hasGL.FloatFramebuffers)
             {
                 versionHeader += "#define HAS_FLOAT_TEXTURES\n";
             }
 
-            if (_hasGLSrgb)
+            if (_hasGL.Srgb)
             {
                 versionHeader += "#define HAS_SRGB\n";
             }
 
-            if (_hasGLUniformBuffers)
+            if (_hasGL.UniformBuffers)
             {
                 versionHeader += "#define HAS_UNIFORM_BUFFERS\n";
             }

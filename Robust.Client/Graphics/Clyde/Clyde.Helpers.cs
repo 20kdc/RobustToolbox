@@ -82,7 +82,7 @@ namespace Robust.Client.Graphics.Clyde
         {
             ProjViewUBO.Apply(program);
             UniformConstantsUBO.Apply(program);
-            if (!_hasGLSrgb)
+            if (!_hasGL.Srgb)
             {
                 program.SetUniformMaybe("SRGB_EMU_CONFIG",
                     new Vector2(texIsSrgb ? 1 : 0, _currentBoundRenderTarget.IsSrgb ? 1 : 0));
@@ -93,14 +93,14 @@ namespace Robust.Client.Graphics.Clyde
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private BatchPrimitiveType GetQuadBatchPrimitiveType()
         {
-            return _hasGLPrimitiveRestart ? BatchPrimitiveType.TriangleFan : BatchPrimitiveType.TriangleList;
+            return _hasGL.PrimitiveRestart ? BatchPrimitiveType.TriangleFan : BatchPrimitiveType.TriangleList;
         }
 
         // Gets the PrimitiveType version of GetQuadBatchPrimitiveType
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private PrimitiveType GetQuadGLPrimitiveType()
         {
-            return _hasGLPrimitiveRestart ? PrimitiveType.TriangleFan : PrimitiveType.Triangles;
+            return _hasGL.PrimitiveRestart ? PrimitiveType.TriangleFan : PrimitiveType.Triangles;
         }
 
         // Gets the amount of indices required by QuadBatchIndexWrite.
@@ -109,7 +109,7 @@ namespace Robust.Client.Graphics.Clyde
         {
             // PR: Need 5 indices per quad: 4 to draw the quad with triangle strips and another one as primitive restart.
             // no PR: Need 6 indices per quad: 2 triangles
-            return _hasGLPrimitiveRestart ? 5 : 6;
+            return _hasGL.PrimitiveRestart ? 5 : 6;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -130,7 +130,7 @@ namespace Robust.Client.Graphics.Clyde
             ushort tIdx3)
         {
             var nIdxl = nIdx;
-            if (_hasGLPrimitiveRestart)
+            if (_hasGL.PrimitiveRestart)
             {
                 // PJB's fancy triangle fan isolated to a quad with primitive restart
                 indexData[nIdxl + 4] = PrimitiveRestartIndex;
@@ -179,23 +179,23 @@ namespace Robust.Client.Graphics.Clyde
         // And easiest.
         private unsafe void* MapFullBuffer(BufferTarget buffer, int length, BufferAccess access, BufferAccessMask mask)
         {
-            DebugTools.Assert(HasGLAnyMapBuffer);
+            DebugTools.Assert(_hasGL.AnyMapBuffer);
 
             void* ptr;
 
-            if (_hasGLMapBufferRange)
+            if (_hasGL.MapBufferRange)
             {
                 ptr = (void*) GL.MapBufferRange(buffer, IntPtr.Zero, length, mask);
                 CheckGlError();
             }
-            else if (_hasGLMapBuffer)
+            else if (_hasGL.MapBuffer)
             {
                 ptr = (void*) GL.MapBuffer(buffer, access);
                 CheckGlError();
             }
             else
             {
-                DebugTools.Assert(_hasGLMapBufferOes);
+                DebugTools.Assert(_hasGL.MapBufferOes);
 
                 ptr = (void*) ES20.GL.Oes.MapBuffer((ES20.BufferTargetArb) buffer,
                     (ES20.BufferAccessArb) BufferAccess.ReadOnly);
@@ -207,16 +207,16 @@ namespace Robust.Client.Graphics.Clyde
 
         private void UnmapBuffer(BufferTarget buffer)
         {
-            DebugTools.Assert(HasGLAnyMapBuffer);
+            DebugTools.Assert(_hasGL.AnyMapBuffer);
 
-            if (_hasGLMapBufferRange || _hasGLMapBuffer)
+            if (_hasGL.MapBufferRange || _hasGL.MapBuffer)
             {
                 GL.UnmapBuffer(buffer);
                 CheckGlError();
             }
             else
             {
-                DebugTools.Assert(_hasGLMapBufferOes);
+                DebugTools.Assert(_hasGL.MapBufferOes);
 
                 ES20.GL.Oes.UnmapBuffer((ES20.BufferTarget) buffer);
                 CheckGlError();
@@ -225,17 +225,17 @@ namespace Robust.Client.Graphics.Clyde
 
         private uint GenVertexArray()
         {
-            DebugTools.Assert(HasGLAnyVertexArrayObjects);
+            DebugTools.Assert(_hasGL.AnyVertexArrayObjects);
 
             int value;
-            if (_hasGLVertexArrayObject)
+            if (_hasGL.VertexArrayObject)
             {
                 value = GL.GenVertexArray();
                 CheckGlError();
             }
             else
             {
-                DebugTools.Assert(_hasGLVertexArrayObjectOes);
+                DebugTools.Assert(_hasGL.VertexArrayObjectOes);
 
                 value = ES20.GL.Oes.GenVertexArray();
                 CheckGlError();
@@ -246,16 +246,16 @@ namespace Robust.Client.Graphics.Clyde
 
         private void BindVertexArray(uint vao)
         {
-            DebugTools.Assert(HasGLAnyVertexArrayObjects);
+            DebugTools.Assert(_hasGL.AnyVertexArrayObjects);
 
-            if (_hasGLVertexArrayObject)
+            if (_hasGL.VertexArrayObject)
             {
                 GL.BindVertexArray(vao);
                 CheckGlError();
             }
             else
             {
-                DebugTools.Assert(_hasGLVertexArrayObjectOes);
+                DebugTools.Assert(_hasGL.VertexArrayObjectOes);
 
                 ES20.GL.Oes.BindVertexArray(vao);
                 CheckGlError();
@@ -264,16 +264,16 @@ namespace Robust.Client.Graphics.Clyde
 
         private void DeleteVertexArray(uint vao)
         {
-            DebugTools.Assert(HasGLAnyVertexArrayObjects);
+            DebugTools.Assert(_hasGL.AnyVertexArrayObjects);
 
-            if (_hasGLVertexArrayObject)
+            if (_hasGL.VertexArrayObject)
             {
                 GL.DeleteVertexArray(vao);
                 CheckGlError();
             }
             else
             {
-                DebugTools.Assert(_hasGLVertexArrayObjectOes);
+                DebugTools.Assert(_hasGL.VertexArrayObjectOes);
 
                 ES20.GL.Oes.DeleteVertexArray(vao);
                 CheckGlError();

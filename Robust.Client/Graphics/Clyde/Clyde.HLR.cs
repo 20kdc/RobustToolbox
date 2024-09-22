@@ -238,7 +238,7 @@ namespace Robust.Client.Graphics.Clyde
                 GL.BindTexture(TextureTarget.Texture2D, screenBufferHandle.Handle);
 
                 GL.TexImage2D(TextureTarget.Texture2D, 0,
-                    _hasGLSrgb ? PixelInternalFormat.Srgb8Alpha8 : PixelInternalFormat.Rgba8, texture.Size.X,
+                    _hasGL.Srgb ? PixelInternalFormat.Srgb8Alpha8 : PixelInternalFormat.Rgba8, texture.Size.X,
                     texture.Size.Y, 0,
                     PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero);
             }

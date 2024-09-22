@@ -161,11 +161,11 @@ namespace Robust.Client.Graphics.Clyde
             // FOV FBO.
             _fovRenderTarget = CreateRenderTarget((FovMapSize, 2),
                 new RenderTargetFormatParameters(
-                    _hasGLFloatFramebuffers ? RenderTargetColorFormat.RG32F : RenderTargetColorFormat.Rgba8, true),
+                    _hasGL.FloatFramebuffers ? RenderTargetColorFormat.RG32F : RenderTargetColorFormat.Rgba8, true),
                 new TextureSampleParameters { WrapMode = TextureWrapMode.Repeat },
                 nameof(_fovRenderTarget));
 
-            if (_hasGLSamplerObjects)
+            if (_hasGL.SamplerObjects)
             {
                 _fovFilterSampler = new GLHandle(GL.GenSampler());
                 GL.SamplerParameter(_fovFilterSampler.Handle, SamplerParameterName.TextureMagFilter, (int)All.Linear);
@@ -298,7 +298,7 @@ namespace Robust.Client.Graphics.Clyde
             CheckGlError();
             GL.ClearDepth(1);
             CheckGlError();
-            if (_hasGLFloatFramebuffers)
+            if (_hasGL.FloatFramebuffers)
             {
                 GL.ClearColor(arbitraryDistanceMax, arbitraryDistanceMax * arbitraryDistanceMax, 0, 1);
             }
@@ -849,7 +849,7 @@ namespace Robust.Client.Graphics.Clyde
 
             // Have to swap to linear filtering on the shadow map here.
             // VSM wants it.
-            if (_hasGLSamplerObjects)
+            if (_hasGL.SamplerObjects)
             {
                 GL.BindSampler(0, _fovFilterSampler.Handle);
                 CheckGlError();
@@ -875,7 +875,7 @@ namespace Robust.Client.Graphics.Clyde
             fovShader.SetUniformMaybe("occludeColor", Color.Black);
             FovSetTransformAndBlit(viewport, eye.Position.Position, fovShader);
 
-            if (_hasGLSamplerObjects)
+            if (_hasGL.SamplerObjects)
             {
                 GL.BindSampler(0, 0);
                 CheckGlError();
@@ -1142,7 +1142,7 @@ namespace Robust.Client.Graphics.Clyde
 
             var lightMapSize = GetLightMapSize(viewport.Size);
             var lightMapSizeQuart = GetLightMapSize(viewport.Size, true);
-            var lightMapColorFormat = _hasGLFloatFramebuffers
+            var lightMapColorFormat = _hasGL.FloatFramebuffers
                 ? RenderTargetColorFormat.R11FG11FB10F
                 : RenderTargetColorFormat.Rgba8;
             var lightMapSampleParameters = new TextureSampleParameters { Filter = true };
@@ -1222,7 +1222,7 @@ namespace Robust.Client.Graphics.Clyde
             // Shadow FBO.
             _shadowRenderTarget = CreateRenderTarget((ShadowMapSize, _maxShadowcastingLights),
                 new RenderTargetFormatParameters(
-                    _hasGLFloatFramebuffers ? RenderTargetColorFormat.RG32F : RenderTargetColorFormat.Rgba8, true),
+                    _hasGL.FloatFramebuffers ? RenderTargetColorFormat.RG32F : RenderTargetColorFormat.Rgba8, true),
                 new TextureSampleParameters { WrapMode = TextureWrapMode.Repeat, Filter = true },
                 nameof(_shadowRenderTarget));
         }

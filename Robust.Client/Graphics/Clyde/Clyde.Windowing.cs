@@ -40,7 +40,7 @@ namespace Robust.Client.Graphics.Clyde
         private WindowMode _windowMode;
         private WindowReg? _currentHoveredWindow;
         private bool _threadWindowBlit;
-        private bool EffectiveThreadWindowBlit => _threadWindowBlit && !_isGLES;
+        private bool EffectiveThreadWindowBlit => _threadWindowBlit && !_hasGL.GLES;
 
         public event Action<TextEnteredEventArgs>? TextEntered;
         public event Action<TextEditingEventArgs>? TextEditing;

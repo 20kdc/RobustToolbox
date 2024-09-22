@@ -407,7 +407,7 @@ namespace Robust.Client.Graphics.Clyde
 
         private Color ConvertClearFromSrgb(Color color)
         {
-            if (!_hasGLSrgb)
+            if (!_hasGL.Srgb)
                 return color;
 
             return Color.FromSrgb(color);
@@ -925,7 +925,7 @@ namespace Robust.Client.Graphics.Clyde
 
         private void FenceRenderTarget(RenderTargetBase rt)
         {
-            if (!_hasGLFenceSync || !rt.MakeGLFence)
+            if (!_hasGL.FenceSync || !rt.MakeGLFence)
                 return;
 
             if (rt.LastGLSync != 0)
