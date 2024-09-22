@@ -11,7 +11,7 @@ namespace Robust.Client.Graphics.Clyde
 
         IConfigurationManager IWindowingHost.Cfg => _cfg;
         ILogManager IWindowingHost.LogManager => _logManager;
-        ClydeGLFeatures IWindowingHost.HasGL => _hasGL;
+        GLWrapper IWindowingHost.HasGL => _hasGL;
 
         private void InitGLContextManager()
         {
@@ -53,11 +53,6 @@ namespace Robust.Client.Graphics.Clyde
             */
 
             _glContext = new PAL.GLContextWindow(this);
-        }
-
-        void IWindowingHost.CheckGlError()
-        {
-            CheckGlError();
         }
 
         void IWindowingHost.SetupDebugCallback()

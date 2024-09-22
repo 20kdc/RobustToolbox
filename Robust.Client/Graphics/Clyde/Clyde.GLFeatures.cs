@@ -6,16 +6,18 @@ using Robust.Shared.Log;
 using Robust.Shared.Utility;
 using ES20 = OpenToolkit.Graphics.ES20;
 using Robust.Shared;
+using System.Runtime.CompilerServices;
+using System;
 
 namespace Robust.Client.Graphics.Clyde
 {
     /// <summary>
     /// This class has three responsibilities:
     /// 1. Enumerating GL version details and features.
-    /// 2. Providing "extension-aware thunks" for cases of different names for the same function (VAOs)
+    /// 2. Providing "extension-aware thunks" for cases of different names for the same function (VAOs).
     /// 3. Providing the universal shader header.
     /// </summary>
-    internal sealed class ClydeGLFeatures
+    internal sealed class GLWrapper
     {
         private readonly ISawmill _sawmill;
 
@@ -63,8 +65,10 @@ namespace Robust.Client.Graphics.Clyde
 
         public bool HasVaryingAttribute => GLES && !GLES3Shaders;
 
+        private bool _checkGLErrors;
+
         /// <summary>Probes the current context for features.</summary>
-        public ClydeGLFeatures(bool gles, bool isES2, bool core, bool hasBrokenWindowSrgb, ILogManager log, IConfigurationManager cfg)
+        public GLWrapper(bool gles, bool isES2, bool core, bool hasBrokenWindowSrgb, ILogManager log, IConfigurationManager cfg)
         {
             Vendor = GL.GetString(StringName.Vendor);
             Renderer = GL.GetString(StringName.Renderer);
@@ -73,7 +77,9 @@ namespace Robust.Client.Graphics.Clyde
             var major = isES2 ? 2 : GL.GetInteger(GetPName.MajorVersion);
             var minor = isES2 ? 0 : GL.GetInteger(GetPName.MinorVersion);
 
-            _sawmill = log.GetSawmill("clyde.ogl.features");
+            _sawmill = log.GetSawmill("clyde.ogl");
+
+            cfg.OnValueChanged(CVars.DisplayOGLCheckErrors, b => _checkGLErrors = b, true);
 
             var overrideVersion = ParseGLOverrideVersion();
 
@@ -399,6 +405,28 @@ namespace Robust.Client.Graphics.Clyde
                 DebugTools.Assert(VertexArrayObjectOes);
 
                 ES20.GL.Oes.DeleteVertexArray(vao);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void CheckGlError([CallerFilePath] string? path = null, [CallerLineNumber] int line = default)
+        {
+            if (!_checkGLErrors)
+            {
+                return;
+            }
+
+            // Separate method to reduce code footprint and improve inlining of this method.
+            CheckGlErrorInternal(path, line);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private void CheckGlErrorInternal(string? path, int line)
+        {
+            var err = GL.GetError();
+            if (err != ErrorCode.NoError)
+            {
+                _sawmill.Error($"OpenGL error: {err} at {path}:{line}\n{Environment.StackTrace}");
             }
         }
     }

@@ -241,7 +241,7 @@ namespace Robust.Client.Graphics.Clyde
             DebugTools.AssertNotNull(_mainWindow);
 
             // GLFeatures must be set by _glContext.
-            var glFeatures = _glContext.GLFeatures;
+            var glFeatures = _glContext.GLWrapper;
             DebugTools.AssertNotNull(glFeatures);
 
             // We're ready, copy over information...

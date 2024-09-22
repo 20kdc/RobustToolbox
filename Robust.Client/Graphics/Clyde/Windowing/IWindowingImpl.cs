@@ -86,7 +86,7 @@ internal interface IWindowingHost {
     Dictionary<int, MonitorHandle> MonitorHandles { get; }
     IConfigurationManager Cfg { get; }
     ILogManager LogManager { get; }
-    ClydeGLFeatures HasGL { get; }
+    GLWrapper HasGL { get; }
 
     ClydeHandle AllocRid();
 
@@ -109,7 +109,6 @@ internal interface IWindowingHost {
     void SendMouseEnterLeave(MouseEnterLeaveEventArgs ev);
     void SendInputModeChanged();
 
-    void CheckGlError();
     void SetupDebugCallback();
     void EnableRenderWindowFlipY(Clyde.RenderWindow rw);
     Clyde.LoadedRenderTarget RtToLoaded(Clyde.RenderTargetBase rt);

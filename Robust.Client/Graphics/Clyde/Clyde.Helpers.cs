@@ -156,23 +156,7 @@ namespace Robust.Client.Graphics.Clyde
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void CheckGlError([CallerFilePath] string? path = null, [CallerLineNumber] int line = default)
         {
-            if (!_checkGLErrors)
-            {
-                return;
-            }
-
-            // Separate method to reduce code footprint and improve inlining of this method.
-            CheckGlErrorInternal(path, line);
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private void CheckGlErrorInternal(string? path, int line)
-        {
-            var err = GL.GetError();
-            if (err != ErrorCode.NoError)
-            {
-                _sawmillOgl.Error($"OpenGL error: {err} at {path}:{line}\n{Environment.StackTrace}");
-            }
+            _hasGL.CheckGlError(path, line);
         }
 
         // Both access and mask are specified because I like prematurely optimizing and this is the most performant.

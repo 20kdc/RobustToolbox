@@ -68,8 +68,6 @@ namespace Robust.Client.Graphics.Clyde
         private int _maxShadowcastingLights = 128;
         private bool _enableSoftShadows = true;
 
-        private bool _checkGLErrors;
-
         private Thread? _gameThread;
 
         private ISawmill _clydeSawmill = default!;
@@ -78,7 +76,7 @@ namespace Robust.Client.Graphics.Clyde
         private IBindingsContext _glBindingsContext = default!;
         private bool _threadWindowApi;
 
-        private ClydeGLFeatures _hasGL = default!;
+        private GLWrapper _hasGL = default!;
 
         public Clyde()
         {
@@ -92,7 +90,6 @@ namespace Robust.Client.Graphics.Clyde
             _clydeSawmill = _logManager.GetSawmill("clyde");
             _sawmillOgl = _logManager.GetSawmill("clyde.ogl");
 
-            _cfg.OnValueChanged(CVars.DisplayOGLCheckErrors, b => _checkGLErrors = b, true);
             _cfg.OnValueChanged(CVars.DisplayVSync, VSyncChanged, true);
             _cfg.OnValueChanged(CVars.DisplayWindowMode, WindowModeChanged, true);
             _cfg.OnValueChanged(CVars.LightResolutionScale, LightResolutionScaleChanged, true);
@@ -166,7 +163,7 @@ namespace Robust.Client.Graphics.Clyde
         {
             // This cvar does not modify the actual GL version requested or anything,
             // it overrides the version we detect to detect GL features.
-            ClydeGLFeatures.RegisterBlockCVars(_cfg);
+            GLWrapper.RegisterBlockCVars(_cfg);
         }
 
         public void RegisterGridEcsEvents()

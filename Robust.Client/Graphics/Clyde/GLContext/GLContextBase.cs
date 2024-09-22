@@ -23,7 +23,7 @@ namespace Robust.Client.Graphics.Clyde
 
             public IBindingsContext BindingsContext { get; }
 
-            public ClydeGLFeatures? GLFeatures { get; protected set; }
+            public GLWrapper? GLWrapper { get; protected set; }
 
             /// <summary>Defaults to auto, but then changes to match whatever the main window was created with.</summary>
             private RendererOpenGLVersion _glVersionToUse;
@@ -57,7 +57,7 @@ namespace Robust.Client.Graphics.Clyde
                 }
 
                 var hasBrokenWindowSrgb = HasBrokenWindowSrgb(glVersion);
-                GLFeatures = new ClydeGLFeatures(isGLES, isGLES2, isCore, hasBrokenWindowSrgb, Clyde.LogManager, Clyde.Cfg);
+                GLWrapper = new GLWrapper(isGLES, isGLES2, isCore, hasBrokenWindowSrgb, Clyde.LogManager, Clyde.Cfg);
             }
 
             protected abstract GLContextSpec? SpecWithOpenGLVersion(RendererOpenGLVersion version);

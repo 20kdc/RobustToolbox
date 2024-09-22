@@ -153,7 +153,7 @@ namespace Robust.Client.Graphics.Clyde
                 if (data.Reg.IsMainWindow)
                 {
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-                    Clyde.CheckGlError();
+                    GLWrapper!.CheckGlError();
                 }
                 else
                 {
@@ -213,18 +213,18 @@ namespace Robust.Client.Graphics.Clyde
                     var rt = window.Reg.RenderTarget;
                     var sync = rt.LastGLSync;
                     GL.WaitSync(sync, WaitSyncFlags.None, unchecked((long) 0xFFFFFFFFFFFFFFFFUL));
-                    Clyde.CheckGlError();
+                    GLWrapper!.CheckGlError();
                 }
 
                 GL.Viewport(0, 0, window.Reg.FramebufferSize.X, window.Reg.FramebufferSize.Y);
-                Clyde.CheckGlError();
+                GLWrapper!.CheckGlError();
 
                 var tex = Clyde.TextureToGLHandle(window.RenderTexture!.Texture.TextureId);
                 GL.BindTexture(TextureTarget.Texture2D, tex.Handle);
-                Clyde.CheckGlError();
+                GLWrapper!.CheckGlError();
 
                 GL.DrawArrays(PrimitiveType.TriangleStrip, 0, 4);
-                Clyde.CheckGlError();
+                GLWrapper!.CheckGlError();
 
                 window.BlitDoneEvent?.Set();
                 Clyde.Windowing!.WindowSwapBuffers(window.Reg);
@@ -261,7 +261,7 @@ namespace Robust.Client.Graphics.Clyde
                     }
                 }
 
-                Clyde.CheckGlError();
+                GLWrapper!.CheckGlError();
 
                 var vao = Clyde.HasGL.GenVertexArray();
                 Clyde.HasGL.BindVertexArray(vao);
@@ -299,7 +299,7 @@ namespace Robust.Client.Graphics.Clyde
 
                 var tex = Clyde.TextureToGLHandle(reg.RenderTexture!.Texture.TextureId);
                 GL.BindTexture(TextureTarget.Texture2D, tex.Handle);
-                Clyde.CheckGlError();
+                GLWrapper!.CheckGlError();
 
                 var loc = GL.GetUniformLocation(program, "tex");
                 GL.Uniform1(loc, 0);

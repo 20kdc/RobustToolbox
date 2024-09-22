@@ -517,7 +517,7 @@ namespace Robust.Client.Graphics.Clyde
                     throw new Exception("eglMakeCurrent failed.");
 
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-                Clyde.CheckGlError();
+                GLWrapper!.CheckGlError();
             }
 
             private static void ThrowIfFailed(string methodName, HRESULT hr)
