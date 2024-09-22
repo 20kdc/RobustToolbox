@@ -114,6 +114,8 @@ namespace Robust.Client
                     deps.Register<IUriOpener, UriOpenerDummy>();
                     break;
                 case GameController.DisplayMode.Clyde:
+                    deps.Register<PAL, PAL>();
+                    deps.Register<Clyde, Clyde>();
                     deps.Register<IClyde, Clyde>();
                     deps.Register<IClipboardManager, Clyde>();
                     deps.Register<IClydeInternal, Clyde>();
