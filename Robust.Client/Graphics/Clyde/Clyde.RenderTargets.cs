@@ -293,7 +293,7 @@ namespace Robust.Client.Graphics.Clyde
             }
         }
 
-        private sealed class LoadedRenderTarget
+        internal sealed class LoadedRenderTarget
         {
             public bool IsWindow;
             public WindowId WindowId;
@@ -317,7 +317,7 @@ namespace Robust.Client.Graphics.Clyde
             public long MemoryPressure;
         }
 
-        private abstract class RenderTargetBase : IRenderTarget
+        internal abstract class RenderTargetBase : IRenderTarget
         {
             protected readonly Clyde Clyde;
             private bool _disposed;
@@ -379,7 +379,7 @@ namespace Robust.Client.Graphics.Clyde
             }
         }
 
-        private sealed class RenderTexture : RenderTargetBase, IRenderTexture
+        internal sealed class RenderTexture : RenderTargetBase, IRenderTexture
         {
             public RenderTexture(Vector2i size, ClydeTexture texture, Clyde clyde, ClydeHandle handle)
                 : base(clyde, handle)
@@ -410,7 +410,7 @@ namespace Robust.Client.Graphics.Clyde
             }
         }
 
-        private sealed class RenderWindow : RenderTargetBase
+        internal sealed class RenderWindow : RenderTargetBase
         {
             public override Vector2i Size => Clyde._renderTargets[Handle].Size;
 

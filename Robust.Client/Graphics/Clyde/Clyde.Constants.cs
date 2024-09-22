@@ -39,7 +39,7 @@ namespace Robust.Client.Graphics.Clyde
             Explode = -1,
         }
 
-        private enum RendererOpenGLVersion : byte
+        internal enum RendererOpenGLVersion : byte
         {
             Auto = default,
             GL33 = 1,

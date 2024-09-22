@@ -72,27 +72,5 @@ namespace Robust.Client.Graphics.Clyde
         }
 
         GLHandle IWindowingHost.TextureToGLHandle(ClydeHandle texture) => _loadedTextures[texture].OpenGLObject;
-        private struct GLContextSpec
-        {
-            public int Major;
-            public int Minor;
-            public GLContextProfile Profile;
-            public GLContextCreationApi CreationApi;
-            // Used by GLContextWindow to figure out which GL version managed to initialize.
-            public RendererOpenGLVersion OpenGLVersion;
-        }
-
-        private enum GLContextProfile
-        {
-            Compatibility,
-            Core,
-            Es
-        }
-
-        private enum GLContextCreationApi
-        {
-            Native,
-            Egl,
-        }
     }
 }
