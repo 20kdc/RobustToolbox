@@ -209,12 +209,6 @@ namespace Robust.Client.Graphics.Clyde
                     succeeded = true;
             }
 
-            // We should have a main window now.
-            DebugTools.AssertNotNull(_mainWindow);
-
-            // _openGLVersion must be set by _glContext.
-            DebugTools.Assert(_openGLVersion != RendererOpenGLVersion.Auto);
-
             if (!succeeded)
             {
                 if (OperatingSystem.IsWindows())
@@ -242,6 +236,17 @@ namespace Robust.Client.Graphics.Clyde
 
                 return false;
             }
+
+            // We should have a main window now.
+            DebugTools.AssertNotNull(_mainWindow);
+
+            // GLFeatures must be set by _glContext.
+            var glFeatures = _glContext.GLFeatures;
+            DebugTools.AssertNotNull(glFeatures);
+
+            // We're ready, copy over information...
+            _hasGL = glFeatures!;
+            _glBindingsContext = _glContext.BindingsContext;
 
             InitOpenGL();
 
@@ -311,7 +316,7 @@ namespace Robust.Client.Graphics.Clyde
             DebugTools.AssertNotNull(_glContext);
             DebugTools.AssertNotNull(_mainWindow);
 
-            var glSpec = _glContext!.SpecWithOpenGLVersion(_openGLVersion);
+            var glSpec = _glContext!.SpecToCreateWindowsWith;
 
             _glContext.BeforeSharedWindowCreateUnbind();
 

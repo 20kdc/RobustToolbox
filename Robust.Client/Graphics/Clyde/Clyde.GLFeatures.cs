@@ -1,11 +1,11 @@
+using System.Globalization;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using OpenToolkit.Graphics.OpenGL4;
 using Robust.Shared.Configuration;
-using Robust.Shared.IoC;
 using Robust.Shared.Log;
 using Robust.Shared.Utility;
 using ES20 = OpenToolkit.Graphics.ES20;
+using Robust.Shared;
 
 namespace Robust.Client.Graphics.Clyde
 {
@@ -17,14 +17,12 @@ namespace Robust.Client.Graphics.Clyde
     /// </summary>
     internal sealed class ClydeGLFeatures
     {
-        [Dependency] private readonly ILogManager _logManager = default!;
-        [Dependency] private readonly IConfigurationManager _cfg = default!;
-
         private readonly ISawmill _sawmill;
 
         public readonly int Major, Minor;
-
         public readonly OpenGLVersion GLVersion;
+        public readonly string Vendor, Renderer, Version;
+        public readonly bool Overriding;
 
         // OpenGL feature detection go here.
 
@@ -65,19 +63,36 @@ namespace Robust.Client.Graphics.Clyde
 
         public bool HasVaryingAttribute => GLES && !GLES3Shaders;
 
-        public ClydeGLFeatures(int major, int minor, bool gles, bool gles2, bool core, bool hasBrokenWindowSrgb, IDependencyCollection deps)
+        /// <summary>Probes the current context for features.</summary>
+        public ClydeGLFeatures(bool gles, bool isES2, bool core, bool hasBrokenWindowSrgb, ILogManager log, IConfigurationManager cfg)
         {
+            Vendor = GL.GetString(StringName.Vendor);
+            Renderer = GL.GetString(StringName.Renderer);
+            Version = GL.GetString(StringName.Version);
+
+            var major = isES2 ? 2 : GL.GetInteger(GetPName.MajorVersion);
+            var minor = isES2 ? 0 : GL.GetInteger(GetPName.MinorVersion);
+
+            _sawmill = log.GetSawmill("clyde.ogl.features");
+
+            var overrideVersion = ParseGLOverrideVersion();
+
+            if (overrideVersion != null)
+            {
+                (major, minor) = overrideVersion.Value;
+                _sawmill.Debug("OVERRIDING detected GL version to: {0}.{1}", major, minor);
+            }
+
+            Overriding = overrideVersion != null;
+
             Major = major;
             Minor = minor;
+
             GLES = gles;
-            GLES2 = gles2;
+            GLES2 = isES2;
             Core = core;
 
-            GLVersion = new OpenGLVersion((byte) major, (byte) minor, gles, core);
-
-            deps.InjectDependencies(this, true);
-
-            _sawmill = _logManager.GetSawmill("clyde.ogl.features");
+            GLVersion = new OpenGLVersion((byte) Major, (byte) Minor, gles, core);
 
             var extensions = GetGLExtensions();
 
@@ -109,7 +124,7 @@ namespace Robust.Client.Graphics.Clyde
             {
                 // OpenGL ES capabilities.
                 CheckGLCap(ref KhrDebug, "khr_debug", (3, 2), "GL_KHR_debug");
-                if (!CompareVersion(3, 2, major, minor))
+                if (!CompareVersion(3, 2, Major, Minor))
                 {
                     // We're ES <3.2, KHR_debug is extension and needs KHR suffixes.
                     KhrDebugESExtension = true;
@@ -132,7 +147,7 @@ namespace Robust.Client.Graphics.Clyde
                 CheckGLCap(ref FloatFramebuffers, "float_framebuffers", (3, 2), "GL_EXT_color_buffer_float");
                 CheckGLCap(ref GLES3Shaders, "gles3_shaders", (3, 0));
 
-                if (major >= 3)
+                if (Major >= 3)
                 {
                     if (hasBrokenWindowSrgb)
                     {
@@ -159,11 +174,11 @@ namespace Robust.Client.Graphics.Clyde
             {
                 var (majorMin, minorMin) = versionMin ?? (int.MaxValue, int.MaxValue);
                 // Check if feature is available from the GL context.
-                cap = CompareVersion(majorMin, minorMin, major, minor) || extensions.Overlaps(exts);
+                cap = CompareVersion(majorMin, minorMin, Major, Minor) || extensions.Overlaps(exts);
 
                 var prev = cap;
                 var cVarName = $"display.ogl_block_{capName}";
-                var block = _cfg.GetCVar<bool>(cVarName);
+                var block = cfg.GetCVar<bool>(cVarName);
 
                 if (block)
                 {
@@ -172,6 +187,31 @@ namespace Robust.Client.Graphics.Clyde
                 }
 
                 _sawmill.Debug($"  {capName}: {cap}");
+            }
+
+            (int major, int minor)? ParseGLOverrideVersion()
+            {
+                var overrideGLVersion = cfg.GetCVar(CVars.DisplayOGLOverrideVersion);
+                if (string.IsNullOrEmpty(overrideGLVersion))
+                {
+                    return null;
+                }
+
+                var split = overrideGLVersion.Split(".");
+                if (split.Length != 2)
+                {
+                    _sawmill.Warning("display.ogl_override_version is in invalid format");
+                    return null;
+                }
+
+                if (!int.TryParse(split[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out var major)
+                    || !int.TryParse(split[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out var minor))
+                {
+                    _sawmill.Warning("display.ogl_override_version is in invalid format");
+                    return null;
+                }
+
+                return (major, minor);
             }
 
             ShaderHeader = GenShaderHeader();

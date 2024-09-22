@@ -76,7 +76,6 @@ namespace Robust.Client.Graphics.Clyde
         private ISawmill _sawmillOgl = default!;
 
         private IBindingsContext _glBindingsContext = default!;
-        private bool _didGLInit;
         private bool _threadWindowApi;
 
         private ClydeGLFeatures _hasGL = default!;
@@ -184,65 +183,29 @@ namespace Robust.Client.Graphics.Clyde
             _entityManager.EventBus.UnsubscribeEvent<GridRemovalEvent>(EventSource.Local, this);
         }
 
-        private void GLInitBindings(bool gles)
-        {
-            _glBindingsContext = _glContext!.BindingsContext;
-            GL.LoadBindings(_glBindingsContext);
-
-            if (gles)
-            {
-                // On GLES we use some OES and KHR functions so make sure to initialize them.
-                OpenToolkit.Graphics.ES20.GL.LoadBindings(_glBindingsContext);
-            }
-        }
-
+        /// <summary>Called by InitMainWindowAndRenderer</summary>
         private void InitOpenGL()
         {
-            if (_didGLInit)
-                return;
-            _didGLInit = true;
+            SetupDebugCallback();
 
-            bool isGLES = OpenGLVersionIsGLES(_openGLVersion);
-            bool isGLES2 = _openGLVersion is RendererOpenGLVersion.GLES2;
-            bool isCore = OpenGLVersionIsCore(_openGLVersion);
-
-            GLInitBindings(isGLES);
-
-            var vendor = GL.GetString(StringName.Vendor);
-            var renderer = GL.GetString(StringName.Renderer);
-            var version = GL.GetString(StringName.Version);
-            // GLES2 doesn't allow you to query major/minor version. Seriously.
-            var major = _openGLVersion == RendererOpenGLVersion.GLES2 ? 2 : GL.GetInteger(GetPName.MajorVersion);
-            var minor = _openGLVersion == RendererOpenGLVersion.GLES2 ? 0 :GL.GetInteger(GetPName.MinorVersion);
+            var vendor = _hasGL.Vendor;
+            var renderer = _hasGL.Renderer;
+            var version = _hasGL.Version;
 
             _sawmillOgl.Debug("OpenGL Vendor: {0}", vendor);
             _sawmillOgl.Debug("OpenGL Renderer: {0}", renderer);
             _sawmillOgl.Debug("OpenGL Version: {0}", version);
 
-            var overrideVersion = ParseGLOverrideVersion();
-
-            if (overrideVersion != null)
-            {
-                (major, minor) = overrideVersion.Value;
-                _sawmillOgl.Debug("OVERRIDING detected GL version to: {0}.{1}", major, minor);
-            }
-
-            var hasBrokenWindowSrgb = _glContext!.HasBrokenWindowSrgb(_openGLVersion);
-            _hasGL = new ClydeGLFeatures(major, minor, isGLES, isGLES2, isCore, hasBrokenWindowSrgb, _deps);
-            SetupDebugCallback();
-
-            var glVersion = new OpenGLVersion((byte) major, (byte) minor, isGLES, isCore);
-
             DebugInfo = new ClydeDebugInfo(
-                glVersion,
+                _hasGL.GLVersion,
                 renderer,
                 vendor,
                 version,
-                overrideVersion != null,
+                _hasGL.Overriding,
                 _windowing!.GetDescription());
 
             GL.Enable(EnableCap.Blend);
-            if (_hasGL.Srgb && !isGLES)
+            if (_hasGL.Srgb && !_hasGL.GLES)
             {
                 GL.Enable(EnableCap.FramebufferSrgb);
                 CheckGlError();
@@ -286,31 +249,6 @@ namespace Robust.Client.Graphics.Clyde
             _sawmillOgl.Debug("Setting up RenderHandle...");
 
             _renderHandle = new RenderHandle(this, _entityManager);
-        }
-
-        private (int major, int minor)? ParseGLOverrideVersion()
-        {
-            var overrideGLVersion = _cfg.GetCVar(CVars.DisplayOGLOverrideVersion);
-            if (string.IsNullOrEmpty(overrideGLVersion))
-            {
-                return null;
-            }
-
-            var split = overrideGLVersion.Split(".");
-            if (split.Length != 2)
-            {
-                _sawmillOgl.Warning("display.ogl_override_version is in invalid format");
-                return null;
-            }
-
-            if (!int.TryParse(split[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out var major)
-                || !int.TryParse(split[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out var minor))
-            {
-                _sawmillOgl.Warning("display.ogl_override_version is in invalid format");
-                return null;
-            }
-
-            return (major, minor);
         }
 
         private unsafe void CreateMiscGLObjects()

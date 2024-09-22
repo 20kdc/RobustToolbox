@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Robust.Client.Input;
 using Robust.Shared.Configuration;
+using Robust.Shared.Log;
 using Robust.Shared.Maths;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -84,6 +85,7 @@ namespace Robust.Client.Graphics.Clyde
             bool EffectiveThreadWindowBlit { get; }
             Dictionary<int, MonitorHandle> MonitorHandles { get; }
             IConfigurationManager Cfg { get; }
+            ILogManager LogManager { get; }
             ClydeGLFeatures HasGL { get; }
 
             ClydeHandle AllocRid();
@@ -107,10 +109,8 @@ namespace Robust.Client.Graphics.Clyde
             void SendMouseEnterLeave(MouseEnterLeaveEventArgs ev);
             void SendInputModeChanged();
 
-            void SetOpenGLVersion(RendererOpenGLVersion version);
             void CheckGlError();
             void SetupDebugCallback();
-            void InitOpenGL();
             void EnableRenderWindowFlipY(RenderWindow rw);
             LoadedRenderTarget RtToLoaded(RenderTargetBase rt);
             GLHandle TextureToGLHandle(ClydeHandle texture);

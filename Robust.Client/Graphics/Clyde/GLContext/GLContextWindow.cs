@@ -56,11 +56,13 @@ namespace Robust.Client.Graphics.Clyde
             // ANGLE does not support main window sRGB.
             public override bool HasBrokenWindowSrgb(RendererOpenGLVersion version) => OpenGLVersionIsGLES(version) && OperatingSystem.IsWindows();
 
+            public override string SawmillCategory => "clyde.ogl.window";
+
             public GLContextWindow(Clyde clyde) : base(clyde)
             {
             }
 
-            public override GLContextSpec? SpecWithOpenGLVersion(RendererOpenGLVersion version)
+            protected override GLContextSpec? SpecWithOpenGLVersion(RendererOpenGLVersion version)
             {
                 return GetVersionSpec(version);
             }
@@ -87,7 +89,8 @@ namespace Robust.Client.Graphics.Clyde
 
                 if (reg.IsMainWindow)
                 {
-                    Clyde.SetOpenGLVersion(spec!.Value.OpenGLVersion);
+                    Clyde.Windowing!.GLMakeContextCurrent(reg);
+                    InitOpenGL(spec!.Value.OpenGLVersion);
                 }
                 else
                 {

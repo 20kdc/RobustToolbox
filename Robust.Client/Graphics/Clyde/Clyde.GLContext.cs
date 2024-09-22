@@ -9,10 +9,8 @@ namespace Robust.Client.Graphics.Clyde
     {
         private GLContextBase? _glContext;
 
-        // Current OpenGL version we managed to initialize with.
-        private RendererOpenGLVersion _openGLVersion;
-
         IConfigurationManager IWindowingHost.Cfg => _cfg;
+        ILogManager IWindowingHost.LogManager => _logManager;
         ClydeGLFeatures IWindowingHost.HasGL => _hasGL;
 
         private void InitGLContextManager()
@@ -29,8 +27,6 @@ namespace Robust.Client.Graphics.Clyde
                     {
                         _sawmillOgl.Debug("Successfully initialized custom ANGLE");
                         _glContext = ctxAngle;
-
-                        ctxAngle.EarlyInit();
                         return;
                     }
                 }
@@ -59,19 +55,9 @@ namespace Robust.Client.Graphics.Clyde
             _glContext = new GLContextWindow(this);
         }
 
-        void IWindowingHost.SetOpenGLVersion(RendererOpenGLVersion version)
-        {
-            _openGLVersion = version;
-        }
-
         void IWindowingHost.CheckGlError()
         {
             CheckGlError();
-        }
-
-        void IWindowingHost.InitOpenGL()
-        {
-            InitOpenGL();
         }
 
         void IWindowingHost.SetupDebugCallback()

@@ -53,14 +53,15 @@ namespace Robust.Client.Graphics.Clyde
 
             public override GLContextSpec[] SpecsToTry => Array.Empty<GLContextSpec>();
             public override bool RequireWindowGL => false;
-            public override bool EarlyContextInit => true;
             public override bool HasBrokenWindowSrgb(RendererOpenGLVersion version) => false;
+
+            public override string SawmillCategory => "clyde.ogl.angle";
 
             public GLContextAngle(Clyde clyde) : base(clyde)
             {
             }
 
-            public override GLContextSpec? SpecWithOpenGLVersion(RendererOpenGLVersion version)
+            protected override GLContextSpec? SpecWithOpenGLVersion(RendererOpenGLVersion version)
             {
                 // Do not initialize GL context on the window directly, we use ANGLE.
                 return null;
@@ -185,7 +186,7 @@ namespace Robust.Client.Graphics.Clyde
                 }
                 catch (Exception e)
                 {
-                    Logger.ErrorS("clyde.ogl.angle", $"Failed to initialize custom ANGLE: {e}");
+                    Sawmill.Debug($"Failed to initialize custom ANGLE: {e}");
                     Shutdown();
                     return false;
                 }
@@ -193,18 +194,10 @@ namespace Robust.Client.Graphics.Clyde
                 return true;
             }
 
-            public void EarlyInit()
-            {
-                // Early GL context init so that feature detection runs before window creation,
-                // and so that we can know _hasGLSrgb in window creation.
-                eglMakeCurrent(_eglDisplay, null, null, _eglContext);
-                Clyde.InitOpenGL();
-            }
-
             private void TryInitializeCore()
             {
                 var extensions = Marshal.PtrToStringUTF8((nint) eglQueryString(null, EGL_EXTENSIONS));
-                Logger.DebugS("clyde.ogl.angle", $"EGL client extensions: {extensions}!");
+                Sawmill.Debug($"EGL client extensions: {extensions}!");
 
                 CreateD3D11Device();
                 CreateEglContext();
@@ -229,10 +222,10 @@ namespace Robust.Client.Graphics.Clyde
                 var version = Marshal.PtrToStringUTF8((nint) eglQueryString(_eglDisplay, EGL_VERSION));
                 var extensions = Marshal.PtrToStringUTF8((nint) eglQueryString(_eglDisplay, EGL_EXTENSIONS));
 
-                Logger.DebugS("clyde.ogl.angle", "EGL initialized!");
-                Logger.DebugS("clyde.ogl.angle", $"EGL vendor: {vendor}!");
-                Logger.DebugS("clyde.ogl.angle", $"EGL version: {version}!");
-                Logger.DebugS("clyde.ogl.angle", $"EGL extensions: {extensions}!");
+                Sawmill.Debug("EGL initialized!");
+                Sawmill.Debug($"EGL vendor: {vendor}!");
+                Sawmill.Debug($"EGL version: {version}!");
+                Sawmill.Debug($"EGL extensions: {extensions}!");
 
                 if (eglBindAPI(EGL_OPENGL_ES_API) != EGL_TRUE)
                     throw new Exception("eglBindAPI failed.");
@@ -259,11 +252,11 @@ namespace Robust.Client.Graphics.Clyde
                 if (numConfigs == 0)
                     throw new Exception("No compatible EGL configurations returned!");
 
-                Logger.DebugS("clyde.ogl.angle", $"{numConfigs} EGL configs possible!");
+                Sawmill.Debug($"{numConfigs} EGL configs possible!");
 
                 for (var i = 0; i < numConfigs; i++)
                 {
-                    Logger.DebugS("clyde.ogl.angle", DumpEglConfig(_eglDisplay, configs[i]));
+                    Sawmill.Debug(DumpEglConfig(_eglDisplay, configs[i]));
                 }
 
                 _eglConfig = configs[0];
@@ -283,9 +276,13 @@ namespace Robust.Client.Graphics.Clyde
                 if (_eglContext == (void*) EGL_NO_CONTEXT)
                     throw new Exception("eglCreateContext failed!");
 
-                Logger.DebugS("clyde.ogl.angle", "EGL context created!");
+                Sawmill.Debug("EGL context created!");
 
-                Clyde.SetOpenGLVersion(_es3 ? RendererOpenGLVersion.GLES3 : RendererOpenGLVersion.GLES2);
+                // Early GL context init so that feature detection runs before window creation,
+                // and so that we can know _hasGLSrgb in window creation.
+                eglMakeCurrent(_eglDisplay, null, null, _eglContext);
+
+                InitOpenGL(_es3 ? RendererOpenGLVersion.GLES3 : RendererOpenGLVersion.GLES2);
             }
 
             private void CreateD3D11Device()
@@ -308,11 +305,10 @@ namespace Robust.Client.Graphics.Clyde
 
                         if (_adapter == null)
                         {
-                            Logger.WarningS("clyde.ogl.angle",
-                                $"Unable to find display adapter with requested name: {adapterName}");
+                            Sawmill.Debug($"Unable to find display adapter with requested name: {adapterName}");
                         }
 
-                        Logger.DebugS("clyde.ogl.angle", $"Found display adapter with name: {adapterName}");
+                        Sawmill.Debug($"Found display adapter with name: {adapterName}");
                     }
 
 #pragma warning disable CA1416
@@ -412,9 +408,9 @@ namespace Robust.Client.Graphics.Clyde
 
                     var descName = ((ReadOnlySpan<char>)desc.Description).TrimEnd('\0');
 
-                    Logger.DebugS("clyde.ogl.angle", "Successfully created D3D11 device!");
-                    Logger.DebugS("clyde.ogl.angle", $"D3D11 Device Adapter: {descName.ToString()}");
-                    Logger.DebugS("clyde.ogl.angle", $"D3D11 Device FL: {_deviceFl}");
+                    Sawmill.Debug("Successfully created D3D11 device!");
+                    Sawmill.Debug($"D3D11 Device Adapter: {descName.ToString()}");
+                    Sawmill.Debug($"D3D11 Device FL: {_deviceFl}");
 
                     if (_deviceFl == D3D_FEATURE_LEVEL_9_1)
                     {
