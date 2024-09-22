@@ -15,6 +15,9 @@ internal partial class Clyde
 {
     private sealed partial class Sdl2WindowingImpl
     {
+        WindowReg? _currentHoveredWindow = null;
+        WindowReg? IWindowingImpl.CurrentHoveredWindow => _currentHoveredWindow;
+
         public void ProcessEvents(bool single = false)
         {
             while (_eventReader.TryRead(out var ev))
@@ -92,7 +95,7 @@ internal partial class Clyde
         private void ProcessEventQuit()
         {
             // Interpret quit as closing of the main window.
-            var window = _clyde._mainWindow!;
+            var window = _clyde.MainWindow!;
             _clyde.SendCloseWindow(window, new WindowRequestClosedEventArgs(window.Handle));
         }
 
@@ -108,12 +111,12 @@ internal partial class Clyde
                     _clyde.SendCloseWindow(window, new WindowRequestClosedEventArgs(window.Handle));
                     break;
                 case SDL_WINDOWEVENT_ENTER:
-                    _clyde._currentHoveredWindow = window;
+                    _currentHoveredWindow = window;
                     _clyde.SendMouseEnterLeave(new MouseEnterLeaveEventArgs(window.Handle, true));
                     break;
                 case SDL_WINDOWEVENT_LEAVE:
-                    if (_clyde._currentHoveredWindow == window)
-                        _clyde._currentHoveredWindow = null;
+                    if (_currentHoveredWindow == window)
+                        _currentHoveredWindow = null;
 
                     _clyde.SendMouseEnterLeave(new MouseEnterLeaveEventArgs(window.Handle, false));
                     break;
@@ -170,7 +173,7 @@ internal partial class Clyde
             var delta = newPos - windowReg.LastMousePos;
             windowReg.LastMousePos = newPos;
 
-            _clyde._currentHoveredWindow = windowReg;
+            _currentHoveredWindow = windowReg;
 
             _clyde.SendMouseMove(new MouseMoveEventArgs(delta, new ScreenCoordinates(newPos, windowReg.Id)));
         }

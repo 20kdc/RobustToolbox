@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Robust.Client.Input;
 using Robust.Shared.Maths;
@@ -40,6 +41,7 @@ namespace Robust.Client.Graphics.Clyde
             void WindowSetTitle(WindowReg window, string title);
             void WindowSetMonitor(WindowReg window, IClydeMonitor monitor);
             void WindowSetVisible(WindowReg window, bool visible);
+            void WindowSetMode(WindowReg window, WindowMode mode);
             void WindowRequestAttention(WindowReg window);
             void WindowSwapBuffers(WindowReg window);
             uint? WindowGetX11Id(WindowReg window);
@@ -53,8 +55,6 @@ namespace Robust.Client.Graphics.Clyde
             Task<string> ClipboardGetText(WindowReg mainWindow);
             void ClipboardSetText(WindowReg mainWindow, string text);
 
-            void UpdateMainWindowMode();
-
             // OpenGL-related stuff.
             // Note: you should probably go through GLContextBase instead, which calls these functions.
             void GLMakeContextCurrent(WindowReg? reg);
@@ -64,11 +64,43 @@ namespace Robust.Client.Graphics.Clyde
             // Misc
             void RunOnWindowThread(Action a);
 
+            WindowReg? CurrentHoveredWindow { get; }
+
             // IME
             void TextInputSetRect(UIBox2i rect);
             void TextInputStart();
             void TextInputStop();
             string GetDescription();
+        }
+
+        /// Interface that windowing implementations expect to receive. Used to control surface area expected of Clyde.
+        private interface IWindowingHost {
+            IWindowingImpl? Windowing { get; }
+            WindowReg? MainWindow { get; }
+            List<WindowReg> Windows { get; }
+            bool ThreadWindowApi { get; }
+            Dictionary<int, MonitorHandle> MonitorHandles { get; }
+
+            ClydeHandle AllocRid();
+
+            IEnumerable<Image<Rgba32>> LoadWindowIcons();
+
+            void DoDestroyWindow(WindowReg windowReg);
+            void SetPrimaryMonitorId(int id);
+            void UpdateVSync();
+
+            void SendKeyUp(KeyEventArgs ev);
+            void SendKeyDown(KeyEventArgs ev);
+            void SendScroll(MouseWheelEventArgs ev);
+            void SendCloseWindow(WindowReg windowReg, WindowRequestClosedEventArgs ev);
+            void SendWindowResized(WindowReg reg, Vector2i oldSize);
+            void SendWindowContentScaleChanged(WindowContentScaleEventArgs ev);
+            void SendWindowFocus(WindowFocusedEventArgs ev);
+            void SendText(TextEnteredEventArgs ev);
+            void SendTextEditing(TextEditingEventArgs ev);
+            void SendMouseMove(MouseMoveEventArgs ev);
+            void SendMouseEnterLeave(MouseEnterLeaveEventArgs ev);
+            void SendInputModeChanged();
         }
     }
 }

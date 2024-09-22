@@ -11,6 +11,9 @@ namespace Robust.Client.Graphics.Clyde
     {
         private partial class GlfwWindowingImpl
         {
+            WindowReg? _currentHoveredWindow = null;
+            WindowReg? IWindowingImpl.CurrentHoveredWindow => _currentHoveredWindow;
+
             public void ProcessEvents(bool single=false)
             {
                 while (_eventReader.TryRead(out var ev))
@@ -112,7 +115,7 @@ namespace Robust.Client.Graphics.Clyde
                 var delta = newPos - windowReg.LastMousePos;
                 windowReg.LastMousePos = newPos;
 
-                _clyde._currentHoveredWindow = windowReg;
+                _currentHoveredWindow = windowReg;
 
                 _clyde.SendMouseMove(new MouseMoveEventArgs(delta, new ScreenCoordinates(newPos, windowReg.Id)));
             }
@@ -125,11 +128,11 @@ namespace Robust.Client.Graphics.Clyde
 
                 if (ev.Entered)
                 {
-                    _clyde._currentHoveredWindow = windowReg;
+                    _currentHoveredWindow = windowReg;
                 }
-                else if (_clyde._currentHoveredWindow == windowReg)
+                else if (_currentHoveredWindow == windowReg)
                 {
-                    _clyde._currentHoveredWindow = null;
+                    _currentHoveredWindow = null;
                 }
 
                 _clyde.SendMouseEnterLeave(new MouseEnterLeaveEventArgs(windowReg.Handle, ev.Entered));
@@ -263,7 +266,7 @@ namespace Robust.Client.Graphics.Clyde
             {
                 // As far as I can tell, sometimes entering fullscreen just disables vsync.
                 // Hilarious!
-                _clyde._glContext?.UpdateVSync();
+                _clyde.UpdateVSync();
             }
         }
     }

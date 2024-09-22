@@ -8,7 +8,7 @@ namespace Robust.Client.Graphics.Clyde
         // Also start these at 1 so 0 (uninitialized) is caught easily.
         private long _nextRid = 1;
 
-        private ClydeHandle AllocRid()
+        public ClydeHandle AllocRid()
         {
             return new(_nextRid++);
         }

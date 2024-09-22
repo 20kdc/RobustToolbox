@@ -17,7 +17,7 @@ namespace Robust.Client.Graphics.Clyde
             [Dependency] private readonly IConfigurationManager _cfg = default!;
             [Dependency] private readonly IInputManager _inputManager = default!;
 
-            private readonly Clyde _clyde;
+            private readonly IWindowingHost _clyde;
 
             private readonly ISawmill _sawmill;
             private readonly ISawmill _sawmillGlfw;
@@ -29,7 +29,7 @@ namespace Robust.Client.Graphics.Clyde
             // This will ensure some level of consistency between the backends.
             private bool _textInputActive;
 
-            public GlfwWindowingImpl(Clyde clyde, IDependencyCollection deps)
+            public GlfwWindowingImpl(IWindowingHost clyde, IDependencyCollection deps)
             {
                 _clyde = clyde;
                 deps.InjectDependencies(this, true);

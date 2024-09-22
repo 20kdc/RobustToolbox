@@ -34,7 +34,7 @@ namespace Robust.Client.Graphics.Clyde
 
                 var primaryMonitor = GLFW.GetPrimaryMonitor();
                 var up = GLFW.GetMonitorUserPointer(primaryMonitor);
-                _clyde._primaryMonitorId = (int) up;
+                _clyde.SetPrimaryMonitorId((int) up);
 
                 ProcessEvents();
             }
@@ -85,7 +85,7 @@ namespace Robust.Client.Graphics.Clyde
                     ev.CurrentMode.RefreshRate,
                     ev.AllModes);
 
-                _clyde._monitorHandles.Add(ev.Id, impl);
+                _clyde.MonitorHandles.Add(ev.Id, impl);
                 _monitors[ev.Id] = new GlfwMonitorReg
                 {
                     Id = ev.Id,
@@ -114,7 +114,7 @@ namespace Robust.Client.Graphics.Clyde
             private void ProcessEventDestroyMonitor(EventMonitorDestroy ev)
             {
                 _monitors.Remove(ev.Id);
-                _clyde._monitorHandles.Remove(ev.Id);
+                _clyde.MonitorHandles.Remove(ev.Id);
             }
 
             private sealed class GlfwMonitorReg : MonitorReg

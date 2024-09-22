@@ -173,7 +173,7 @@ namespace Robust.Client.Graphics.Clyde
 
             private void SendCmd(CmdBase cmd)
             {
-                if (_clyde._threadWindowApi)
+                if (_clyde.ThreadWindowApi)
                 {
                     _cmdWriter.TryWrite(cmd);
 
@@ -189,7 +189,7 @@ namespace Robust.Client.Graphics.Clyde
 
             private void SendEvent(EventBase ev)
             {
-                if (_clyde._threadWindowApi)
+                if (_clyde.ThreadWindowApi)
                 {
                     var task = _eventWriter.WriteAsync(ev);
 

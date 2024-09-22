@@ -131,13 +131,10 @@ namespace Robust.Client.Graphics.Clyde
                 GLFW.SwapBuffers(reg.GlfwWindow);
             }
 
-            public void UpdateMainWindowMode()
+            public void WindowSetMode(WindowReg wr, WindowMode mode)
             {
-                if (_clyde._mainWindow == null)
-                    return;
-
-                var win = (GlfwWindowReg) _clyde._mainWindow;
-                if (_clyde._windowMode == WindowMode.Fullscreen)
+                var win = (GlfwWindowReg) wr;
+                if (mode == WindowMode.Fullscreen)
                 {
                     win.PrevWindowSize = win.WindowSize;
                     win.PrevWindowPos = win.WindowPos;
@@ -633,7 +630,7 @@ namespace Robust.Client.Graphics.Clyde
 
             private WindowReg? FindWindow(Window* window)
             {
-                foreach (var windowReg in _clyde._windows)
+                foreach (var windowReg in _clyde.Windows)
                 {
                     var glfwReg = (GlfwWindowReg) windowReg;
                     if (glfwReg.GlfwWindow == window)

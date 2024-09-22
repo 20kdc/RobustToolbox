@@ -169,7 +169,7 @@ internal partial class Clyde
 
         private unsafe void SendCmd(CmdBase cmd)
         {
-            if (_clyde._threadWindowApi)
+            if (_clyde.ThreadWindowApi)
             {
                 _cmdWriter.TryWrite(cmd);
 
@@ -191,7 +191,7 @@ internal partial class Clyde
 
         private void SendEvent(EventBase ev)
         {
-            if (_clyde._threadWindowApi)
+            if (_clyde.ThreadWindowApi)
             {
                 var task = _eventWriter.WriteAsync(ev);
 

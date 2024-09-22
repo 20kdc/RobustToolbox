@@ -19,16 +19,22 @@ using GL = OpenToolkit.Graphics.OpenGL4.GL;
 
 namespace Robust.Client.Graphics.Clyde
 {
-    internal partial class  Clyde
+    internal partial class Clyde
     {
         private readonly List<WindowReg> _windows = new();
+        List<WindowReg> IWindowingHost.Windows => _windows;
         private readonly List<WindowHandle> _windowHandles = new();
         private readonly Dictionary<int, MonitorHandle> _monitorHandles = new();
+        Dictionary<int, MonitorHandle> IWindowingHost.MonitorHandles => _monitorHandles;
 
         private int _primaryMonitorId;
         private WindowReg? _mainWindow;
+        WindowReg? IWindowingHost.MainWindow => _mainWindow;
 
         private IWindowingImpl? _windowing;
+        IWindowingImpl? IWindowingHost.Windowing => _windowing;
+        bool IWindowingHost.ThreadWindowApi => _threadWindowApi;
+
 #pragma warning disable 414
         // Keeping this for if/when we ever get a new renderer.
         private Renderer _chosenRenderer;
@@ -38,7 +44,6 @@ namespace Robust.Client.Graphics.Clyde
         private Thread? _windowingThread;
         private bool _vSync;
         private WindowMode _windowMode;
-        private WindowReg? _currentHoveredWindow;
         private bool _threadWindowBlit;
         private bool EffectiveThreadWindowBlit => _threadWindowBlit && !_hasGL.GLES;
 
@@ -75,7 +80,7 @@ namespace Robust.Client.Graphics.Clyde
         {
             get
             {
-                var window = _currentHoveredWindow;
+                var window = _windowing!.CurrentHoveredWindow;
                 if (window == null)
                     return default;
 
@@ -252,7 +257,7 @@ namespace Robust.Client.Graphics.Clyde
             return true;
         }
 
-        private IEnumerable<Image<Rgba32>> LoadWindowIcons()
+        IEnumerable<Image<Rgba32>> IWindowingHost.LoadWindowIcons()
         {
             if (OperatingSystem.IsMacOS() || _windowIconPath == null)
             {
@@ -365,6 +370,21 @@ namespace Robust.Client.Graphics.Clyde
             return (reg, error);
         }
 
+        void IWindowingHost.SetPrimaryMonitorId(int id)
+        {
+            _primaryMonitorId = id;
+        }
+
+        void IWindowingHost.UpdateVSync()
+        {
+            _glContext?.UpdateVSync();
+        }
+
+        void IWindowingHost.DoDestroyWindow(WindowReg reg)
+        {
+            DoDestroyWindow(reg);
+        }
+
         private void DoDestroyWindow(WindowReg reg)
         {
             if (reg.IsMainWindow)
@@ -406,7 +426,8 @@ namespace Robust.Client.Graphics.Clyde
         private void WindowModeChanged(int mode)
         {
             _windowMode = (WindowMode) mode;
-            _windowing?.UpdateMainWindowMode();
+            if (_mainWindow != null)
+                _windowing?.WindowSetMode(_mainWindow, _windowMode);
         }
 
         Task<string> IClipboardManager.GetText()
@@ -445,13 +466,6 @@ namespace Robust.Client.Graphics.Clyde
             _windowing!.CursorSet(_mainWindow!, cursor);
         }
 
-
-        private void SetWindowVisible(WindowReg reg, bool visible)
-        {
-            DebugTools.AssertNotNull(_windowing);
-
-            _windowing!.WindowSetVisible(reg, visible);
-        }
 
         public void RunOnWindowThread(Action a)
         {
@@ -517,13 +531,13 @@ namespace Robust.Client.Graphics.Clyde
             // while compiling the Closed event.
             // VERY funny.
 
-            private readonly Clyde _clyde;
+            private readonly IWindowingHost _clyde;
             public readonly WindowReg Reg;
 
             public bool IsDisposed => Reg.IsDisposed;
             public WindowId Id => Reg.Id;
 
-            public WindowHandle(Clyde clyde, WindowReg reg)
+            public WindowHandle(IWindowingHost clyde, WindowReg reg)
             {
                 _clyde = clyde;
                 Reg = reg;
@@ -541,7 +555,7 @@ namespace Robust.Client.Graphics.Clyde
             public string Title
             {
                 get => Reg.Title;
-                set => _clyde._windowing!.WindowSetTitle(Reg, value);
+                set => _clyde.Windowing!.WindowSetTitle(Reg, value);
             }
 
             public bool IsFocused => Reg.IsFocused;
@@ -550,7 +564,7 @@ namespace Robust.Client.Graphics.Clyde
             public bool IsVisible
             {
                 get => Reg.IsVisible;
-                set => _clyde.SetWindowVisible(Reg, value);
+                set => _clyde.Windowing!.WindowSetVisible(Reg, value);
             }
 
             public Vector2 ContentScale => Reg.WindowScale;
@@ -579,7 +593,7 @@ namespace Robust.Client.Graphics.Clyde
                 remove => Reg.Resized -= value;
             }
 
-            public nint? WindowsHWnd => _clyde._windowing!.WindowGetWin32Window(Reg);
+            public nint? WindowsHWnd => _clyde.Windowing!.WindowGetWin32Window(Reg);
         }
 
         private sealed class MonitorHandle : IClydeMonitor

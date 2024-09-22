@@ -299,14 +299,9 @@ internal partial class Clyde
             SendCmd(new CmdWinDestroy(reg.Sdl2Window, window.Owner != null));
         }
 
-        public void UpdateMainWindowMode()
+        public void WindowSetMode(WindowReg win, WindowMode mode)
         {
-            if (_clyde._mainWindow == null)
-                return;
-
-            var win = (Sdl2WindowReg) _clyde._mainWindow;
-
-            SendCmd(new CmdWinWinSetMode(win.Sdl2Window, _clyde._windowMode));
+            SendCmd(new CmdWinWinSetMode(((Sdl2WindowReg) win).Sdl2Window, mode));
         }
 
         private static void WinThreadWinSetMode(CmdWinWinSetMode cmd)
@@ -545,7 +540,7 @@ internal partial class Clyde
 
         private WindowReg? FindWindow(uint windowId)
         {
-            foreach (var windowReg in _clyde._windows)
+            foreach (var windowReg in _clyde.Windows)
             {
                 var glfwReg = (Sdl2WindowReg) windowReg;
                 if (glfwReg.WindowId == windowId)

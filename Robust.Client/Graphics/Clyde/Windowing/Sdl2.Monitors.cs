@@ -47,7 +47,7 @@ internal partial class Clyde
             SendEvent(new EventMonitorSetup(id, name, ConvertVideoMode(curMode), modes));
 
             if (displayIdx == 0)
-                _clyde._primaryMonitorId = id;
+                _clyde.SetPrimaryMonitorId(id);
         }
 
         private static VideoMode ConvertVideoMode(in SDL.SDL_DisplayMode mode)
@@ -73,7 +73,7 @@ internal partial class Clyde
                 ev.CurrentMode.RefreshRate,
                 ev.AllModes);
 
-            _clyde._monitorHandles.Add(ev.Id, impl);
+            _clyde.MonitorHandles.Add(ev.Id, impl);
             _monitors[ev.Id] = new Sdl2MonitorReg
             {
                 Id = ev.Id,
@@ -116,7 +116,7 @@ internal partial class Clyde
         private void ProcessEventDestroyMonitor(EventMonitorDestroy ev)
         {
             _monitors.Remove(ev.Id);
-            _clyde._monitorHandles.Remove(ev.Id);
+            _clyde.MonitorHandles.Remove(ev.Id);
         }
 
         private sealed class Sdl2MonitorReg : MonitorReg

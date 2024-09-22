@@ -87,27 +87,27 @@ namespace Robust.Client.Graphics.Clyde
             }
         }
 
-        private void SendKeyUp(KeyEventArgs ev)
+        void IWindowingHost.SendKeyUp(KeyEventArgs ev)
         {
             _eventDispatchQueue.Enqueue(new DEventKeyUp(ev));
         }
 
-        private void SendKeyDown(KeyEventArgs ev)
+        void IWindowingHost.SendKeyDown(KeyEventArgs ev)
         {
             _eventDispatchQueue.Enqueue(new DEventKeyDown(ev));
         }
 
-        private void SendScroll(MouseWheelEventArgs ev)
+        void IWindowingHost.SendScroll(MouseWheelEventArgs ev)
         {
             _eventDispatchQueue.Enqueue(new DEventScroll(ev));
         }
 
-        private void SendCloseWindow(WindowReg windowReg, WindowRequestClosedEventArgs ev)
+        void IWindowingHost.SendCloseWindow(WindowReg windowReg, WindowRequestClosedEventArgs ev)
         {
             _eventDispatchQueue.Enqueue(new DEventWindowClosed(windowReg, ev));
         }
 
-        private void SendWindowResized(WindowReg reg, Vector2i oldSize)
+        void IWindowingHost.SendWindowResized(WindowReg reg, Vector2i oldSize)
         {
             var loaded = RtToLoaded(reg.RenderTarget);
             loaded.Size = reg.FramebufferSize;
@@ -122,37 +122,37 @@ namespace Robust.Client.Graphics.Clyde
             _eventDispatchQueue.Enqueue(new DEventWindowResized(reg, eventArgs));
         }
 
-        private void SendWindowContentScaleChanged(WindowContentScaleEventArgs ev)
+        void IWindowingHost.SendWindowContentScaleChanged(WindowContentScaleEventArgs ev)
         {
             _eventDispatchQueue.Enqueue(new DEventWindowContentScaleChanged(ev));
         }
 
-        private void SendWindowFocus(WindowFocusedEventArgs ev)
+        void IWindowingHost.SendWindowFocus(WindowFocusedEventArgs ev)
         {
             _eventDispatchQueue.Enqueue(new DEventWindowFocus(ev));
         }
 
-        private void SendText(TextEnteredEventArgs ev)
+        void IWindowingHost.SendText(TextEnteredEventArgs ev)
         {
             _eventDispatchQueue.Enqueue(new DEventText(ev));
         }
 
-        private void SendTextEditing(TextEditingEventArgs ev)
+        void IWindowingHost.SendTextEditing(TextEditingEventArgs ev)
         {
             _eventDispatchQueue.Enqueue(new DEventTextEditing(ev));
         }
 
-        private void SendMouseMove(MouseMoveEventArgs ev)
+        void IWindowingHost.SendMouseMove(MouseMoveEventArgs ev)
         {
             _eventDispatchQueue.Enqueue(new DEventMouseMove(ev));
         }
 
-        private void SendMouseEnterLeave(MouseEnterLeaveEventArgs ev)
+        void IWindowingHost.SendMouseEnterLeave(MouseEnterLeaveEventArgs ev)
         {
             _eventDispatchQueue.Enqueue(new DEventMouseEnterLeave(ev));
         }
 
-        private void SendInputModeChanged()
+        void IWindowingHost.SendInputModeChanged()
         {
             _eventDispatchQueue.Enqueue(new DEventInputModeChanged());
         }

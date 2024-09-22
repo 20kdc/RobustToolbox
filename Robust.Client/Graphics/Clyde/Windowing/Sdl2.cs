@@ -17,13 +17,13 @@ internal partial class Clyde
         [Dependency] private readonly ILogManager _logManager = default!;
         [Dependency] private readonly IConfigurationManager _cfg = default!;
 
-        private readonly Clyde _clyde;
+        private readonly IWindowingHost _clyde;
         private GCHandle _selfGCHandle;
 
         private readonly ISawmill _sawmill;
         private readonly ISawmill _sawmillSdl2;
 
-        public Sdl2WindowingImpl(Clyde clyde, IDependencyCollection deps)
+        public Sdl2WindowingImpl(IWindowingHost clyde, IDependencyCollection deps)
         {
             _clyde = clyde;
             deps.InjectDependencies(this, true);
