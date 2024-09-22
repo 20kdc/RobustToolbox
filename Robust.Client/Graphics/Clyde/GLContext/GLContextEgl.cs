@@ -10,12 +10,12 @@ using static Robust.Client.Graphics.Clyde.Egl;
 
 namespace Robust.Client.Graphics.Clyde
 {
-    internal partial class Clyde
+    internal sealed partial class PAL
     {
         /// <summary>
         /// Context manager that uses EGL directly so that we get better control over multi-window management.
         /// </summary>
-        private sealed unsafe class GLContextEgl : GLContextBase
+        internal sealed unsafe class GLContextEgl : GLContextBase
         {
             // TODO: Currently this class uses ANGLE and Windows-specific initialization code.
             // It could be made more general purpose later if anybody ever gets adventurous with like, Wayland.
@@ -26,7 +26,7 @@ namespace Robust.Client.Graphics.Clyde
             private void* _eglContext;
             private void* _eglConfig;
 
-            public override bool HasBrokenWindowSrgb(RendererOpenGLVersion version) => OpenGLVersionIsGLES(version) && OperatingSystem.IsWindows();
+            public override bool HasBrokenWindowSrgb(RendererOpenGLVersion version) => RendererOpenGLVersionUtils.IsGLES(version) && OperatingSystem.IsWindows();
 
             public override string SawmillCategory => "clyde.ogl.egl";
 

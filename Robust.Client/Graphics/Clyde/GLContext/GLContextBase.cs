@@ -9,12 +9,12 @@ using Robust.Shared.Maths;
 
 namespace Robust.Client.Graphics.Clyde
 {
-    internal partial class Clyde
+    internal sealed partial class PAL
     {
         /// <summary>
         /// Manages OpenGL contexts for the windowing system.
         /// </summary>
-        private abstract class GLContextBase
+        internal abstract class GLContextBase
         {
             protected readonly IWindowingHost Clyde;
             protected readonly ISawmill Sawmill;
@@ -43,9 +43,9 @@ namespace Robust.Client.Graphics.Clyde
             {
                 _glVersionToUse = glVersion;
 
-                bool isGLES = OpenGLVersionIsGLES(glVersion);
+                bool isGLES = RendererOpenGLVersionUtils.IsGLES(glVersion);
                 bool isGLES2 = glVersion is RendererOpenGLVersion.GLES2;
-                bool isCore = OpenGLVersionIsCore(glVersion);
+                bool isCore = RendererOpenGLVersionUtils.IsCore(glVersion);
 
                 // Initialize bindings...
                 GL.LoadBindings(BindingsContext);

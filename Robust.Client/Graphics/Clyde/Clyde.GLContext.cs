@@ -7,7 +7,7 @@ namespace Robust.Client.Graphics.Clyde
 {
     internal sealed partial class Clyde
     {
-        private GLContextBase? _glContext;
+        private PAL.GLContextBase? _glContext;
 
         IConfigurationManager IWindowingHost.Cfg => _cfg;
         ILogManager IWindowingHost.LogManager => _logManager;
@@ -21,7 +21,7 @@ namespace Robust.Client.Graphics.Clyde
                 if (_cfg.GetCVar(CVars.DisplayAngleCustomSwapChain))
                 {
                     _sawmillOgl.Debug("Trying custom swap chain ANGLE.");
-                    var ctxAngle = new GLContextAngle(this);
+                    var ctxAngle = new PAL.GLContextAngle(this);
 
                     if (ctxAngle.TryInitialize())
                     {
@@ -34,7 +34,7 @@ namespace Robust.Client.Graphics.Clyde
                 if (_cfg.GetCVar(CVars.DisplayEgl))
                 {
                     _sawmillOgl.Debug("Trying EGL");
-                    var ctxEgl = new GLContextEgl(this);
+                    var ctxEgl = new PAL.GLContextEgl(this);
                     ctxEgl.InitializePublic();
                     _glContext = ctxEgl;
                     return;
@@ -45,14 +45,14 @@ namespace Robust.Client.Graphics.Clyde
             if (OperatingSystem.IsLinux() && _cfg.GetCVar(CVars.DisplayEgl))
             {
                 _sawmillOgl.Debug("Trying EGL");
-                var ctxEgl = new GLContextEgl(this);
+                var ctxEgl = new PAL.GLContextEgl(this);
                 ctxEgl.InitializePublic();
                 _glContext = ctxEgl;
                 return;
             }
             */
 
-            _glContext = new GLContextWindow(this);
+            _glContext = new PAL.GLContextWindow(this);
         }
 
         void IWindowingHost.CheckGlError()

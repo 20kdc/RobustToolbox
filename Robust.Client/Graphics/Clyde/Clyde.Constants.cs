@@ -38,19 +38,5 @@ namespace Robust.Client.Graphics.Clyde
             OpenGL = 1,
             Explode = -1,
         }
-
-        internal enum RendererOpenGLVersion : byte
-        {
-            Auto = default,
-            GL33 = 1,
-            GL31 = 2,
-            GLES3 = 3,
-            GLES2 = 4,
-        }
-
-        private static bool OpenGLVersionIsGLES(RendererOpenGLVersion version) => version is RendererOpenGLVersion.GLES2 or RendererOpenGLVersion.GLES3;
-
-        private static bool OpenGLVersionIsCore(RendererOpenGLVersion version) => version is RendererOpenGLVersion.GL33;
-
     }
 }

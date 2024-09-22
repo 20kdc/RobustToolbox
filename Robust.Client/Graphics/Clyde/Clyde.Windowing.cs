@@ -499,10 +499,5 @@ namespace Robust.Client.Graphics.Clyde
 
             _windowing!.TextInputStop();
         }
-
-        private abstract class MonitorReg
-        {
-            public MonitorHandle Handle = default!;
-        }
     }
 }

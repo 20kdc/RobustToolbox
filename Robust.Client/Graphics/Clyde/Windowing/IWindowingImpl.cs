@@ -218,6 +218,11 @@ internal sealed class WindowHandle : IClydeWindowInternal
     public nint? WindowsHWnd => _clyde.Windowing!.WindowGetWin32Window(Reg);
 }
 
+internal abstract class MonitorReg
+{
+    public MonitorHandle Handle = default!;
+}
+
 internal sealed class MonitorHandle : IClydeMonitor
 {
     public MonitorHandle(int id, string name, Vector2i size, int refreshRate, VideoMode[] videoModes)
@@ -243,7 +248,7 @@ internal struct GLContextSpec
     public GLContextProfile Profile;
     public GLContextCreationApi CreationApi;
     // Used by GLContextWindow to figure out which GL version managed to initialize.
-    public Clyde.RendererOpenGLVersion OpenGLVersion;
+    public RendererOpenGLVersion OpenGLVersion;
 }
 
 internal enum GLContextProfile
@@ -257,4 +262,19 @@ internal enum GLContextCreationApi
 {
     Native,
     Egl,
+}
+
+internal enum RendererOpenGLVersion : byte
+{
+    Auto = default,
+    GL33 = 1,
+    GL31 = 2,
+    GLES3 = 3,
+    GLES2 = 4,
+}
+
+internal static class RendererOpenGLVersionUtils {
+    internal static bool IsGLES(RendererOpenGLVersion version) => version is RendererOpenGLVersion.GLES2 or RendererOpenGLVersion.GLES3;
+
+    internal static bool IsCore(RendererOpenGLVersion version) => version is RendererOpenGLVersion.GL33;
 }

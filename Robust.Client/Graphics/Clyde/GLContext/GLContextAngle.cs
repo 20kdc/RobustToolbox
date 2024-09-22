@@ -24,12 +24,12 @@ using GL = OpenToolkit.Graphics.OpenGL4.GL;
 
 namespace Robust.Client.Graphics.Clyde
 {
-    internal partial class Clyde
+    internal sealed partial class PAL
     {
         /// <summary>
         ///     Explicit ANGLE GL context with manual DXGI/D3D device and swap chain management.
         /// </summary>
-        private sealed unsafe class GLContextAngle : GLContextBase
+        internal sealed unsafe class GLContextAngle : GLContextBase
         {
             // Thanks to mpv's implementation of context_angle for inspiration/hints.
             // https://github.com/mpv-player/mpv/blob/f8e62d3d82dd0a3d06f9a557d756f0ad78118cc7/video/out/opengl/context_angle.c

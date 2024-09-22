@@ -10,12 +10,12 @@ using Robust.Shared.Maths;
 
 namespace Robust.Client.Graphics.Clyde
 {
-    internal partial class Clyde
+    internal sealed partial class PAL
     {
         /// <summary>
         ///     GL Context(s) provided by the windowing system (GLFW, SDL2...)
         /// </summary>
-        private sealed class GLContextWindow : GLContextBase
+        internal sealed class GLContextWindow : GLContextBase
         {
             private readonly Dictionary<WindowId, WindowData> _windowData = new();
 
@@ -54,7 +54,7 @@ namespace Robust.Client.Graphics.Clyde
 
             public override bool RequireWindowGL => true;
             // ANGLE does not support main window sRGB.
-            public override bool HasBrokenWindowSrgb(RendererOpenGLVersion version) => OpenGLVersionIsGLES(version) && OperatingSystem.IsWindows();
+            public override bool HasBrokenWindowSrgb(RendererOpenGLVersion version) => RendererOpenGLVersionUtils.IsGLES(version) && OperatingSystem.IsWindows();
 
             public override string SawmillCategory => "clyde.ogl.window";
 
@@ -396,7 +396,7 @@ namespace Robust.Client.Graphics.Clyde
             {
                 public WindowReg Reg = default!;
 
-                public RenderTexture? RenderTexture;
+                public Clyde.RenderTexture? RenderTexture;
                 // Used EXCLUSIVELY to run the two rendering commands to blit to the window.
                 public Thread? BlitThread;
                 public ManualResetEventSlim? BlitStartEvent;
