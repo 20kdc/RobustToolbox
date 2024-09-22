@@ -225,59 +225,21 @@ namespace Robust.Client.Graphics.Clyde
 
         private uint GenVertexArray()
         {
-            DebugTools.Assert(_hasGL.AnyVertexArrayObjects);
-
-            int value;
-            if (_hasGL.VertexArrayObject)
-            {
-                value = GL.GenVertexArray();
-                CheckGlError();
-            }
-            else
-            {
-                DebugTools.Assert(_hasGL.VertexArrayObjectOes);
-
-                value = ES20.GL.Oes.GenVertexArray();
-                CheckGlError();
-            }
-
-            return (uint) value;
+            uint res = _hasGL.GenVertexArray();
+            CheckGlError();
+            return res;
         }
 
         private void BindVertexArray(uint vao)
         {
-            DebugTools.Assert(_hasGL.AnyVertexArrayObjects);
-
-            if (_hasGL.VertexArrayObject)
-            {
-                GL.BindVertexArray(vao);
-                CheckGlError();
-            }
-            else
-            {
-                DebugTools.Assert(_hasGL.VertexArrayObjectOes);
-
-                ES20.GL.Oes.BindVertexArray(vao);
-                CheckGlError();
-            }
+            _hasGL.BindVertexArray(vao);
+            CheckGlError();
         }
 
         private void DeleteVertexArray(uint vao)
         {
-            DebugTools.Assert(_hasGL.AnyVertexArrayObjects);
-
-            if (_hasGL.VertexArrayObject)
-            {
-                GL.DeleteVertexArray(vao);
-                CheckGlError();
-            }
-            else
-            {
-                DebugTools.Assert(_hasGL.VertexArrayObjectOes);
-
-                ES20.GL.Oes.DeleteVertexArray(vao);
-                CheckGlError();
-            }
+            _hasGL.DeleteVertexArray(vao);
+            CheckGlError();
         }
 
         private nint LoadGLProc(string name)

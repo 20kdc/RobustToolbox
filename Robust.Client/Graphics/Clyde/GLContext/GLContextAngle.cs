@@ -66,9 +66,9 @@ namespace Robust.Client.Graphics.Clyde
                 return null;
             }
 
-            public override void UpdateVSync()
+            public override void UpdateVSync(bool vSync)
             {
-                _swapInterval = (uint) (Clyde._vSync ? 1 : 0);
+                _swapInterval = (uint) (vSync ? 1 : 0);
             }
 
             public override void WindowCreated(GLContextSpec? spec, WindowReg reg)
@@ -79,19 +79,17 @@ namespace Robust.Client.Graphics.Clyde
                 };
                 _windowData[reg.Id] = data;
 
-                var hWnd = (HWND) Clyde._windowing!.WindowGetWin32Window(reg)!.Value;
+                var hWnd = (HWND) Clyde.Windowing!.WindowGetWin32Window(reg)!.Value;
 
                 // todo: exception management.
                 CreateSwapChain1(hWnd, data);
 
                 _factory->MakeWindowAssociation(hWnd, DXGI_MWA_NO_ALT_ENTER);
 
-                var rt = Clyde.RtToLoaded(reg.RenderTarget);
-                rt.FlipY = true;
+                Clyde.EnableRenderWindowFlipY(reg.RenderTarget);
 
                 if (reg.IsMainWindow)
                 {
-                    UpdateVSync();
                     eglMakeCurrent(_eglDisplay, data.EglBackbuffer, data.EglBackbuffer, _eglContext);
                 }
             }
@@ -144,7 +142,7 @@ namespace Robust.Client.Graphics.Clyde
                     {
                         Width = (uint) data.Reg.FramebufferSize.X,
                         Height = (uint) data.Reg.FramebufferSize.Y,
-                        Format =  Clyde._hasGL.Srgb ? DXGI_FORMAT_R8G8B8A8_UNORM_SRGB : DXGI_FORMAT_R8G8B8A8_UNORM
+                        Format =  Clyde.HasGL.Srgb ? DXGI_FORMAT_R8G8B8A8_UNORM_SRGB : DXGI_FORMAT_R8G8B8A8_UNORM
                     },
                     SampleDesc =
                     {
@@ -201,7 +199,6 @@ namespace Robust.Client.Graphics.Clyde
                 // and so that we can know _hasGLSrgb in window creation.
                 eglMakeCurrent(_eglDisplay, null, null, _eglContext);
                 Clyde.InitOpenGL();
-                Clyde._earlyGLInit = true;
             }
 
             private void TryInitializeCore()
@@ -288,7 +285,7 @@ namespace Robust.Client.Graphics.Clyde
 
                 Logger.DebugS("clyde.ogl.angle", "EGL context created!");
 
-                Clyde._openGLVersion = _es3 ? RendererOpenGLVersion.GLES3 : RendererOpenGLVersion.GLES2;
+                Clyde.SetOpenGLVersion(_es3 ? RendererOpenGLVersion.GLES3 : RendererOpenGLVersion.GLES2);
             }
 
             private void CreateD3D11Device()
@@ -303,7 +300,7 @@ namespace Robust.Client.Graphics.Clyde
                     }
 
                     // Try to find the correct adapter if specified.
-                    var adapterName = Clyde._cfg.GetCVar(CVars.DisplayAdapter);
+                    var adapterName = Clyde.Cfg.GetCVar(CVars.DisplayAdapter);
 
                     if (adapterName != "")
                     {
@@ -323,7 +320,7 @@ namespace Robust.Client.Graphics.Clyde
                     IDXGIFactory6* factory6;
                     if (_adapter == null && _factory->QueryInterface(__uuidof<IDXGIFactory6>(), (void**) &factory6) == 0)
                     {
-                        var gpuPref = (DXGI_GPU_PREFERENCE) Clyde._cfg.GetCVar(CVars.DisplayGpuPreference);
+                        var gpuPref = (DXGI_GPU_PREFERENCE) Clyde.Cfg.GetCVar(CVars.DisplayGpuPreference);
                         IDXGIAdapter1* adapter;
                         for (var adapterIndex = 0u;
                              factory6->EnumAdapterByGpuPreference(
@@ -364,7 +361,7 @@ namespace Robust.Client.Graphics.Clyde
                         D3D_FEATURE_LEVEL_9_1
                     };
 
-                    if (Clyde._cfg.GetCVar(CVars.DisplayAngleForceEs2))
+                    if (Clyde.Cfg.GetCVar(CVars.DisplayAngleForceEs2))
                     {
                         featureLevels = stackalloc D3D_FEATURE_LEVEL[]
                         {
@@ -374,7 +371,7 @@ namespace Robust.Client.Graphics.Clyde
                         };
                     }
 
-                    if (Clyde._cfg.GetCVar(CVars.DisplayAngleForce10_0))
+                    if (Clyde.Cfg.GetCVar(CVars.DisplayAngleForce10_0))
                     {
                         featureLevels = stackalloc D3D_FEATURE_LEVEL[]
                         {
@@ -468,7 +465,7 @@ namespace Robust.Client.Graphics.Clyde
                 ThrowIfFailed("ResizeBuffers", data.SwapChain->ResizeBuffers(
                     2,
                     (uint) reg.FramebufferSize.X, (uint) reg.FramebufferSize.Y,
-                    Clyde._hasGL.Srgb ? DXGI_FORMAT_R8G8B8A8_UNORM_SRGB : DXGI_FORMAT_R8G8B8A8_UNORM,
+                    Clyde.HasGL.Srgb ? DXGI_FORMAT_R8G8B8A8_UNORM_SRGB : DXGI_FORMAT_R8G8B8A8_UNORM,
                     0));
 
                 SetupBackbuffer(data);

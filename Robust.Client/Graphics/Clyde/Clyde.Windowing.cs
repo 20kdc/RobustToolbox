@@ -45,7 +45,7 @@ namespace Robust.Client.Graphics.Clyde
         private bool _vSync;
         private WindowMode _windowMode;
         private bool _threadWindowBlit;
-        private bool EffectiveThreadWindowBlit => _threadWindowBlit && !_hasGL.GLES;
+        bool IWindowingHost.EffectiveThreadWindowBlit => _threadWindowBlit && !_hasGL.GLES;
 
         public event Action<TextEnteredEventArgs>? TextEntered;
         public event Action<TextEditingEventArgs>? TextEditing;
@@ -243,8 +243,7 @@ namespace Robust.Client.Graphics.Clyde
                 return false;
             }
 
-            if (!_earlyGLInit)
-                InitOpenGL();
+            InitOpenGL();
 
             _sawmillOgl.Debug("Setting viewport and rendering splash...");
 
@@ -312,7 +311,7 @@ namespace Robust.Client.Graphics.Clyde
             DebugTools.AssertNotNull(_glContext);
             DebugTools.AssertNotNull(_mainWindow);
 
-            var glSpec = _glContext!.GetNewWindowSpec();
+            var glSpec = _glContext!.SpecWithOpenGLVersion(_openGLVersion);
 
             _glContext.BeforeSharedWindowCreateUnbind();
 
@@ -364,6 +363,7 @@ namespace Robust.Client.Graphics.Clyde
                 reg.RenderTarget = new RenderWindow(this, rtId);
 
                 _glContext!.WindowCreated(glSpec, reg);
+                _glContext!.UpdateVSync(_vSync);
             }
 
             // Pass through result whether successful or not, caller handles it.
@@ -377,7 +377,7 @@ namespace Robust.Client.Graphics.Clyde
 
         void IWindowingHost.UpdateVSync()
         {
-            _glContext?.UpdateVSync();
+            _glContext?.UpdateVSync(_vSync);
         }
 
         void IWindowingHost.DoDestroyWindow(WindowReg reg)
@@ -420,7 +420,7 @@ namespace Robust.Client.Graphics.Clyde
         private void VSyncChanged(bool newValue)
         {
             _vSync = newValue;
-            _glContext?.UpdateVSync();
+            _glContext?.UpdateVSync(newValue);
         }
 
         private void WindowModeChanged(int mode)

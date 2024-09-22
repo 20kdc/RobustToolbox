@@ -12,26 +12,21 @@ namespace Robust.Client.Graphics.Clyde
         /// </summary>
         private abstract class GLContextBase
         {
-            protected readonly Clyde Clyde;
+            protected readonly IWindowingHost Clyde;
 
             public IBindingsContext BindingsContext { get; }
 
-            public GLContextBase(Clyde clyde)
+            public GLContextBase(IWindowingHost clyde)
             {
                 Clyde = clyde;
                 BindingsContext = new BindingsContextImpl(this);
-            }
-
-            public GLContextSpec? GetNewWindowSpec()
-            {
-                return SpecWithOpenGLVersion(Clyde._openGLVersion);
             }
 
             public virtual bool EarlyContextInit => false;
 
             public abstract GLContextSpec? SpecWithOpenGLVersion(RendererOpenGLVersion version);
 
-            public abstract void UpdateVSync();
+            public abstract void UpdateVSync(bool vSync);
             public abstract void WindowCreated(GLContextSpec? spec, WindowReg reg);
             public abstract void WindowDestroyed(WindowReg reg);
 

@@ -36,6 +36,14 @@ namespace Robust.Client.Graphics.Clyde
             return CreateRenderTarget(size, format, sampleParameters, name);
         }
 
+        RenderTexture IWindowingHost.CreateWindowRenderTarget(Vector2i size)
+        {
+            return CreateRenderTarget(size, new RenderTargetFormatParameters
+            {
+                ColorFormat = RenderTargetColorFormat.Rgba8Srgb,
+                HasDepthStencil = true
+            });
+        }
         private RenderTexture CreateRenderTarget(Vector2i size, RenderTargetFormatParameters format,
             TextureSampleParameters? sampleParameters = null, string? name = null)
         {
@@ -248,6 +256,11 @@ namespace Robust.Client.Graphics.Clyde
         private void BindRenderTargetFull(RenderTargetBase rt)
         {
             BindRenderTargetFull(RtToLoaded(rt));
+        }
+
+        LoadedRenderTarget IWindowingHost.RtToLoaded(RenderTargetBase rt)
+        {
+            return _renderTargets[rt.Handle];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Robust.Client.Input;
+using Robust.Shared.Configuration;
 using Robust.Shared.Maths;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -74,12 +75,16 @@ namespace Robust.Client.Graphics.Clyde
         }
 
         /// Interface that windowing implementations expect to receive. Used to control surface area expected of Clyde.
+        /// Also used by GLContext due to their heavy interrelation.
         private interface IWindowingHost {
             IWindowingImpl? Windowing { get; }
             WindowReg? MainWindow { get; }
             List<WindowReg> Windows { get; }
             bool ThreadWindowApi { get; }
+            bool EffectiveThreadWindowBlit { get; }
             Dictionary<int, MonitorHandle> MonitorHandles { get; }
+            IConfigurationManager Cfg { get; }
+            ClydeGLFeatures HasGL { get; }
 
             ClydeHandle AllocRid();
 
@@ -101,6 +106,15 @@ namespace Robust.Client.Graphics.Clyde
             void SendMouseMove(MouseMoveEventArgs ev);
             void SendMouseEnterLeave(MouseEnterLeaveEventArgs ev);
             void SendInputModeChanged();
+
+            void SetOpenGLVersion(RendererOpenGLVersion version);
+            void CheckGlError();
+            void SetupDebugCallback();
+            void InitOpenGL();
+            void EnableRenderWindowFlipY(RenderWindow rw);
+            LoadedRenderTarget RtToLoaded(RenderTargetBase rt);
+            GLHandle TextureToGLHandle(ClydeHandle texture);
+            RenderTexture CreateWindowRenderTarget(Vector2i size);
         }
     }
 }

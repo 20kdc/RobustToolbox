@@ -1,5 +1,6 @@
 ﻿using System;
 using Robust.Shared;
+using Robust.Shared.Configuration;
 using Robust.Shared.Log;
 
 namespace Robust.Client.Graphics.Clyde
@@ -10,6 +11,9 @@ namespace Robust.Client.Graphics.Clyde
 
         // Current OpenGL version we managed to initialize with.
         private RendererOpenGLVersion _openGLVersion;
+
+        IConfigurationManager IWindowingHost.Cfg => _cfg;
+        ClydeGLFeatures IWindowingHost.HasGL => _hasGL;
 
         private void InitGLContextManager()
         {
@@ -55,6 +59,33 @@ namespace Robust.Client.Graphics.Clyde
             _glContext = new GLContextWindow(this);
         }
 
+        void IWindowingHost.SetOpenGLVersion(RendererOpenGLVersion version)
+        {
+            _openGLVersion = version;
+        }
+
+        void IWindowingHost.CheckGlError()
+        {
+            CheckGlError();
+        }
+
+        void IWindowingHost.InitOpenGL()
+        {
+            InitOpenGL();
+        }
+
+        void IWindowingHost.SetupDebugCallback()
+        {
+            SetupDebugCallback();
+        }
+
+        void IWindowingHost.EnableRenderWindowFlipY(RenderWindow rw)
+        {
+            var rt = RtToLoaded(rw);
+            rt.FlipY = true;
+        }
+
+        GLHandle IWindowingHost.TextureToGLHandle(ClydeHandle texture) => _loadedTextures[texture].OpenGLObject;
         private struct GLContextSpec
         {
             public int Major;

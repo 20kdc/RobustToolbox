@@ -37,9 +37,9 @@ namespace Robust.Client.Graphics.Clyde
                 return null;
             }
 
-            public override void UpdateVSync()
+            public override void UpdateVSync(bool vSync)
             {
-                var interval = Clyde._vSync ? 1 : 0;
+                var interval = vSync ? 1 : 0;
 
                 eglSwapInterval(_eglDisplay, interval);
             }
@@ -70,14 +70,14 @@ namespace Robust.Client.Graphics.Clyde
                 if (OperatingSystem.IsWindows())
                 {
                     // Set up window surface.
-                    var hWNd = Clyde._windowing!.WindowGetWin32Window(reg)!.Value;
+                    var hWNd = Clyde.Windowing!.WindowGetWin32Window(reg)!.Value;
                     data.EglSurface = eglCreateWindowSurface(_eglDisplay, _eglConfig, (void*) hWNd, attribs);
                     if (data.EglSurface == (void*) EGL_NO_SURFACE)
                         throw new Exception("eglCreateWindowSurface failed.");
                 }
                 else if (OperatingSystem.IsLinux())
                 {
-                    var window = Clyde._windowing!.WindowGetX11Id(reg)!.Value;
+                    var window = Clyde.Windowing!.WindowGetX11Id(reg)!.Value;
                     data.EglSurface = eglCreateWindowSurface(_eglDisplay, _eglConfig, (void*) window, attribs);
                     if (data.EglSurface == (void*) EGL_NO_SURFACE)
                         throw new Exception("eglCreateWindowSurface failed.");
@@ -106,7 +106,7 @@ namespace Robust.Client.Graphics.Clyde
                 if (OperatingSystem.IsWindows())
                 {
                     // Setting up ANGLE without manually selecting a D3D11 device requires a windows DC.
-                    mainWindow.DC = Windows.GetDC((HWND)Clyde._windowing!.WindowGetWin32Window(mainWindow.Reg)!.Value);
+                    mainWindow.DC = Windows.GetDC((HWND)Clyde.Windowing!.WindowGetWin32Window(mainWindow.Reg)!.Value);
 
                     _eglDisplay = eglGetPlatformDisplayEXT(EGL_PLATFORM_ANGLE_ANGLE, (void*) mainWindow.DC, null);
                     if (_eglDisplay == null)
@@ -114,7 +114,7 @@ namespace Robust.Client.Graphics.Clyde
                 }
                 else if (OperatingSystem.IsLinux())
                 {
-                    var xDisplay = Clyde._windowing!.WindowGetX11Display(mainWindow.Reg)!.Value;
+                    var xDisplay = Clyde.Windowing!.WindowGetX11Display(mainWindow.Reg)!.Value;
                     _eglDisplay = eglGetDisplay((void*) xDisplay);
                     if (mainWindow.EglSurface == (void*) EGL_NO_SURFACE)
                         throw new Exception("eglCreateWindowSurface failed.");

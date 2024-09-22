@@ -58,10 +58,6 @@ namespace Robust.Client.Graphics.Clyde
         private GLBuffer QuadVBO = default!;
         private GLHandle QuadVAO;
 
-        // VBO to blit to the window
-        // VAO is per-window and not stored (not necessary!)
-        private GLBuffer WindowVBO = default!;
-
         private bool _drawingSplash = true;
 
         private GLShaderProgram? _currentProgram;
@@ -80,7 +76,7 @@ namespace Robust.Client.Graphics.Clyde
         private ISawmill _sawmillOgl = default!;
 
         private IBindingsContext _glBindingsContext = default!;
-        private bool _earlyGLInit;
+        private bool _didGLInit;
         private bool _threadWindowApi;
 
         private ClydeGLFeatures _hasGL = default!;
@@ -202,6 +198,10 @@ namespace Robust.Client.Graphics.Clyde
 
         private void InitOpenGL()
         {
+            if (_didGLInit)
+                return;
+            _didGLInit = true;
+
             bool isGLES = OpenGLVersionIsGLES(_openGLVersion);
             bool isGLES2 = _openGLVersion is RendererOpenGLVersion.GLES2;
             bool isCore = OpenGLVersionIsCore(_openGLVersion);
@@ -330,26 +330,6 @@ namespace Robust.Client.Graphics.Clyde
                     nameof(QuadVBO));
 
                 QuadVAO = MakeQuadVao();
-
-                CheckGlError();
-            }
-
-            // Window VBO
-            {
-                Span<Vertex2D> winVertices = stackalloc[]
-                {
-                    new Vertex2D(-1, 1, 0, 1, Color.White),
-                    new Vertex2D(-1, -1, 0, 0, Color.White),
-                    new Vertex2D(1, 1, 1, 1, Color.White),
-                    new Vertex2D(1, -1, 1, 0, Color.White),
-                };
-
-                WindowVBO = new GLBuffer<Vertex2D>(
-                    this,
-                    BufferTarget.ArrayBuffer,
-                    BufferUsageHint.StaticDraw,
-                    winVertices,
-                    nameof(WindowVBO));
 
                 CheckGlError();
             }

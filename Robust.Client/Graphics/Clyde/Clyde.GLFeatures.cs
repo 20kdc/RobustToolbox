@@ -4,9 +4,17 @@ using OpenToolkit.Graphics.OpenGL4;
 using Robust.Shared.Configuration;
 using Robust.Shared.IoC;
 using Robust.Shared.Log;
+using Robust.Shared.Utility;
+using ES20 = OpenToolkit.Graphics.ES20;
 
 namespace Robust.Client.Graphics.Clyde
 {
+    /// <summary>
+    /// This class has three responsibilities:
+    /// 1. Enumerating GL version details and features.
+    /// 2. Providing "extension-aware thunks" for cases of different names for the same function (VAOs)
+    /// 3. Providing the universal shader header.
+    /// </summary>
     internal sealed class ClydeGLFeatures
     {
         [Dependency] private readonly ILogManager _logManager = default!;
@@ -48,10 +56,14 @@ namespace Robust.Client.Graphics.Clyde
 
         public readonly bool FenceSync;
 
-        // These are set from Clyde.Windowing.
         public readonly bool GLES;
         public readonly bool GLES2;
         public readonly bool Core;
+
+        /// <summary>Mandatory shader header. This doesn't handle language changes, this is just a mixture of stuff needed to get your foot in the door and flags so you can handle compatibility yourself.</summary>
+        public readonly string ShaderHeader;
+
+        public bool HasVaryingAttribute => GLES && !GLES3Shaders;
 
         public ClydeGLFeatures(int major, int minor, bool gles, bool gles2, bool core, bool hasBrokenWindowSrgb, IDependencyCollection deps)
         {
@@ -161,6 +173,8 @@ namespace Robust.Client.Graphics.Clyde
 
                 _sawmill.Debug($"  {capName}: {cap}");
             }
+
+            ShaderHeader = GenShaderHeader();
         }
 
         private static bool CompareVersion(int majorA, int minorA, int majorB, int minorB)
@@ -242,6 +256,109 @@ namespace Robust.Client.Graphics.Clyde
                 var extensions = GL.GetString(StringName.Extensions);
                 _sawmill.Debug("OpenGL Extensions: {0}", extensions);
                 return new HashSet<string>(extensions.Split(' '));
+            }
+        }
+
+        /// Creates the "mandatory header" which sets the GLSL version and provides available feature flags.
+        /// Notably, this doesn't do anything to smooth out the language itself.
+        private string GenShaderHeader()
+        {
+            var versionHeader = "#version 140\n#define HAS_MOD\n";
+
+            if (GLES)
+            {
+                if (GLES3Shaders)
+                {
+                    versionHeader = "#version 300 es\n";
+                }
+                else
+                {
+                    // GLES2 uses a different GLSL versioning scheme to desktop GL.
+                    versionHeader = "#version 100\n#define HAS_VARYING_ATTRIBUTE\n";
+                    if (StandardDerivatives)
+                    {
+                        versionHeader += "#extension GL_OES_standard_derivatives : enable\n";
+                    }
+
+                    versionHeader += "#define NO_ARRAY_PRECISION\n";
+                }
+
+            }
+
+            if (StandardDerivatives)
+            {
+                versionHeader += "#define HAS_DFDX\n";
+            }
+
+            if (FloatFramebuffers)
+            {
+                versionHeader += "#define HAS_FLOAT_TEXTURES\n";
+            }
+
+            if (Srgb)
+            {
+                versionHeader += "#define HAS_SRGB\n";
+            }
+
+            if (UniformBuffers)
+            {
+                versionHeader += "#define HAS_UNIFORM_BUFFERS\n";
+            }
+
+            return versionHeader;
+        }
+
+        /// Makes a raw, unchecked call to GenVertexArray considering the nature of the GL.
+        public uint GenVertexArray()
+        {
+            DebugTools.Assert(AnyVertexArrayObjects);
+
+            int value;
+            if (VertexArrayObject)
+            {
+                value = GL.GenVertexArray();
+            }
+            else
+            {
+                DebugTools.Assert(VertexArrayObjectOes);
+
+                value = ES20.GL.Oes.GenVertexArray();
+            }
+
+            return (uint) value;
+        }
+
+        /// Makes a raw, unchecked call to BindVertexArray considering the nature of the GL.
+        public void BindVertexArray(uint vao)
+        {
+            DebugTools.Assert(AnyVertexArrayObjects);
+
+            if (VertexArrayObject)
+            {
+                GL.BindVertexArray(vao);
+            }
+            else
+            {
+                DebugTools.Assert(VertexArrayObjectOes);
+
+                ES20.GL.Oes.BindVertexArray(vao);
+            }
+        }
+
+        /// Makes a raw, unchecked call to DeleteVertexArray considering the nature of the GL.
+        public void DeleteVertexArray(uint vao)
+        {
+            DebugTools.Assert(AnyVertexArrayObjects);
+
+            if (VertexArrayObject)
+            {
+                GL.DeleteVertexArray(vao);
+            }
+            else
+            {
+                DebugTools.Assert(VertexArrayObjectOes);
+
+                ES20.GL.Oes.DeleteVertexArray(vao);
             }
         }
     }

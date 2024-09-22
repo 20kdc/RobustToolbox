@@ -28,9 +28,6 @@ namespace Robust.Client.Graphics.Clyde
         private string _shaderWrapCodeRawFrag = default!;
         private string _shaderWrapCodeRawVert = default!;
 
-        private string _winBlitShaderVert = default!;
-        private string _winBlitShaderFrag = default!;
-
         [ViewVariables]
         private readonly Dictionary<ClydeHandle, LoadedShader> _loadedShaders =
             new();
@@ -154,9 +151,6 @@ namespace Robust.Client.Graphics.Clyde
             _shaderWrapCodeRawVert = ReadEmbeddedShader("base-raw.vert");
             _shaderWrapCodeRawFrag = ReadEmbeddedShader("base-raw.frag");
 
-            _winBlitShaderVert = ReadEmbeddedShader("winblit.vert");
-            _winBlitShaderFrag = ReadEmbeddedShader("winblit.frag");
-
             var defaultLoadedShader = _resourceCache
                 .GetResource<ShaderSourceResource>("/Shaders/Internal/default-sprite.swsl");
 
@@ -180,47 +174,7 @@ namespace Robust.Client.Graphics.Clyde
             GLShader? vertexShader = null;
             GLShader? fragmentShader = null;
 
-            var versionHeader = "#version 140\n#define HAS_MOD\n";
-
-            if (_hasGL.GLES)
-            {
-                if (_hasGL.GLES3Shaders)
-                {
-                    versionHeader = "#version 300 es\n";
-                }
-                else
-                {
-                    // GLES2 uses a different GLSL versioning scheme to desktop GL.
-                    versionHeader = "#version 100\n#define HAS_VARYING_ATTRIBUTE\n";
-                    if (_hasGL.StandardDerivatives)
-                    {
-                        versionHeader += "#extension GL_OES_standard_derivatives : enable\n";
-                    }
-
-                    versionHeader += "#define NO_ARRAY_PRECISION\n";
-                }
-
-            }
-
-            if (_hasGL.StandardDerivatives)
-            {
-                versionHeader += "#define HAS_DFDX\n";
-            }
-
-            if (_hasGL.FloatFramebuffers)
-            {
-                versionHeader += "#define HAS_FLOAT_TEXTURES\n";
-            }
-
-            if (_hasGL.Srgb)
-            {
-                versionHeader += "#define HAS_SRGB\n";
-            }
-
-            if (_hasGL.UniformBuffers)
-            {
-                versionHeader += "#define HAS_UNIFORM_BUFFERS\n";
-            }
+            var versionHeader = _hasGL.ShaderHeader;
 
             if (defines is not null)
             {
