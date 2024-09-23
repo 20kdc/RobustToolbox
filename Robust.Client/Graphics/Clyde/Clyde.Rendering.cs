@@ -170,6 +170,8 @@ namespace Robust.Client.Graphics.Clyde
 
         private void ProcessRenderCommands()
         {
+            BatchVAO.Use();
+
             foreach (ref var command in _queuedRenderCommands)
             {
                 switch (command.Type)
@@ -217,11 +219,9 @@ namespace Robust.Client.Graphics.Clyde
             }
         }
 
+        // Assumes the batch VAO is held.
         private void DrawCommandBatch(ClydeTexture loadedTexture, ref RenderCommandDrawBatch command)
         {
-            BindVertexArray(BatchVAO.Handle);
-            CheckGlError();
-
             var (program, loaded) = ActivateShaderInstance(command.ShaderInstance);
             SetupGlobalUniformsImmediate(program, loadedTexture.IsSrgb);
 
@@ -287,11 +287,10 @@ namespace Robust.Client.Graphics.Clyde
             DrawQuadWithVao(QuadVAO, a, b, modelMatrix, program);
         }
 
-        private void DrawQuadWithVao(GLHandle vao, Vector2 a, Vector2 b, in Matrix3x2 modelMatrix,
+        private void DrawQuadWithVao(GLVAOBase vao, Vector2 a, Vector2 b, in Matrix3x2 modelMatrix,
             GLShaderProgram program)
         {
-            BindVertexArray(vao.Handle);
-            CheckGlError();
+            vao.Use();
 
             var rectTransform = Matrix3x2.Identity;
             (rectTransform.M11, rectTransform.M22) = b - a;
@@ -321,9 +320,6 @@ namespace Robust.Client.Graphics.Clyde
         {
             // Finish any batches that may have been WiP.
             BreakBatch();
-
-            BindVertexArray(BatchVAO.Handle);
-            CheckGlError();
 
             _debugStats.LargestBatchVertices = Math.Max(BatchVertexIndex, _debugStats.LargestBatchVertices);
             _debugStats.LargestBatchIndices = Math.Max(BatchIndexIndex, _debugStats.LargestBatchIndices);

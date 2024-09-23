@@ -68,7 +68,7 @@ namespace Robust.Client.Graphics.Clyde
         private GLBuffer _occlusionVbo = default!;
         private GLBuffer _occlusionVIVbo = default!;
         private GLBuffer _occlusionEbo = default!;
-        private GLHandle _occlusionVao;
+        private GLVAOBase _occlusionVao = default!;
 
 
         // Occlusion mask geometry that represents the area with occluders.
@@ -80,7 +80,7 @@ namespace Robust.Client.Graphics.Clyde
         // Actual GL objects used for rendering.
         private GLBuffer _occlusionMaskVbo = default!;
         private GLBuffer _occlusionMaskEbo = default!;
-        private GLHandle _occlusionMaskVao;
+        private GLVAOBase _occlusionMaskVao = default!;
 
         // For depth calculation for FOV.
         private RenderTexture _fovRenderTarget = default!;
@@ -110,29 +110,20 @@ namespace Robust.Client.Graphics.Clyde
             {
                 // Occlusion VAO.
                 // Only handles positions, no other vertex data necessary.
-                _occlusionVao = new GLHandle(GenVertexArray());
-                BindVertexArray(_occlusionVao.Handle);
-                CheckGlError();
-
-                _hasGL.ObjectLabelMaybe(ObjectLabelIdentifier.VertexArray, _occlusionVao, nameof(_occlusionVao));
 
                 // aPos
                 _occlusionVbo = new GLBuffer(_pal, BufferUsageHint.DynamicDraw, nameof(_occlusionVbo));
-                _occlusionVbo.Use(BufferTarget.ArrayBuffer);
-                GL.VertexAttribPointer(0, 4, VertexAttribPointerType.Float, false, sizeof(Vector4), IntPtr.Zero);
-                GL.EnableVertexAttribArray(0);
-
-                CheckGlError();
 
                 // subVertex
                 _occlusionVIVbo = new GLBuffer(_pal, BufferUsageHint.DynamicDraw, nameof(_occlusionVIVbo));
-                _occlusionVIVbo.Use(BufferTarget.ArrayBuffer);
-                GL.VertexAttribPointer(1, 2, VertexAttribPointerType.UnsignedByte, true, sizeof(byte) * 2, IntPtr.Zero);
-                GL.EnableVertexAttribArray(1);
 
                 // index
                 _occlusionEbo = new GLBuffer(_pal, BufferUsageHint.DynamicDraw, nameof(_occlusionEbo));
-                _occlusionEbo.Use(BufferTarget.ElementArrayBuffer);
+
+                _occlusionVao = _pal.CreateVAO(nameof(_occlusionVao));
+                _occlusionVao.SetVertexAttrib(0, new GPUVertexAttrib(_occlusionVbo, 4, GPUVertexAttrib.Type.Float, false, sizeof(Vector4), 0));
+                _occlusionVao.SetVertexAttrib(1, new GPUVertexAttrib(_occlusionVIVbo, 2, GPUVertexAttrib.Type.UnsignedByte, true, sizeof(byte) * 2, 0));
+                _occlusionVao.IndexBuffer = _occlusionEbo;
 
                 CheckGlError();
             }
@@ -141,21 +132,14 @@ namespace Robust.Client.Graphics.Clyde
                 // Occlusion mask VAO.
                 // Only handles positions, no other vertex data necessary.
 
-                _occlusionMaskVao = new GLHandle(GenVertexArray());
-                BindVertexArray(_occlusionMaskVao.Handle);
-                CheckGlError();
-
-                _hasGL.ObjectLabelMaybe(ObjectLabelIdentifier.VertexArray, _occlusionMaskVao, nameof(_occlusionMaskVao));
-
                 _occlusionMaskVbo = new GLBuffer(_pal, BufferUsageHint.DynamicDraw, nameof(_occlusionMaskVbo));
 
                 _occlusionMaskEbo = new GLBuffer(_pal, BufferUsageHint.DynamicDraw, nameof(_occlusionMaskEbo));
 
-                _occlusionMaskVbo.Use(BufferTarget.ArrayBuffer);
-                GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, sizeof(Vector2), IntPtr.Zero);
-                GL.EnableVertexAttribArray(0);
+                _occlusionMaskVao = _pal.CreateVAO(nameof(_occlusionMaskVao));
+                _occlusionMaskVao.SetVertexAttrib(0, new GPUVertexAttrib(_occlusionMaskVbo, 2, GPUVertexAttrib.Type.Float, false, sizeof(Vector2), 0));
+                _occlusionMaskVao.IndexBuffer = _occlusionMaskEbo;
 
-                _occlusionMaskEbo.Use(BufferTarget.ElementArrayBuffer);
                 CheckGlError();
             }
 
@@ -314,8 +298,7 @@ namespace Robust.Client.Graphics.Clyde
             GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
             CheckGlError();
 
-            BindVertexArray(_occlusionVao.Handle);
-            CheckGlError();
+            _occlusionVao.Use();
 
             _fovCalculationProgram.Use();
 
@@ -791,8 +774,7 @@ namespace Robust.Client.Graphics.Clyde
 
             SetTexture(InternedUniform.MainTextureUnit, tex);
 
-            BindVertexArray(_occlusionMaskVao.Handle);
-            CheckGlError();
+            _occlusionMaskVao.Use();
 
             GL.DrawElements(GetQuadGLPrimitiveType(), _occlusionMaskDataLength, DrawElementsType.UnsignedShort,
                 IntPtr.Zero);
@@ -1104,15 +1086,10 @@ namespace Robust.Client.Graphics.Clyde
                 _occlusionMaskDataLength = imi;
 
                 // Upload geometry to OpenGL.
-                BindVertexArray(_occlusionVao.Handle);
-                CheckGlError();
 
                 _occlusionVbo.Reallocate(arrayBuffer.AsSpan(0, ai));
                 _occlusionVIVbo.Reallocate(arrayVIBuffer.AsSpan(0, avi));
                 _occlusionEbo.Reallocate(indexBuffer.AsSpan(0, ii));
-
-                BindVertexArray(_occlusionMaskVao.Handle);
-                CheckGlError();
 
                 _occlusionMaskVbo.Reallocate(arrayMaskBuffer.AsSpan(0, ami));
                 _occlusionMaskEbo.Reallocate(indexMaskBuffer.AsSpan(0, imi));

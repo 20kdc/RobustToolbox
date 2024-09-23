@@ -15,63 +15,41 @@ namespace Robust.Client.Graphics;
 [PublicAPI]
 public abstract class GPUVertexArrayObject : GPUResource
 {
-    /// <summary>Accessor for vertex attributes.</summary>
-    public VertexAttribConvenience Attributes => new(this);
-
     /// <summary>Index buffer (aka ElementArrayBuffer).</summary>
     public abstract GPUBuffer? IndexBuffer { set; }
 
     /// <summary>Sets a vertex attribute.</summary>
-    public abstract void SetVertexAttrib(int index, VertexAttrib? value);
+    public abstract void SetVertexAttrib(int index, GPUVertexAttrib? value);
+}
 
-    public struct VertexAttrib(GPUBuffer buffer, int size, GPUVertexArrayObject.ComponentType type, bool normalized, int stride, uint offset)
-    {
-        /// <summary>Buffer.</summary>
-        public GPUBuffer Buffer = buffer;
+[PublicAPI]
+public struct GPUVertexAttrib(GPUBuffer buffer, int size, GPUVertexAttrib.Type component, bool normalized, int stride, uint offset)
+{
+    /// <summary>Buffer.</summary>
+    public GPUBuffer Buffer = buffer;
 
-        /// <summary>Component count.</summary>
-        public int Size = size;
+    /// <summary>Component count.</summary>
+    public int Size = size;
 
-        /// <summary>Type.</summary>
-        public ComponentType Type = type;
+    /// <summary>Type.</summary>
+    public Type Component = component;
 
-        /// <summary>Normalized.</summary>
-        public bool Normalized = normalized;
+    /// <summary>Normalized.</summary>
+    public bool Normalized = normalized;
 
-        /// <summary>Stride.</summary>
-        public int Stride = stride;
+    /// <summary>Stride.</summary>
+    public int Stride = stride;
 
-        /// <summary>Offset.</summary>
-        public uint Offset = offset;
-    }
+    /// <summary>Offset.</summary>
+    public uint Offset = offset;
 
     /// <summary>Vertex attribute component type.</summary>
-    public enum ComponentType
+    public enum Type
     {
         Byte = VertexAttribPointerType.Byte,
         UnsignedByte = VertexAttribPointerType.UnsignedByte,
         Short = VertexAttribPointerType.Short,
         UnsignedShort = VertexAttribPointerType.UnsignedShort,
         Float = VertexAttribPointerType.Float
-    }
-
-    /// <summary>Convenience wrapper to insert vertex attributes.</summary>
-    public readonly struct VertexAttribConvenience
-    {
-        private readonly GPUVertexArrayObject _parent;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal VertexAttribConvenience(GPUVertexArrayObject parent)
-        {
-            _parent = parent;
-        }
-
-        public VertexAttrib? this[int index]
-        {
-            set
-            {
-                _parent.SetVertexAttrib(index, value);
-            }
-        }
     }
 }

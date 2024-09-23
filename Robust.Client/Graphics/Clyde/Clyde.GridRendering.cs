@@ -81,8 +81,7 @@ namespace Robust.Client.Graphics.Clyde
                     if (datum.TileCount == 0)
                         continue;
 
-                    BindVertexArray(datum.VAO);
-                    CheckGlError();
+                    datum.VAO.Use();
 
                     _debugStats.LastGLDrawCalls += 1;
                     GL.DrawElements(GetQuadGLPrimitiveType(), datum.TileCount * GetQuadBatchIndexCount(), DrawElementsType.UnsignedShort, 0);
@@ -188,9 +187,7 @@ namespace Robust.Client.Graphics.Clyde
 
         private unsafe MapChunkData _initChunkBuffers(Entity<MapGridComponent> grid, MapChunk chunk)
         {
-            var vao = GenVertexArray();
-            BindVertexArray(vao);
-            CheckGlError();
+            var vao = _pal.CreateVAO($"Grid {grid.Owner} chunk {chunk.Indices} VAO");
 
             var vboSize = _verticesPerChunk(chunk) * sizeof(Vertex2D);
             var eboSize = _indicesPerChunk(chunk) * sizeof(ushort);
@@ -200,11 +197,8 @@ namespace Robust.Client.Graphics.Clyde
             var ebo = new GLBuffer(_pal, BufferUsageHint.DynamicDraw,
                 eboSize, $"Grid {grid.Owner} chunk {chunk.Indices} EBO");
 
-            _hasGL.ObjectLabelMaybe(ObjectLabelIdentifier.VertexArray, vao, $"Grid {grid.Owner} chunk {chunk.Indices} VAO");
-            ebo.Use(BufferTarget.ElementArrayBuffer);
-            vbo.Use(BufferTarget.ArrayBuffer);
-            SetupVAOLayout();
-            CheckGlError();
+            SetupVAOLayout(vao, vbo);
+            vao.IndexBuffer = ebo;
 
             var datum = new MapChunkData(vao, vbo, ebo)
             {
@@ -216,8 +210,7 @@ namespace Robust.Client.Graphics.Clyde
 
         private void DeleteChunk(MapChunkData data)
         {
-            DeleteVertexArray(data.VAO);
-            CheckGlError();
+            data.VAO.Dispose();
             data.VBO.Dispose();
             data.EBO.Dispose();
         }
@@ -251,12 +244,12 @@ namespace Robust.Client.Graphics.Clyde
         private sealed class MapChunkData
         {
             public bool Dirty;
-            public readonly uint VAO;
+            public readonly GLVAOBase VAO;
             public readonly GLBuffer VBO;
             public readonly GLBuffer EBO;
             public int TileCount;
 
-            public MapChunkData(uint vao, GLBuffer vbo, GLBuffer ebo)
+            public MapChunkData(GLVAOBase vao, GLBuffer vbo, GLBuffer ebo)
             {
                 VAO = vao;
                 VBO = vbo;

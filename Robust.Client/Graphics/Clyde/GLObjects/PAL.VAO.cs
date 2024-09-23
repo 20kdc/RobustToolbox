@@ -108,14 +108,14 @@ internal abstract class GLVAOBase : GPUVertexArrayObject
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public override void SetVertexAttrib(int index, VertexAttrib? value)
+    public override void SetVertexAttrib(int index, GPUVertexAttrib? value)
     {
         Use();
         if (value != null)
         {
             var info = value!.Value;
             ((GLBuffer) info.Buffer).Use(BufferTarget.ArrayBuffer);
-            GL.VertexAttribPointer(index, info.Size, (VertexAttribPointerType) info.Type, info.Normalized, info.Stride, (nint) info.Offset);
+            GL.VertexAttribPointer(index, info.Size, (VertexAttribPointerType) info.Component, info.Normalized, info.Stride, (nint) info.Offset);
             GL.EnableVertexAttribArray(index);
         }
         else

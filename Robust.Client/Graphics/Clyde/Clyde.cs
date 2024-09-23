@@ -51,11 +51,11 @@ namespace Robust.Client.Graphics.Clyde
 
         private GLBuffer BatchVBO = default!;
         private GLBuffer BatchEBO = default!;
-        private GLHandle BatchVAO;
+        private GLVAOBase BatchVAO = default!;
 
         // VBO to draw a single quad.
         private GLBuffer QuadVBO = default!;
-        private GLHandle QuadVAO;
+        private GLVAOBase QuadVAO = default!;
 
         private bool _drawingSplash = true;
         private float _lightResolutionScale = 0.5f;
@@ -256,27 +256,20 @@ namespace Robust.Client.Graphics.Clyde
                     MemoryMarshal.AsBytes(quadVertices),
                     nameof(QuadVBO));
 
-                QuadVAO = MakeQuadVao();
-
-                CheckGlError();
+                QuadVAO = _pal.CreateVAO(nameof(QuadVAO));
+                SetupVAOLayout(QuadVAO, QuadVBO);
             }
 
             // Batch rendering
             {
                 BatchVBO = new GLBuffer(_pal, BufferUsageHint.DynamicDraw,
                     sizeof(Vertex2D) * BatchVertexData.Length, nameof(BatchVBO));
-
-                BatchVAO = new GLHandle(GenVertexArray());
-                BindVertexArray(BatchVAO.Handle);
-                _hasGL.ObjectLabelMaybe(ObjectLabelIdentifier.VertexArray, BatchVAO, nameof(BatchVAO));
-                BatchVBO.Use(BufferTarget.ArrayBuffer);
-                SetupVAOLayout();
-
-                CheckGlError();
-
                 BatchEBO = new GLBuffer(_pal, BufferUsageHint.DynamicDraw,
                     sizeof(ushort) * BatchIndexData.Length, nameof(BatchEBO));
-                BatchEBO.Use(BufferTarget.ElementArrayBuffer);
+
+                BatchVAO = _pal.CreateVAO(nameof(BatchVAO));
+                SetupVAOLayout(BatchVAO, BatchVBO);
+                BatchVAO.IndexBuffer = BatchEBO;
             }
 
             ProjViewUBO = new GLUniformBuffer<ProjViewMatrices>(this, BindingIndexProjView, nameof(ProjViewUBO));
@@ -287,17 +280,6 @@ namespace Robust.Client.Graphics.Clyde
             _pal.ApplySampleParameters(new TextureSampleParameters() { Filter = false, WrapMode = TextureWrapMode.MirroredRepeat});
             // TODO: This is atrocious and broken and awful why did I merge this
             ScreenBufferTexture = _pal.GenTexture(screenBufferHandle, (1920, 1080), true, null, TexturePixelType.Rgba32);
-        }
-
-        private GLHandle MakeQuadVao()
-        {
-            var vao = new GLHandle(GenVertexArray());
-            BindVertexArray(vao.Handle);
-            _hasGL.ObjectLabelMaybe(ObjectLabelIdentifier.VertexArray, vao, nameof(QuadVAO));
-            GL.BindBuffer(BufferTarget.ArrayBuffer, QuadVBO.ObjectHandle);
-            SetupVAOLayout();
-
-            return vao;
         }
 
         [Conditional("DEBUG")]

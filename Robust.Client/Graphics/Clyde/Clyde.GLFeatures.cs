@@ -355,7 +355,10 @@ namespace Robust.Client.Graphics.Clyde
             return versionHeader;
         }
 
+        /// <summary>
         /// Makes a raw, unchecked call to GenVertexArray considering the nature of the GL.
+        /// This should really only be seen in GLContextWindow (PAL has its own mechanism)
+        /// </summary>
         public uint GenVertexArray()
         {
             DebugTools.Assert(AnyVertexArrayObjects);

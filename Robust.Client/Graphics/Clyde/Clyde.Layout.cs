@@ -15,20 +15,16 @@ namespace Robust.Client.Graphics.Clyde
         ///     Sets up VAO layout for Vertex2D for base and raw shader types.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static unsafe void SetupVAOLayout()
+        private static unsafe void SetupVAOLayout(GLVAOBase vao, GLBuffer buffer)
         {
             // Vertex Coords
-            GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, sizeof(Vertex2D), 0);
-            GL.EnableVertexAttribArray(0);
+            vao.SetVertexAttrib(0, new GPUVertexAttrib(buffer, 2, GPUVertexAttrib.Type.Float, false, sizeof(Vertex2D), 0));
             // Texture Coords.
-            GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, sizeof(Vertex2D), 2 * sizeof(float));
-            GL.EnableVertexAttribArray(1);
+            vao.SetVertexAttrib(1, new GPUVertexAttrib(buffer, 2, GPUVertexAttrib.Type.Float, false, sizeof(Vertex2D), 2 * sizeof(float)));
             // Texture Coords (2).
-            GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, false, sizeof(Vertex2D), 4 * sizeof(float));
-            GL.EnableVertexAttribArray(2);
+            vao.SetVertexAttrib(2, new GPUVertexAttrib(buffer, 2, GPUVertexAttrib.Type.Float, false, sizeof(Vertex2D), 4 * sizeof(float)));
             // Colour Modulation.
-            GL.VertexAttribPointer(3, 4, VertexAttribPointerType.Float, false, sizeof(Vertex2D), 6 * sizeof(float));
-            GL.EnableVertexAttribArray(3);
+            vao.SetVertexAttrib(3, new GPUVertexAttrib(buffer, 4, GPUVertexAttrib.Type.Float, false, sizeof(Vertex2D), 6 * sizeof(float)));
         }
 
         // NOTE: This is:

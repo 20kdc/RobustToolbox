@@ -337,7 +337,7 @@ namespace Robust.Client.Graphics.Clyde
                 }
             }
 
-            public override void SetVertexAttrib(int index, VertexAttrib? value)
+            public override void SetVertexAttrib(int index, GPUVertexAttrib? value)
             {
                 // still no
             }

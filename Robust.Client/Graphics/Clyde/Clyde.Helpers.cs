@@ -191,25 +191,6 @@ namespace Robust.Client.Graphics.Clyde
             }
         }
 
-        private uint GenVertexArray()
-        {
-            uint res = _hasGL.GenVertexArray();
-            CheckGlError();
-            return res;
-        }
-
-        private void BindVertexArray(uint vao)
-        {
-            _hasGL.BindVertexArray(vao);
-            CheckGlError();
-        }
-
-        private void DeleteVertexArray(uint vao)
-        {
-            _hasGL.DeleteVertexArray(vao);
-            CheckGlError();
-        }
-
         private nint LoadGLProc(string name)
         {
             var proc = _glBindingsContext.GetProcAddress(name);
