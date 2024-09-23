@@ -175,7 +175,7 @@ namespace Robust.Client.Graphics.Clyde
                 switch (command.Type)
                 {
                     case RenderCommandType.DrawBatch:
-                        DrawCommandBatch(ref command.DrawBatch);
+                        DrawCommandBatch(command.Texture!, ref command.DrawBatch);
                         break;
 
                     case RenderCommandType.Scissor:
@@ -212,13 +212,13 @@ namespace Robust.Client.Graphics.Clyde
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
+                // GC-relevant objects get nulled here.
+                command.Texture = null;
             }
         }
 
-        private void DrawCommandBatch(ref RenderCommandDrawBatch command)
+        private void DrawCommandBatch(ClydeTexture loadedTexture, ref RenderCommandDrawBatch command)
         {
-            var loadedTexture = command.Texture;
-
             BindVertexArray(BatchVAO.Handle);
             CheckGlError();
 
@@ -619,7 +619,7 @@ namespace Robust.Client.Graphics.Clyde
             command.DrawBatch.Indexed = true;
             command.DrawBatch.StartIndex = BatchIndexIndex;
             command.DrawBatch.PrimitiveType = MapDrawToBatchPrimitiveType(primitiveTopology);
-            command.DrawBatch.Texture = textureId;
+            command.Texture = textureId;
             command.DrawBatch.ShaderInstance = _queuedShader;
 
             command.DrawBatch.Count = indices.Length;
@@ -645,7 +645,7 @@ namespace Robust.Client.Graphics.Clyde
             command.DrawBatch.Indexed = false;
             command.DrawBatch.StartIndex = BatchVertexIndex;
             command.DrawBatch.PrimitiveType = MapDrawToBatchPrimitiveType(primitiveTopology);
-            command.DrawBatch.Texture = textureId;
+            command.Texture = textureId;
             command.DrawBatch.ShaderInstance = _queuedShader;
 
             command.DrawBatch.Count = vertices.Length;
@@ -803,7 +803,7 @@ namespace Robust.Client.Graphics.Clyde
             command.DrawBatch.Indexed = indexed;
             command.DrawBatch.StartIndex = metaData.StartIndex;
             command.DrawBatch.PrimitiveType = metaData.PrimitiveType;
-            command.DrawBatch.Texture = metaData.Texture;
+            command.Texture = metaData.Texture;
             command.DrawBatch.ShaderInstance = metaData.ShaderInstance;
 
             command.DrawBatch.Count = currentIndex - metaData.StartIndex;
@@ -942,17 +942,21 @@ namespace Robust.Client.Graphics.Clyde
             // Also means I don't have to declare a pool for every command type.
             [FieldOffset(0)] public RenderCommandType Type;
 
-            [FieldOffset(4)] public RenderCommandDrawBatch DrawBatch;
-            [FieldOffset(4)] public RenderCommandProjViewMatrix ProjView;
-            [FieldOffset(4)] public RenderCommandScissor Scissor;
-            [FieldOffset(4)] public RenderCommandRenderTarget RenderTarget;
-            [FieldOffset(4)] public RenderCommandViewport Viewport;
-            [FieldOffset(4)] public RenderCommandClear Clear;
+            // GC-relevant objects live here.
+            // Be sure to null these out in ProcessRenderCommands.
+            [FieldOffset(8)] public ClydeTexture? Texture;
+
+            [FieldOffset(16)] public RenderCommandDrawBatch DrawBatch;
+            [FieldOffset(16)] public RenderCommandProjViewMatrix ProjView;
+            [FieldOffset(16)] public RenderCommandScissor Scissor;
+            [FieldOffset(16)] public RenderCommandRenderTarget RenderTarget;
+            [FieldOffset(16)] public RenderCommandViewport Viewport;
+            [FieldOffset(16)] public RenderCommandClear Clear;
         }
 
         private struct RenderCommandDrawBatch
         {
-            public ClydeTexture Texture;
+            // Texture is 'hidden'.
             public ClydeHandle ShaderInstance;
 
             public int StartIndex;

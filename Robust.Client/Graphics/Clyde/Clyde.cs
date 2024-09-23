@@ -272,12 +272,14 @@ namespace Robust.Client.Graphics.Clyde
                 BatchVAO = new GLHandle(GenVertexArray());
                 BindVertexArray(BatchVAO.Handle);
                 _hasGL.ObjectLabelMaybe(ObjectLabelIdentifier.VertexArray, BatchVAO, nameof(BatchVAO));
+                BatchVBO.Use(BufferTarget.ArrayBuffer);
                 SetupVAOLayout();
 
                 CheckGlError();
 
                 BatchEBO = new GLBuffer(_pal, BufferUsageHint.DynamicDraw,
                     sizeof(ushort) * BatchIndexData.Length, nameof(BatchEBO));
+                BatchEBO.Use(BufferTarget.ElementArrayBuffer);
             }
 
             ProjViewUBO = new GLUniformBuffer<ProjViewMatrices>(this, BindingIndexProjView, nameof(ProjViewUBO));
