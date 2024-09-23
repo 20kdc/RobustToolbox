@@ -14,7 +14,7 @@ namespace Robust.Client.Graphics.Clyde
                 Compile(type, shaderSource);
                 if (name != null)
                 {
-                    _clyde.ObjectLabelMaybe(ObjectLabelIdentifier.Shader, ObjectHandle, name);
+                    clyde._hasGL.ObjectLabelMaybe(ObjectLabelIdentifier.Shader, ObjectHandle, name);
                 }
             }
 

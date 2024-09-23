@@ -23,14 +23,8 @@ using TextureWrapMode = Robust.Shared.Graphics.TextureWrapMode;
 
 namespace Robust.Client.Graphics.Clyde
 {
-    internal partial class Clyde
+    internal partial class PAL
     {
-        private ClydeTexture _stockTextureWhite = default!;
-        private ClydeTexture _stockTextureBlack = default!;
-        private ClydeTexture _stockTextureTransparent = default!;
-
-        private readonly ConcurrentQueue<GLHandle> _textureDisposeQueue = new();
-
         public OwnedTexture LoadTextureFromPNGStream(Stream stream, string? name = null,
             TextureLoadParameters? loadParams = null)
         {
@@ -200,7 +194,22 @@ namespace Robust.Client.Graphics.Clyde
             return GenTexture(texture, (width, height), isActuallySrgb, name, texPixType, pressureEst);
         }
 
-        private void ApplySampleParameters(TextureSampleParameters? sampleParameters)
+        internal static long EstPixelSize(PixelInternalFormat format)
+        {
+            return format switch
+            {
+                PixelInternalFormat.Rgba8 => 4,
+                PixelInternalFormat.Rgba16f => 8,
+                PixelInternalFormat.Srgb8Alpha8 => 4,
+                PixelInternalFormat.R11fG11fB10f => 4,
+                PixelInternalFormat.R32f => 4,
+                PixelInternalFormat.Rg32f => 8,
+                PixelInternalFormat.R8 => 1,
+                _ => 0
+            };
+        }
+
+        internal void ApplySampleParameters(TextureSampleParameters? sampleParameters)
         {
             var actualParams = sampleParameters ?? TextureSampleParameters.Default;
             if (actualParams.Filter)
@@ -278,7 +287,7 @@ namespace Robust.Client.Graphics.Clyde
             };
         }
 
-        private ClydeTexture GenTexture(
+        internal ClydeTexture GenTexture(
             GLHandle glHandle,
             Vector2i size,
             bool srgb,
@@ -288,13 +297,13 @@ namespace Robust.Client.Graphics.Clyde
         {
             if (name != null)
             {
-                ObjectLabelMaybe(ObjectLabelIdentifier.Texture, glHandle, name);
+                _hasGL.ObjectLabelMaybe(ObjectLabelIdentifier.Texture, glHandle, name);
             }
 
             return new ClydeTexture(glHandle, size, srgb, pixType, name, this);
         }
 
-        private unsafe void SetSubImage<T>(
+        internal unsafe void SetSubImage<T>(
             ClydeTexture texture,
             Vector2i dstTl,
             Image<T> img,
@@ -327,7 +336,7 @@ namespace Robust.Client.Graphics.Clyde
                 ArrayPool<T>.Shared.Return(pooled);
         }
 
-        private unsafe void SetSubImage<T>(
+        internal unsafe void SetSubImage<T>(
             ClydeTexture texture,
             Vector2i dstTl,
             Vector2i size,
@@ -427,21 +436,6 @@ namespace Robust.Client.Graphics.Clyde
             };
         }
 
-        private void LoadStockTextures()
-        {
-            var white = new Image<Rgba32>(1, 1);
-            white[0, 0] = new Rgba32(255, 255, 255, 255);
-            _stockTextureWhite = (ClydeTexture) Texture.LoadFromImage(white);
-
-            var black = new Image<Rgba32>(1, 1);
-            black[0, 0] = new Rgba32(0, 0, 0, 255);
-            _stockTextureBlack = (ClydeTexture) Texture.LoadFromImage(black);
-
-            var blank = new Image<Rgba32>(1, 1);
-            blank[0, 0] = new Rgba32(0, 0, 0, 0);
-            _stockTextureTransparent = (ClydeTexture) Texture.LoadFromImage(blank);
-        }
-
         /// <summary>
         ///     Makes a clone of the image that is also flipped.
         /// </summary>
@@ -460,7 +454,7 @@ namespace Robust.Client.Graphics.Clyde
             return copy;
         }
 
-        private static void FlipCopy<T>(ReadOnlySpan<T> srcSpan, Span<T> dstSpan, int w, int h)
+        internal static void FlipCopy<T>(ReadOnlySpan<T> srcSpan, Span<T> dstSpan, int w, int h)
         {
             var dr = h - 1;
             for (var r = 0; r < h; r++, dr--)
@@ -535,100 +529,80 @@ namespace Robust.Client.Graphics.Clyde
                 dst[i] = new Rgba32(255, 255, 255, px);
             }
         }
+    }
 
-        internal enum TexturePixelType : byte
+    internal enum TexturePixelType : byte
+    {
+        RenderTarget = 0,
+        Rgba32,
+        A8,
+        L8,
+    }
+
+    internal sealed class ClydeTexture : OwnedTexture
+    {
+        private readonly PAL _pal;
+        public readonly bool IsSrgb;
+
+        public GLHandle OpenGLObject;
+        public string? Name;
+        internal TexturePixelType TexturePixelType;
+
+        public override void SetSubImage<T>(Vector2i topLeft, Image<T> sourceImage, in UIBox2i sourceRegion)
         {
-            RenderTarget = 0,
-            Rgba32,
-            A8,
-            L8,
+            _pal.SetSubImage(this, topLeft, sourceImage, sourceRegion);
         }
 
-        private void FlushTextureDispose()
+        public override void SetSubImage<T>(Vector2i topLeft, Vector2i size, ReadOnlySpan<T> buffer)
         {
-            while (_textureDisposeQueue.TryDequeue(out var handle))
-            {
-                GL.DeleteTexture(handle.Handle);
-                CheckGlError();
-            }
+            _pal.SetSubImage(this, topLeft, size, buffer);
         }
 
-        internal sealed class ClydeTexture : OwnedTexture
+        protected override void Dispose(bool disposing)
         {
-            private readonly Clyde _clyde;
-            public readonly bool IsSrgb;
-
-            public GLHandle OpenGLObject;
-            public string? Name;
-            internal TexturePixelType TexturePixelType;
-
-            public override void SetSubImage<T>(Vector2i topLeft, Image<T> sourceImage, in UIBox2i sourceRegion)
+            if (_pal.IsMainThread())
             {
-                _clyde.SetSubImage(this, topLeft, sourceImage, sourceRegion);
+                // Main thread, do direct GL deletion.
+                GL.DeleteTexture(OpenGLObject.Handle);
+                _pal.CheckGlError();
             }
-
-            public override void SetSubImage<T>(Vector2i topLeft, Vector2i size, ReadOnlySpan<T> buffer)
+            else
             {
-                _clyde.SetSubImage(this, topLeft, size, buffer);
-            }
-
-            protected override void Dispose(bool disposing)
-            {
-                if (_clyde.IsMainThread())
-                {
-                    // Main thread, do direct GL deletion.
-                    GL.DeleteTexture(OpenGLObject.Handle);
-                    _clyde.CheckGlError();
-                }
-                else
-                {
-                    // Finalizer thread
-                    _clyde._textureDisposeQueue.Enqueue(OpenGLObject);
-                }
-            }
-
-            internal ClydeTexture(GLHandle gl, Vector2i size, bool srgb, TexturePixelType texturePixelType, string? name, Clyde clyde) : base(size)
-            {
-                OpenGLObject = gl;
-                Name = name;
-                IsSrgb = srgb;
-                TexturePixelType = texturePixelType;
-                _clyde = clyde;
-            }
-
-            public override string ToString() => $"ClydeTexture: {Name} ({OpenGLObject})";
-
-            public override unsafe Color GetPixel(int x, int y)
-            {
-                var curTexture2D = GL.GetInteger(GetPName.TextureBinding2D);
-                var bufSize = 4 * Size.X * Size.Y;
-                var buffer = ArrayPool<byte>.Shared.Rent(bufSize);
-
-                GL.BindTexture(TextureTarget.Texture2D, OpenGLObject.Handle);
-
-                fixed (byte* p = buffer)
-                {
-                    GL.GetTexImage(TextureTarget.Texture2D, 0, PF.Rgba, PT.UnsignedByte, (IntPtr) p);
-                }
-
-                GL.BindTexture(TextureTarget.Texture2D, curTexture2D);
-
-                var pixelPos = (Size.X * (Size.Y - y - 1) + x) * 4;
-                var color = new Color(buffer[pixelPos+0], buffer[pixelPos+1], buffer[pixelPos+2], buffer[pixelPos+3]);
-                ArrayPool<byte>.Shared.Return(buffer);
-                return color;
+                // Finalizer thread
+                _pal._textureDisposeQueue.Enqueue(OpenGLObject);
             }
         }
 
-        public Texture GetStockTexture(ClydeStockTexture stockTexture)
+        internal ClydeTexture(GLHandle gl, Vector2i size, bool srgb, TexturePixelType texturePixelType, string? name, PAL clyde) : base(size)
         {
-            return stockTexture switch
+            OpenGLObject = gl;
+            Name = name;
+            IsSrgb = srgb;
+            TexturePixelType = texturePixelType;
+            _pal = clyde;
+        }
+
+        public override string ToString() => $"ClydeTexture: {Name} ({OpenGLObject})";
+
+        public override unsafe Color GetPixel(int x, int y)
+        {
+            var curTexture2D = GL.GetInteger(GetPName.TextureBinding2D);
+            var bufSize = 4 * Size.X * Size.Y;
+            var buffer = ArrayPool<byte>.Shared.Rent(bufSize);
+
+            GL.BindTexture(TextureTarget.Texture2D, OpenGLObject.Handle);
+
+            fixed (byte* p = buffer)
             {
-                ClydeStockTexture.White => _stockTextureWhite,
-                ClydeStockTexture.Transparent => _stockTextureTransparent,
-                ClydeStockTexture.Black => _stockTextureBlack,
-                _ => throw new ArgumentException(nameof(stockTexture))
-            };
+                GL.GetTexImage(TextureTarget.Texture2D, 0, PF.Rgba, PT.UnsignedByte, (IntPtr) p);
+            }
+
+            GL.BindTexture(TextureTarget.Texture2D, curTexture2D);
+
+            var pixelPos = (Size.X * (Size.Y - y - 1) + x) * 4;
+            var color = new Color(buffer[pixelPos+0], buffer[pixelPos+1], buffer[pixelPos+2], buffer[pixelPos+3]);
+            ArrayPool<byte>.Shared.Return(buffer);
+            return color;
         }
     }
 }

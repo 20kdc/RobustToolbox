@@ -54,21 +54,6 @@ namespace Robust.Client.Graphics.Clyde
             }
         }
 
-        private static long EstPixelSize(PixelInternalFormat format)
-        {
-            return format switch
-            {
-                PixelInternalFormat.Rgba8 => 4,
-                PixelInternalFormat.Rgba16f => 8,
-                PixelInternalFormat.Srgb8Alpha8 => 4,
-                PixelInternalFormat.R11fG11fB10f => 4,
-                PixelInternalFormat.R32f => 4,
-                PixelInternalFormat.Rg32f => 8,
-                PixelInternalFormat.R8 => 1,
-                _ => 0
-            };
-        }
-
         // Sets up uniforms (It'd be nice to move this, or make some contextual stuff implicit, but things got complicated.)
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void SetupGlobalUniformsImmediate(GLShaderProgram program, ClydeTexture? tex)
@@ -155,7 +140,7 @@ namespace Robust.Client.Graphics.Clyde
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void CheckGlError([CallerFilePath] string? path = null, [CallerLineNumber] int line = default)
         {
-            _hasGL.CheckGlError(path, line);
+            _pal._hasGL.CheckGlError(path, line);
         }
 
         // Both access and mask are specified because I like prematurely optimizing and this is the most performant.
@@ -234,6 +219,15 @@ namespace Robust.Client.Graphics.Clyde
             }
 
             return proc;
+        }
+    }
+
+    internal sealed partial class PAL
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal void CheckGlError([CallerFilePath] string? path = null, [CallerLineNumber] int line = default)
+        {
+            _hasGL.CheckGlError(path, line);
         }
     }
 }

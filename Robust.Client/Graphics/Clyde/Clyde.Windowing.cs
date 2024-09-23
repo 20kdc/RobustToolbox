@@ -245,7 +245,7 @@ namespace Robust.Client.Graphics.Clyde
             DebugTools.AssertNotNull(glFeatures);
 
             // We're ready, copy over information...
-            _hasGL = glFeatures!;
+            _pal._hasGL = glFeatures!;
             _glBindingsContext = _glContext.BindingsContext;
 
             InitOpenGL();

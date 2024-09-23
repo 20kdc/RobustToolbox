@@ -114,7 +114,7 @@ namespace Robust.Client.Graphics.Clyde
                 BindVertexArray(_occlusionVao.Handle);
                 CheckGlError();
 
-                ObjectLabelMaybe(ObjectLabelIdentifier.VertexArray, _occlusionVao, nameof(_occlusionVao));
+                _hasGL.ObjectLabelMaybe(ObjectLabelIdentifier.VertexArray, _occlusionVao, nameof(_occlusionVao));
 
                 // aPos
                 _occlusionVbo = new GLBuffer(this, BufferTarget.ArrayBuffer, BufferUsageHint.DynamicDraw,
@@ -145,7 +145,7 @@ namespace Robust.Client.Graphics.Clyde
                 BindVertexArray(_occlusionMaskVao.Handle);
                 CheckGlError();
 
-                ObjectLabelMaybe(ObjectLabelIdentifier.VertexArray, _occlusionMaskVao, nameof(_occlusionMaskVao));
+                _hasGL.ObjectLabelMaybe(ObjectLabelIdentifier.VertexArray, _occlusionMaskVao, nameof(_occlusionMaskVao));
 
                 _occlusionMaskVbo = new GLBuffer(this, BufferTarget.ArrayBuffer, BufferUsageHint.DynamicDraw,
                     nameof(_occlusionMaskVbo));

@@ -8,6 +8,7 @@ using ES20 = OpenToolkit.Graphics.ES20;
 using Robust.Shared;
 using System.Runtime.CompilerServices;
 using System;
+using System.Diagnostics;
 
 namespace Robust.Client.Graphics.Clyde
 {
@@ -428,6 +429,33 @@ namespace Robust.Client.Graphics.Clyde
             {
                 _sawmill.Error($"OpenGL error: {err} at {path}:{line}\n{Environment.StackTrace}");
             }
+        }
+
+        [Conditional("DEBUG")]
+        internal void ObjectLabelMaybe(ObjectLabelIdentifier identifier, uint name, string? label)
+        {
+            if (label == null)
+            {
+                return;
+            }
+
+            if (!KhrDebug || !DebuggerPresent)
+                return;
+
+            if (KhrDebugESExtension)
+            {
+                GL.Khr.ObjectLabel((ObjectIdentifier) identifier, name, label.Length, label);
+            }
+            else
+            {
+                GL.ObjectLabel(identifier, name, label.Length, label);
+            }
+        }
+
+        [Conditional("DEBUG")]
+        internal void ObjectLabelMaybe(ObjectLabelIdentifier identifier, GLHandle name, string? label)
+        {
+            ObjectLabelMaybe(identifier, name.Handle, label);
         }
     }
 }

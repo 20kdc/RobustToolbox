@@ -114,7 +114,7 @@ namespace Robust.Client.Graphics.Clyde
                 var image = new Image<T>(size.X, size.Y);
                 var imageSpan = image.GetPixelSpan();
 
-                FlipCopy(buffer, imageSpan, size.X, size.Y);
+                PAL.FlipCopy(buffer, imageSpan, size.X, size.Y);
 
                 callback(image);
                 return;
@@ -190,7 +190,7 @@ namespace Robust.Client.Graphics.Clyde
             var image = new Image<T>(width, height);
             var imageSpan = image.GetPixelSpan();
 
-            FlipCopy(packSpan, imageSpan, width, height);
+            PAL.FlipCopy(packSpan, imageSpan, width, height);
 
             UnmapBuffer(BufferTarget.PixelPackBuffer);
 

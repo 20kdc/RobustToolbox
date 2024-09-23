@@ -56,7 +56,7 @@ namespace Robust.Client.Graphics.Clyde
                 _clyde.CheckGlError();
                 if (Name != null)
                 {
-                    _clyde.ObjectLabelMaybe(ObjectLabelIdentifier.Program, Handle, Name);
+                    _clyde._hasGL.ObjectLabelMaybe(ObjectLabelIdentifier.Program, Handle, Name);
                 }
 
                 if (_vertexShader != null)

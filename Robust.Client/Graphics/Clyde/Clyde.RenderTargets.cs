@@ -68,7 +68,7 @@ namespace Robust.Client.Graphics.Clyde
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, fbo.Handle);
             CheckGlError();
 
-            ObjectLabelMaybe(ObjectLabelIdentifier.Framebuffer, fbo, name);
+            _hasGL.ObjectLabelMaybe(ObjectLabelIdentifier.Framebuffer, fbo, name);
 
             var (width, height) = size;
 
@@ -85,7 +85,7 @@ namespace Robust.Client.Graphics.Clyde
                 GL.BindTexture(TextureTarget.Texture2D, texture.Handle);
                 CheckGlError();
 
-                ApplySampleParameters(sampleParameters);
+                _pal.ApplySampleParameters(sampleParameters);
 
                 var colorFormat = format.ColorFormat;
                 if ((!_hasGL.Srgb) && (colorFormat == RTCF.Rgba8Srgb))
@@ -136,7 +136,7 @@ namespace Robust.Client.Graphics.Clyde
                     };
                 }
 
-                estPixSize += EstPixelSize(internalFormat);
+                estPixSize += PAL.EstPixelSize(internalFormat);
 
                 GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, width, height, 0, pixFormat,
                     pixType, IntPtr.Zero);
@@ -157,7 +157,7 @@ namespace Robust.Client.Graphics.Clyde
                 CheckGlError();
 
                 // Check on original format is NOT a bug, this is so srgb emulation works
-                textureObject = GenTexture(texture, size, format.ColorFormat == RTCF.Rgba8Srgb, name == null ? null : $"{name}-color", TexturePixelType.RenderTarget);
+                textureObject = _pal.GenTexture(texture, size, format.ColorFormat == RTCF.Rgba8Srgb, name == null ? null : $"{name}-color", TexturePixelType.RenderTarget);
             }
 
             // Depth/stencil buffers.
@@ -167,7 +167,7 @@ namespace Robust.Client.Graphics.Clyde
                 GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, depthStencilBuffer.Handle);
                 CheckGlError();
 
-                ObjectLabelMaybe(ObjectLabelIdentifier.Renderbuffer, depthStencilBuffer,
+                _hasGL.ObjectLabelMaybe(ObjectLabelIdentifier.Renderbuffer, depthStencilBuffer,
                     name == null ? null : $"{name}-depth-stencil");
 
                 GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.Depth24Stencil8, width,

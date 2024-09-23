@@ -67,15 +67,11 @@ namespace Robust.Client.Graphics.Clyde
         private int _maxShadowcastingLights = 128;
         private bool _enableSoftShadows = true;
 
-        private Thread? _gameThread;
-
         private ISawmill _clydeSawmill = default!;
         private ISawmill _sawmillOgl = default!;
 
         private IBindingsContext _glBindingsContext = default!;
         private bool _threadWindowApi;
-
-        private GLWrapper _hasGL = default!;
 
         public Clyde()
         {
@@ -113,7 +109,7 @@ namespace Robust.Client.Graphics.Clyde
 
         public bool InitializePostWindowing()
         {
-            _gameThread = Thread.CurrentThread;
+            _pal._gameThread = Thread.CurrentThread;
 
             InitGLContextManager();
             if (!InitMainWindowAndRenderer())
@@ -144,7 +140,7 @@ namespace Robust.Client.Graphics.Clyde
             _windowing?.FlushDispose();
             FlushShaderInstanceDispose();
             FlushRenderTargetDispose();
-            FlushTextureDispose();
+            _pal.FlushDispose();
             FlushViewportDispose();
         }
 
@@ -275,7 +271,7 @@ namespace Robust.Client.Graphics.Clyde
 
                 BatchVAO = new GLHandle(GenVertexArray());
                 BindVertexArray(BatchVAO.Handle);
-                ObjectLabelMaybe(ObjectLabelIdentifier.VertexArray, BatchVAO, nameof(BatchVAO));
+                _hasGL.ObjectLabelMaybe(ObjectLabelIdentifier.VertexArray, BatchVAO, nameof(BatchVAO));
                 SetupVAOLayout();
 
                 CheckGlError();
@@ -289,16 +285,16 @@ namespace Robust.Client.Graphics.Clyde
 
             screenBufferHandle = new GLHandle(GL.GenTexture());
             GL.BindTexture(TextureTarget.Texture2D, screenBufferHandle.Handle);
-            ApplySampleParameters(new TextureSampleParameters() { Filter = false, WrapMode = TextureWrapMode.MirroredRepeat});
+            _pal.ApplySampleParameters(new TextureSampleParameters() { Filter = false, WrapMode = TextureWrapMode.MirroredRepeat});
             // TODO: This is atrocious and broken and awful why did I merge this
-            ScreenBufferTexture = GenTexture(screenBufferHandle, (1920, 1080), true, null, TexturePixelType.Rgba32);
+            ScreenBufferTexture = _pal.GenTexture(screenBufferHandle, (1920, 1080), true, null, TexturePixelType.Rgba32);
         }
 
         private GLHandle MakeQuadVao()
         {
             var vao = new GLHandle(GenVertexArray());
             BindVertexArray(vao.Handle);
-            ObjectLabelMaybe(ObjectLabelIdentifier.VertexArray, vao, nameof(QuadVAO));
+            _hasGL.ObjectLabelMaybe(ObjectLabelIdentifier.VertexArray, vao, nameof(QuadVAO));
             GL.BindBuffer(BufferTarget.ArrayBuffer, QuadVBO.ObjectHandle);
             SetupVAOLayout();
 
@@ -388,33 +384,6 @@ namespace Robust.Client.Graphics.Clyde
 
         private static DebugProc? _debugMessageCallbackInstance;
 
-        [Conditional("DEBUG")]
-        private void ObjectLabelMaybe(ObjectLabelIdentifier identifier, uint name, string? label)
-        {
-            if (label == null)
-            {
-                return;
-            }
-
-            if (!_hasGL.KhrDebug || !_hasGL.DebuggerPresent)
-                return;
-
-            if (_hasGL.KhrDebugESExtension)
-            {
-                GL.Khr.ObjectLabel((ObjectIdentifier) identifier, name, label.Length, label);
-            }
-            else
-            {
-                GL.ObjectLabel(identifier, name, label.Length, label);
-            }
-        }
-
-        [Conditional("DEBUG")]
-        private void ObjectLabelMaybe(ObjectLabelIdentifier identifier, GLHandle name, string? label)
-        {
-            ObjectLabelMaybe(identifier, name.Handle, label);
-        }
-
         private PopDebugGroup DebugGroup(string group)
         {
             PushDebugGroupMaybe(group);
@@ -461,9 +430,9 @@ namespace Robust.Client.Graphics.Clyde
         }
 
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        private bool IsMainThread()
+        internal bool IsMainThread()
         {
-            return Thread.CurrentThread == _gameThread;
+            return _pal.IsMainThread();
         }
     }
 }

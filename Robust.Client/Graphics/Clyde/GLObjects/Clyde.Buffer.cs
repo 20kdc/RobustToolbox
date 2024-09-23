@@ -34,7 +34,7 @@ namespace Robust.Client.Graphics.Clyde
                 GL.BindBuffer(type, handle);
                 clyde.CheckGlError();
 
-                _clyde.ObjectLabelMaybe(ObjectLabelIdentifier.Buffer, ObjectHandle, name);
+                _clyde._hasGL.ObjectLabelMaybe(ObjectLabelIdentifier.Buffer, ObjectHandle, name);
             }
 
             public GLBuffer(Clyde clyde, BufferTarget type, BufferUsageHint usage, int size, string? name = null)
