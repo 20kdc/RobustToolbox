@@ -88,9 +88,9 @@ namespace Robust.Client.Graphics.Clyde
 
         public ClydeHandle LoadShader(ParsedShader shader, string? name = null, Dictionary<string,string>? defines = null)
         {
-            var (vertBody, fragBody) = GetShaderCode(shader);
+            var (vertBody, fragBody, textureUniforms) = GetShaderCode(shader);
 
-            var program = _compileProgram(vertBody, fragBody, BaseShaderAttribLocations, name, defines: defines);
+            var program = _compileProgram(vertBody, fragBody, BaseShaderAttribLocations, textureUniforms, name, defines: defines);
 
             if (_hasGL.UniformBuffers)
             {
@@ -112,9 +112,9 @@ namespace Robust.Client.Graphics.Clyde
         {
             var loaded = _loadedShaders[handle];
 
-            var (vertBody, fragBody) = GetShaderCode(newShader);
+            var (vertBody, fragBody, textureUniforms) = GetShaderCode(newShader);
 
-            var program = _compileProgram(vertBody, fragBody, BaseShaderAttribLocations, loaded.Name);
+            var program = _compileProgram(vertBody, fragBody, BaseShaderAttribLocations, textureUniforms, loaded.Name);
 
             loaded.Program.Delete();
 
@@ -169,7 +169,7 @@ namespace Robust.Client.Graphics.Clyde
         }
 
         private GLShaderProgram _compileProgram(string vertexSource, string fragmentSource,
-            (string, uint)[] attribLocations, string? name = null, bool includeLib=true, Dictionary<string,string>? defines=null)
+            (string, uint)[] attribLocations, string[] textureUniforms, string? name = null, bool includeLib=true, Dictionary<string,string>? defines=null)
         {
             var versionHeader = _hasGL.ShaderHeader;
 
@@ -185,12 +185,19 @@ namespace Robust.Client.Graphics.Clyde
             vertexSource = versionHeader + "#define VERTEX_SHADER\n" + lib + vertexSource;
             fragmentSource = versionHeader + "#define FRAGMENT_SHADER\n" + lib + fragmentSource;
 
-            return new GLShaderProgram(_pal, vertexSource, fragmentSource, attribLocations, name);
+            return new GLShaderProgram(_pal, vertexSource, fragmentSource, attribLocations, textureUniforms, name);
         }
 
-        private (string vertBody, string fragBody) GetShaderCode(ParsedShader shader)
+        private (string vertBody, string fragBody, string[] textureUniforms) GetShaderCode(ParsedShader shader)
         {
             var headerUniforms = new StringBuilder();
+
+            var textureUniforms = new List<string>
+            {
+                // Main/light textures always assigned Texture0 and Texture1.
+                InternedUniform.UniIMainTexture.Name,
+                InternedUniform.UniILightTexture.Name
+            };
 
             foreach (var constant in shader.Constants.Values)
             {
@@ -214,6 +221,24 @@ namespace Robust.Client.Graphics.Clyde
                     else
                     {
                         headerUniforms.AppendFormat("uniform {0} {1};\n", uniform.Type.GetNativeType(), uniform.Name);
+                    }
+                }
+                if (uniform.Type.IsTexture)
+                {
+                    if (uniform.Type.IsArray)
+                    {
+                        var len = uniform.Type.Count!.Value;
+                        for (var i = 0; i < len; i++)
+                        {
+                            textureUniforms.Add($"{uniform.Name}[{i}]");
+                        }
+                    }
+                    else
+                    {
+                        // Checking this is important, because otherwise lightMap gets re-added.
+                        // That is... not good.
+                        if (!textureUniforms.Contains(uniform.Name))
+                            textureUniforms.Add(uniform.Name);
                     }
                 }
             }
@@ -289,7 +314,7 @@ namespace Robust.Client.Graphics.Clyde
                 fragmentSource = fragmentSource.Replace("// [SHADER_CODE]", fragmentMain.Body);
             }
 
-            return (vertexSource, fragmentSource);
+            return (vertexSource, fragmentSource, textureUniforms.ToArray());
         }
 
         private void FlushShaderInstanceDispose()

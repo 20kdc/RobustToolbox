@@ -151,6 +151,8 @@ namespace Robust.Client.Graphics
 
         public bool IsArray => Count != null;
 
+        public bool IsTexture => Type is ShaderDataType.Sampler2D or ShaderDataType.ISampler2D or ShaderDataType.USampler2D;
+
         public string GetNativeType()
         {
             var typeName = GetNativeTypeWithoutArray();

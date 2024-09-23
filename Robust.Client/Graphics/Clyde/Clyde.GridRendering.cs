@@ -61,8 +61,6 @@ namespace Robust.Client.Graphics.Clyde
                     gridProgram = ActivateShaderInstance(_defaultShader.Handle).Item1;
                     SetupGlobalUniformsImmediate(gridProgram, (ClydeTexture) _tileDefinitionManager.TileTextureAtlas);
 
-                    gridProgram.SetUniformTextureMaybe(InternedUniform.UniIMainTexture, TextureUnit.Texture0);
-                    gridProgram.SetUniformTextureMaybe(InternedUniform.UniILightTexture, TextureUnit.Texture1);
                     gridProgram.SetUniform(InternedUniform.UniIModUV, new Vector4(0, 0, 1, 1));
                 }
 

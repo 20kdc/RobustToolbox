@@ -26,11 +26,12 @@ internal sealed class GLShaderProgram
 {
     private readonly sbyte?[] _uniformIntCache = new sbyte?[InternedUniform.UniCount];
     private readonly Dictionary<string, int> _uniformCache = new();
+    private readonly Dictionary<string, TextureUnit> _textureUnits = new();
     public uint Handle = 0;
     public string? Name { get; }
     private readonly PAL _pal;
 
-    public GLShaderProgram(PAL clyde, string vertexSource, string fragmentSource, (string, uint)[] attribLocations, string? name = null)
+    public GLShaderProgram(PAL clyde, string vertexSource, string fragmentSource, (string, uint)[] attribLocations, string[] textureUniforms, string? name = null)
     {
         _pal = clyde;
         Name = name;
@@ -75,6 +76,29 @@ internal sealed class GLShaderProgram
                     string log = GL.GetProgramInfoLog((int) Handle);
                     GL.DeleteProgram(Handle);
                     throw new ShaderCompilationException(log);
+                }
+
+                // -- After this point, everything is mostly initialized, except... --
+
+                // LoadShader relies on this happening somehow.
+                Use();
+
+                // Bind texture uniforms to units.
+                // By doing this we skip having to go fetch them later.
+                // By placing uniforms at preallocated spots (including dummies you don't have),
+                //  you can do stuff like Clyde's Main/Light units, without needing to intern uniforms.
+                var currentTextureUnit = 0;
+                foreach (var uniform in textureUniforms)
+                {
+                    // We have to still allocate the unit even if there's no uniform.
+                    // The texture uniforms array is a 1:1 mapping to texture units.
+                    if (uniform != "")
+                    {
+                        // The use of Add here is intentional, to catch doubly-added uniforms.
+                        _textureUnits.Add(uniform, TextureUnit.Texture0 + currentTextureUnit);
+                        SetUniformMaybe(uniform, currentTextureUnit);
+                    }
+                    currentTextureUnit += 1;
                 }
             }
             finally
@@ -176,6 +200,18 @@ internal sealed class GLShaderProgram
         _uniformCache.Add(name, index);
         return index != -1;
     }
+
+    /// <summary>Gets the texture unit assigned to a sampler uniform.</summary>
+    public TextureUnit GetTextureUnit(string name)
+    {
+        if (!_textureUnits.TryGetValue(name, out var result))
+            throw new ArgumentException($"Uniform \"{name}\" not assigned a texture unit!");
+
+        return result;
+    }
+
+    /// <summary>Gets the texture unit assigned to a sampler uniform.</summary>
+    public bool TryGetTextureUnit(string name, out TextureUnit index) => _textureUnits.TryGetValue(name, out index);
 
     public bool TryGetUniform(InternedUniform id, out int index)
     {
@@ -413,35 +449,6 @@ internal sealed class GLShaderProgram
                 GL.Uniform2(slot, vectors.Length, (float*)ptr);
                 _pal.CheckGlError();
             }
-        }
-    }
-
-    public void SetUniformTexture(string uniformName, TextureUnit textureUnit)
-    {
-        var uniformId = GetUniform(uniformName);
-        SetUniformTextureDirect(uniformId, textureUnit);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void SetUniformTextureDirect(int slot, TextureUnit value)
-    {
-        GL.Uniform1(slot, value - TextureUnit.Texture0);
-        _pal.CheckGlError();
-    }
-
-    public void SetUniformTextureMaybe(string uniformName, TextureUnit value)
-    {
-        if (TryGetUniform(uniformName, out var slot))
-        {
-            SetUniformTextureDirect(slot, value);
-        }
-    }
-
-    public void SetUniformTextureMaybe(InternedUniform uniformName, TextureUnit value)
-    {
-        if (TryGetUniform(uniformName, out var slot))
-        {
-            SetUniformTextureDirect(slot, value);
         }
     }
 

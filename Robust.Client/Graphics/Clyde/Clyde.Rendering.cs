@@ -225,22 +225,19 @@ namespace Robust.Client.Graphics.Clyde
             var (program, loaded) = ActivateShaderInstance(command.ShaderInstance);
             SetupGlobalUniformsImmediate(program, loadedTexture.IsSrgb);
 
-            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.ActiveTexture(InternedUniform.MainTextureUnit);
             CheckGlError();
             GL.BindTexture(TextureTarget.Texture2D, loadedTexture.OpenGLObject.Handle);
             CheckGlError();
 
             if (_lightingReady && loaded.HasLighting)
             {
-                SetTexture(TextureUnit.Texture1, _currentViewport!.LightRenderTarget.Texture);
+                SetTexture(InternedUniform.LightTextureUnit, _currentViewport!.LightRenderTarget.Texture);
             }
             else
             {
-                SetTexture(TextureUnit.Texture1, _stockTextureWhite);
+                SetTexture(InternedUniform.LightTextureUnit, _stockTextureWhite);
             }
-
-            program.SetUniformTextureMaybe(InternedUniform.UniIMainTexture, TextureUnit.Texture0);
-            program.SetUniformTextureMaybe(InternedUniform.UniILightTexture, TextureUnit.Texture1);
 
             // Model matrix becomes identity since it's built into the batch mesh.
             program.SetUniformMaybe(InternedUniform.UniIModelMatrix, command.ModelMatrix);
@@ -454,7 +451,6 @@ namespace Robust.Client.Graphics.Clyde
             shader.LastInstance = instance;
             instance.ParametersDirty = false;
 
-            int textureUnitVal = 0;
             foreach (var (name, value) in instance.Parameters)
             {
                 if (!program.HasUniform(name))
@@ -503,13 +499,8 @@ namespace Robust.Client.Graphics.Clyde
                         program.SetUniform(name, matrix4);
                         break;
                     case ClydeTexture clydeTexture:
-                        //It's important to start at Texture6 here since DrawCommandBatch uses Texture0 and Texture1 immediately after calling this
-                        //function! If passing in textures as uniforms ever stops working it might be since someone made it use all the way up to Texture6 too.
-                        //Might change this in the future?
-                        TextureUnit cTarget = TextureUnit.Texture6 + textureUnitVal;
-                        SetTexture(cTarget, clydeTexture);
-                        program.SetUniformTexture(name, cTarget);
-                        textureUnitVal++;
+                        if (program.TryGetTextureUnit(name, out var cTarget))
+                            SetTexture(cTarget, clydeTexture);
                         break;
                     default:
                         throw new InvalidOperationException($"Unable to handle shader parameter {name}: {value}");
