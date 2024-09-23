@@ -4,7 +4,7 @@ using Robust.Shared.IoC;
 namespace Robust.Client.Graphics.Clyde;
 
 /// <summary>'Sanity layer' over GL, windowing, etc.</summary>
-internal sealed partial class PAL
+internal sealed partial class PAL : IGPUAbstraction
 {
     /// <summary>TODO: This should be moved to Clyde.GLContext when that's migrated to PAL.</summary>
     internal GLWrapper _hasGL = default!;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Robust.Shared.Graphics;
 using Robust.Shared.Maths;
@@ -12,7 +13,7 @@ namespace Robust.Client.Graphics
 {
     public delegate void CopyPixelsDelegate<T>(Image<T> pixels) where T : unmanaged, IPixel<T>;
 
-    public interface IClyde
+    public interface IClyde : IGPUAbstraction
     {
         IClydeWindow MainWindow { get; }
         IRenderTarget MainWindowRenderTarget => MainWindow.RenderTarget;
@@ -41,35 +42,6 @@ namespace Robust.Client.Graphics
         event Action<WindowFocusedEventArgs> OnWindowFocused;
 
         event Action<WindowContentScaleEventArgs> OnWindowScaleChanged;
-
-        OwnedTexture LoadTextureFromPNGStream(Stream stream, string? name = null,
-            TextureLoadParameters? loadParams = null);
-
-        OwnedTexture LoadTextureFromImage<T>(Image<T> image, string? name = null,
-            TextureLoadParameters? loadParams = null) where T : unmanaged, IPixel<T>;
-
-        /// <summary>
-        ///     Creates a blank texture of the specified parameters.
-        ///     This texture can later be modified using <see cref="OwnedTexture.SetSubImage{T}"/>
-        /// </summary>
-        /// <param name="size">The size of the new texture, in pixels.</param>
-        /// <param name="name">A name for the texture that can show up in debugging tools like renderdoc.</param>
-        /// <param name="loadParams">
-        ///     Load parameters for the texture describing stuff such as sample mode.
-        /// </param>
-        /// <typeparam name="T">
-        ///     The type of pixels to "store" in the texture.
-        ///     This is the same type you should pass to <see cref="OwnedTexture.SetSubImage{T}"/>,
-        ///     and also determines how the texture is stored internally.
-        /// </typeparam>
-        /// <returns>
-        ///     An owned, mutable texture object.
-        /// </returns>
-        OwnedTexture CreateBlankTexture<T>(
-            Vector2i size,
-            string? name = null,
-            in TextureLoadParameters? loadParams = null)
-            where T : unmanaged, IPixel<T>;
 
         IRenderTexture CreateRenderTarget(Vector2i size, RenderTargetFormatParameters format,
             TextureSampleParameters? sampleParameters = null, string? name = null);

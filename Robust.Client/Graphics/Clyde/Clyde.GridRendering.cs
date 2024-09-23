@@ -182,10 +182,6 @@ namespace Robust.Client.Graphics.Clyde
                 }
             }
 
-            GL.BindVertexArray(datum.VAO);
-            CheckGlError();
-            datum.EBO.Use();
-            datum.VBO.Use();
             datum.EBO.Reallocate(indexBuffer[..(i * GetQuadBatchIndexCount())]);
             datum.VBO.Reallocate(vertexBuffer[..(i * 4)]);
             datum.Dirty = false;
@@ -201,19 +197,16 @@ namespace Robust.Client.Graphics.Clyde
             var vboSize = _verticesPerChunk(chunk) * sizeof(Vertex2D);
             var eboSize = _indicesPerChunk(chunk) * sizeof(ushort);
 
-            var vbo = new GLBuffer(this, BufferTarget.ArrayBuffer, BufferUsageHint.DynamicDraw,
+            var vbo = new GLBuffer(_pal, BufferUsageHint.DynamicDraw,
                 vboSize, $"Grid {grid.Owner} chunk {chunk.Indices} VBO");
-            var ebo = new GLBuffer(this, BufferTarget.ElementArrayBuffer, BufferUsageHint.DynamicDraw,
+            var ebo = new GLBuffer(_pal, BufferUsageHint.DynamicDraw,
                 eboSize, $"Grid {grid.Owner} chunk {chunk.Indices} EBO");
 
             _hasGL.ObjectLabelMaybe(ObjectLabelIdentifier.VertexArray, vao, $"Grid {grid.Owner} chunk {chunk.Indices} VAO");
+            ebo.Use(BufferTarget.ElementArrayBuffer);
+            vbo.Use(BufferTarget.ArrayBuffer);
             SetupVAOLayout();
             CheckGlError();
-
-            // Assign VBO and EBO to VAO.
-            // OpenGL 3.x is such a good API.
-            vbo.Use();
-            ebo.Use();
 
             var datum = new MapChunkData(vao, vbo, ebo)
             {
@@ -227,8 +220,8 @@ namespace Robust.Client.Graphics.Clyde
         {
             DeleteVertexArray(data.VAO);
             CheckGlError();
-            data.VBO.Delete();
-            data.EBO.Delete();
+            data.VBO.Dispose();
+            data.EBO.Dispose();
         }
 
         private void _updateTileMapOnUpdate(ref TileChangedEvent args)

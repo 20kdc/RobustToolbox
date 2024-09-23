@@ -51,22 +51,22 @@ namespace Robust.Client.Graphics
 
         public void Dispose()
         {
-            if (Interlocked.Exchange(ref _disposed, 1) == 0) {
-                Dispose(true);
+            if (Interlocked.Exchange(ref _disposed, 1) == 0)
+            {
+                DisposeImpl();
                 GC.SuppressFinalize(this);
             }
         }
 
         /// <summary>Actual dispose implementation. This will only ever be called once.</summary>
-        protected virtual void Dispose(bool disposing)
+        protected virtual void DisposeImpl()
         {
         }
 
         ~OwnedTexture()
         {
-            if (Interlocked.Exchange(ref _disposed, 1) == 0) {
-                Dispose(false);
-            }
+            if (Interlocked.Exchange(ref _disposed, 1) == 0)
+                DisposeImpl();
         }
     }
 }

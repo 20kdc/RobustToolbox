@@ -117,22 +117,22 @@ namespace Robust.Client.Graphics.Clyde
                 _hasGL.ObjectLabelMaybe(ObjectLabelIdentifier.VertexArray, _occlusionVao, nameof(_occlusionVao));
 
                 // aPos
-                _occlusionVbo = new GLBuffer(this, BufferTarget.ArrayBuffer, BufferUsageHint.DynamicDraw,
-                    nameof(_occlusionVbo));
+                _occlusionVbo = new GLBuffer(_pal, BufferUsageHint.DynamicDraw, nameof(_occlusionVbo));
+                _occlusionVbo.Use(BufferTarget.ArrayBuffer);
                 GL.VertexAttribPointer(0, 4, VertexAttribPointerType.Float, false, sizeof(Vector4), IntPtr.Zero);
                 GL.EnableVertexAttribArray(0);
 
                 CheckGlError();
 
                 // subVertex
-                _occlusionVIVbo = new GLBuffer(this, BufferTarget.ArrayBuffer, BufferUsageHint.DynamicDraw,
-                    nameof(_occlusionVIVbo));
+                _occlusionVIVbo = new GLBuffer(_pal, BufferUsageHint.DynamicDraw, nameof(_occlusionVIVbo));
+                _occlusionVIVbo.Use(BufferTarget.ArrayBuffer);
                 GL.VertexAttribPointer(1, 2, VertexAttribPointerType.UnsignedByte, true, sizeof(byte) * 2, IntPtr.Zero);
                 GL.EnableVertexAttribArray(1);
 
                 // index
-                _occlusionEbo = new GLBuffer(this, BufferTarget.ElementArrayBuffer, BufferUsageHint.DynamicDraw,
-                    nameof(_occlusionEbo));
+                _occlusionEbo = new GLBuffer(_pal, BufferUsageHint.DynamicDraw, nameof(_occlusionEbo));
+                _occlusionEbo.Use(BufferTarget.ElementArrayBuffer);
 
                 CheckGlError();
             }
@@ -147,14 +147,15 @@ namespace Robust.Client.Graphics.Clyde
 
                 _hasGL.ObjectLabelMaybe(ObjectLabelIdentifier.VertexArray, _occlusionMaskVao, nameof(_occlusionMaskVao));
 
-                _occlusionMaskVbo = new GLBuffer(this, BufferTarget.ArrayBuffer, BufferUsageHint.DynamicDraw,
-                    nameof(_occlusionMaskVbo));
+                _occlusionMaskVbo = new GLBuffer(_pal, BufferUsageHint.DynamicDraw, nameof(_occlusionMaskVbo));
 
-                _occlusionMaskEbo = new GLBuffer(this, BufferTarget.ElementArrayBuffer, BufferUsageHint.DynamicDraw,
-                    nameof(_occlusionMaskEbo));
+                _occlusionMaskEbo = new GLBuffer(_pal, BufferUsageHint.DynamicDraw, nameof(_occlusionMaskEbo));
 
+                _occlusionMaskVbo.Use(BufferTarget.ArrayBuffer);
                 GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, sizeof(Vector2), IntPtr.Zero);
                 GL.EnableVertexAttribArray(0);
+
+                _occlusionMaskEbo.Use(BufferTarget.ElementArrayBuffer);
                 CheckGlError();
             }
 

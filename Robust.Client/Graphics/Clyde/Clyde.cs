@@ -255,7 +255,7 @@ namespace Robust.Client.Graphics.Clyde
                     new Vertex2D(0, 1, 0, 0, Color.White)
                 };
 
-                QuadVBO = new GLBuffer<Vertex2D>(this, BufferTarget.ArrayBuffer, BufferUsageHint.StaticDraw,
+                QuadVBO = new GLBuffer<Vertex2D>(_pal, BufferUsageHint.StaticDraw,
                     quadVertices,
                     nameof(QuadVBO));
 
@@ -266,7 +266,7 @@ namespace Robust.Client.Graphics.Clyde
 
             // Batch rendering
             {
-                BatchVBO = new GLBuffer(this, BufferTarget.ArrayBuffer, BufferUsageHint.DynamicDraw,
+                BatchVBO = new GLBuffer(_pal, BufferUsageHint.DynamicDraw,
                     sizeof(Vertex2D) * BatchVertexData.Length, nameof(BatchVBO));
 
                 BatchVAO = new GLHandle(GenVertexArray());
@@ -276,7 +276,7 @@ namespace Robust.Client.Graphics.Clyde
 
                 CheckGlError();
 
-                BatchEBO = new GLBuffer(this, BufferTarget.ElementArrayBuffer, BufferUsageHint.DynamicDraw,
+                BatchEBO = new GLBuffer(_pal, BufferUsageHint.DynamicDraw,
                     sizeof(ushort) * BatchIndexData.Length, nameof(BatchEBO));
             }
 

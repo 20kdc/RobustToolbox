@@ -194,6 +194,8 @@ namespace Robust.Client.Graphics.Clyde
             return new DummyRenderTexture(size, new DummyTexture(size));
         }
 
+        public GPUBuffer CreateBuffer(ReadOnlySpan<byte> span, GPUBuffer.Usage usage, string? name) => new DummyBuffer();
+
         public ICursor GetStandardCursor(StandardCursorShape shape)
         {
             return new DummyCursor();
@@ -289,6 +291,23 @@ namespace Robust.Client.Graphics.Clyde
             public void Dispose()
             {
                 // Nada.
+            }
+        }
+
+        private sealed class DummyBuffer : GPUBuffer
+        {
+            public DummyBuffer()
+            {
+            }
+
+            public override void WriteSubData(int start, ReadOnlySpan<byte> data)
+            {
+                // do nothing!
+            }
+
+            public override void Reallocate(ReadOnlySpan<byte> data)
+            {
+                // do nothing!
             }
         }
 

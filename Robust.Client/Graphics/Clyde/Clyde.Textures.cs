@@ -25,17 +25,6 @@ namespace Robust.Client.Graphics.Clyde
 {
     internal partial class PAL
     {
-        public OwnedTexture LoadTextureFromPNGStream(Stream stream, string? name = null,
-            TextureLoadParameters? loadParams = null)
-        {
-            DebugTools.Assert(_gameThread == Thread.CurrentThread);
-
-            // Load using Rgba32.
-            using var image = Image.Load<Rgba32>(stream);
-
-            return LoadTextureFromImage(image, name, loadParams);
-        }
-
         public OwnedTexture LoadTextureFromImage<T>(Image<T> image, string? name = null,
             TextureLoadParameters? loadParams = null) where T : unmanaged, IPixel<T>
         {
@@ -558,7 +547,7 @@ namespace Robust.Client.Graphics.Clyde
             _pal.SetSubImage(this, topLeft, size, buffer);
         }
 
-        protected override void Dispose(bool disposing)
+        protected override void DisposeImpl()
         {
             if (_pal.IsMainThread())
             {
