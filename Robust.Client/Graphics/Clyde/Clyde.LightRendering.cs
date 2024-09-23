@@ -460,7 +460,7 @@ namespace Robust.Client.Graphics.Clyde
                     {
                         SetTexture(TextureUnit.Texture0, maskTexture);
                         lastMask = maskTexture;
-                        lightShader.SetUniformTextureMaybe(UniIMainTexture, TextureUnit.Texture0);
+                        lightShader.SetUniformTextureMaybe(InternedUniforms.UniIMainTexture, TextureUnit.Texture0);
                     }
 
                     if (!MathHelper.CloseToPercent(lastRange, component.Radius))
@@ -665,7 +665,7 @@ namespace Robust.Client.Graphics.Clyde
 
             var size = viewport.LightRenderTarget.Size;
             shader.SetUniformMaybe("size", (Vector2)size);
-            shader.SetUniformTextureMaybe(UniIMainTexture, TextureUnit.Texture0);
+            shader.SetUniformTextureMaybe(InternedUniforms.UniIMainTexture, TextureUnit.Texture0);
 
             GL.Viewport(0, 0, size.X, size.Y);
             CheckGlError();
@@ -727,7 +727,7 @@ namespace Robust.Client.Graphics.Clyde
             SetupGlobalUniformsImmediate(shader, viewport.LightRenderTarget.Texture);
 
             shader.SetUniformMaybe("size", (Vector2)viewport.WallBleedIntermediateRenderTarget1.Size);
-            shader.SetUniformTextureMaybe(UniIMainTexture, TextureUnit.Texture0);
+            shader.SetUniformTextureMaybe(InternedUniforms.UniIMainTexture, TextureUnit.Texture0);
 
             var size = viewport.WallBleedIntermediateRenderTarget1.Size;
             GL.Viewport(0, 0, size.X, size.Y);
@@ -793,7 +793,7 @@ namespace Robust.Client.Graphics.Clyde
 
             SetTexture(TextureUnit.Texture0, tex);
 
-            shader.SetUniformTextureMaybe(UniIMainTexture, TextureUnit.Texture0);
+            shader.SetUniformTextureMaybe(InternedUniforms.UniIMainTexture, TextureUnit.Texture0);
 
             BindVertexArray(_occlusionMaskVao.Handle);
             CheckGlError();
@@ -824,7 +824,7 @@ namespace Robust.Client.Graphics.Clyde
 
             SetTexture(TextureUnit.Texture0, FovTexture);
 
-            fovShader.SetUniformTextureMaybe(UniIMainTexture, TextureUnit.Texture0);
+            fovShader.SetUniformTextureMaybe(InternedUniforms.UniIMainTexture, TextureUnit.Texture0);
 
             if (!Color.TryParse(_cfg.GetCVar(CVars.RenderFOVColor), out var color))
                 color = Color.Black;
@@ -864,7 +864,7 @@ namespace Robust.Client.Graphics.Clyde
                 CheckGlError();
             }
 
-            fovShader.SetUniformTextureMaybe(UniIMainTexture, TextureUnit.Texture0);
+            fovShader.SetUniformTextureMaybe(InternedUniforms.UniIMainTexture, TextureUnit.Texture0);
 
             GL.StencilMask(0xFF);
             CheckGlError();

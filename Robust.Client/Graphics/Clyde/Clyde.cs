@@ -58,9 +58,6 @@ namespace Robust.Client.Graphics.Clyde
         private GLHandle QuadVAO;
 
         private bool _drawingSplash = true;
-
-        private GLShaderProgram? _currentProgram;
-
         private float _lightResolutionScale = 0.5f;
         private int _maxLights = 2048;
         private int _maxOccluders = 2048;

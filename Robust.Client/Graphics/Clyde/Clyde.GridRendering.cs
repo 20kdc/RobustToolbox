@@ -61,13 +61,13 @@ namespace Robust.Client.Graphics.Clyde
                     gridProgram = ActivateShaderInstance(_defaultShader.Handle).Item1;
                     SetupGlobalUniformsImmediate(gridProgram, (ClydeTexture) _tileDefinitionManager.TileTextureAtlas);
 
-                    gridProgram.SetUniformTextureMaybe(UniIMainTexture, TextureUnit.Texture0);
-                    gridProgram.SetUniformTextureMaybe(UniILightTexture, TextureUnit.Texture1);
-                    gridProgram.SetUniform(UniIModUV, new Vector4(0, 0, 1, 1));
+                    gridProgram.SetUniformTextureMaybe(InternedUniforms.UniIMainTexture, TextureUnit.Texture0);
+                    gridProgram.SetUniformTextureMaybe(InternedUniforms.UniILightTexture, TextureUnit.Texture1);
+                    gridProgram.SetUniform(InternedUniforms.UniIModUV, new Vector4(0, 0, 1, 1));
                 }
 
                 var transform = _entityManager.GetComponent<TransformComponent>(mapGrid);
-                gridProgram.SetUniform(UniIModelMatrix, transform.WorldMatrix);
+                gridProgram.SetUniform(InternedUniforms.UniIModelMatrix, transform.WorldMatrix);
                 var enumerator = mapSystem.GetMapChunks(mapGrid.Owner, mapGrid.Comp, worldBounds);
 
                 while (enumerator.MoveNext(out var chunk))

@@ -171,9 +171,6 @@ namespace Robust.Client.Graphics.Clyde
         private GLShaderProgram _compileProgram(string vertexSource, string fragmentSource,
             (string, uint)[] attribLocations, string? name = null, bool includeLib=true, Dictionary<string,string>? defines=null)
         {
-            GLShader? vertexShader = null;
-            GLShader? fragmentShader = null;
-
             var versionHeader = _hasGL.ShaderHeader;
 
             if (defines is not null)
@@ -188,52 +185,7 @@ namespace Robust.Client.Graphics.Clyde
             vertexSource = versionHeader + "#define VERTEX_SHADER\n" + lib + vertexSource;
             fragmentSource = versionHeader + "#define FRAGMENT_SHADER\n" + lib + fragmentSource;
 
-            try
-            {
-                try
-                {
-                    vertexShader = new GLShader(this, ShaderType.VertexShader, vertexSource, name == null ? $"{name}-vertex" : null);
-                }
-                catch (ShaderCompilationException e)
-                {
-                    File.WriteAllText("error.glsl", vertexSource);
-                    throw new ShaderCompilationException(
-                        "Failed to compile vertex shader, see inner for details (and error.glsl for formatted source).", e);
-                }
-
-                try
-                {
-                    fragmentShader = new GLShader(this, ShaderType.FragmentShader, fragmentSource, name == null ? $"{name}-fragment" : null);
-                }
-                catch (ShaderCompilationException e)
-                {
-                    File.WriteAllText("error.glsl", fragmentSource);
-                    throw new ShaderCompilationException(
-                        "Failed to compile fragment shader, see inner for details (and error.glsl for formatted source).", e);
-                }
-
-                var program = new GLShaderProgram(this, name);
-                program.Add(vertexShader);
-                program.Add(fragmentShader);
-
-                try
-                {
-                    program.Link(attribLocations);
-                }
-                catch (ShaderCompilationException e)
-                {
-                    program.Delete();
-
-                    throw new ShaderCompilationException("Failed to link shaders. See inner for details.", e);
-                }
-
-                return program;
-            }
-            finally
-            {
-                vertexShader?.Delete();
-                fragmentShader?.Delete();
-            }
+            return new GLShaderProgram(_pal, vertexSource, fragmentSource, attribLocations, name);
         }
 
         private (string vertBody, string fragBody) GetShaderCode(ParsedShader shader)

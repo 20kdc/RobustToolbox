@@ -239,15 +239,15 @@ namespace Robust.Client.Graphics.Clyde
                 SetTexture(TextureUnit.Texture1, _stockTextureWhite);
             }
 
-            program.SetUniformTextureMaybe(UniIMainTexture, TextureUnit.Texture0);
-            program.SetUniformTextureMaybe(UniILightTexture, TextureUnit.Texture1);
+            program.SetUniformTextureMaybe(InternedUniforms.UniIMainTexture, TextureUnit.Texture0);
+            program.SetUniformTextureMaybe(InternedUniforms.UniILightTexture, TextureUnit.Texture1);
 
             // Model matrix becomes identity since it's built into the batch mesh.
-            program.SetUniformMaybe(UniIModelMatrix, command.ModelMatrix);
+            program.SetUniformMaybe(InternedUniforms.UniIModelMatrix, command.ModelMatrix);
             // Reset ModUV to ensure it's identity and doesn't touch anything.
-            program.SetUniformMaybe(UniIModUV, new Vector4(0, 0, 1, 1));
+            program.SetUniformMaybe(InternedUniforms.UniIModUV, new Vector4(0, 0, 1, 1));
 
-            program.SetUniformMaybe(UniITexturePixelSize, Vector2.One / loadedTexture.Size);
+            program.SetUniformMaybe(InternedUniforms.UniITexturePixelSize, Vector2.One / loadedTexture.Size);
 
             SetBlendFunc(loaded.BlendMode);
 
@@ -300,7 +300,7 @@ namespace Robust.Client.Graphics.Clyde
             (rectTransform.M11, rectTransform.M22) = b - a;
             (rectTransform.M31, rectTransform.M32) = a;
             rectTransform = rectTransform * modelMatrix;
-            program.SetUniformMaybe(UniIModelMatrix, rectTransform);
+            program.SetUniformMaybe(InternedUniforms.UniIModelMatrix, rectTransform);
 
             _debugStats.LastGLDrawCalls += 1;
             GL.DrawArrays(PrimitiveType.TriangleStrip, 0, 4);
