@@ -196,6 +196,8 @@ namespace Robust.Client.Graphics.Clyde
 
         public GPUBuffer CreateBuffer(ReadOnlySpan<byte> span, GPUBuffer.Usage usage, string? name) => new DummyBuffer();
 
+        public GPUVertexArrayObject CreateVAO(string? name) => new DummyVAO();
+
         public ICursor GetStandardCursor(StandardCursorShape shape)
         {
             return new DummyCursor();
@@ -300,6 +302,11 @@ namespace Robust.Client.Graphics.Clyde
             {
             }
 
+            protected override void DisposeImpl()
+            {
+                // nothing to dispose
+            }
+
             public override void WriteSubData(int start, ReadOnlySpan<byte> data)
             {
                 // do nothing!
@@ -308,6 +315,31 @@ namespace Robust.Client.Graphics.Clyde
             public override void Reallocate(ReadOnlySpan<byte> data)
             {
                 // do nothing!
+            }
+        }
+
+        private sealed class DummyVAO : GPUVertexArrayObject
+        {
+            public DummyVAO()
+            {
+            }
+
+            protected override void DisposeImpl()
+            {
+                // nothing to dispose
+            }
+
+            public override GPUBuffer? IndexBuffer
+            {
+                set
+                {
+                    // nope!
+                }
+            }
+
+            public override void SetVertexAttrib(int index, VertexAttrib? value)
+            {
+                // still no
             }
         }
 

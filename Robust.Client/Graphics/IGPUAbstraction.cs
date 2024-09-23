@@ -64,4 +64,7 @@ public interface IGPUAbstraction
     /// <summary>Creates a buffer on the GPU with the given contents. Buffer objects store vertex, index, and uniform (if not GLES2) data. They are highly mutable and can be reallocated at will.</summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     GPUBuffer CreateBuffer<T>(in T data, GPUBuffer.Usage usage, string? name = null) where T : unmanaged => CreateBuffer(MemoryMarshal.AsBytes(new ReadOnlySpan<T>(in data)), usage, name);
+
+    /// <summary>Creates a Vertex Array Object. This object specifies the vertex data of a draw call.</summary>
+    GPUVertexArrayObject CreateVAO(string? name = null);
 }

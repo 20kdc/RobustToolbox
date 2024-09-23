@@ -12,11 +12,8 @@ namespace Robust.Client.Graphics;
 /// Notably, data cannot be retrieved from these buffers. (Technically this only applies in compatibility mode, but as that's still used to work around driver bugs...)
 /// </summary>
 [PublicAPI]
-public abstract class GPUBuffer : IDisposable
+public abstract class GPUBuffer : GPUResource
 {
-    /// <summary>Guard to prevent this buffer being disposed multiple times.</summary>
-    private int _disposed = 0;
-
     /// <summary>Writes data into the buffer at the given address. The GL will verify the access is in-bounds. (Internal callers beware: The target used is ArrayBuffer.)</summary>
     public abstract void WriteSubData(int start, ReadOnlySpan<byte> data);
 
@@ -61,26 +58,6 @@ public abstract class GPUBuffer : IDisposable
     /// <summary>Rewrites the buffer with the given data without reallocating it. (Internal callers beware: The target used is ArrayBuffer.)</summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void WriteSubData<T>(Span<T> data) where T : unmanaged => WriteSubData(0, MemoryMarshal.AsBytes((ReadOnlySpan<T>) data));
-
-    public void Dispose()
-    {
-        if (Interlocked.Exchange(ref _disposed, 1) == 0)
-        {
-            DisposeImpl();
-            GC.SuppressFinalize(this);
-        }
-    }
-
-    /// <summary>Actual dispose implementation. This will only ever be called once.</summary>
-    protected virtual void DisposeImpl()
-    {
-    }
-
-    ~GPUBuffer()
-    {
-        if (Interlocked.Exchange(ref _disposed, 1) == 0)
-            DisposeImpl();
-    }
 
     /// <summary>Represents the intended usage mode of the buffer.</summary>
     public enum Usage

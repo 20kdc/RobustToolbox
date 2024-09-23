@@ -255,8 +255,8 @@ namespace Robust.Client.Graphics.Clyde
                     new Vertex2D(0, 1, 0, 0, Color.White)
                 };
 
-                QuadVBO = new GLBuffer<Vertex2D>(_pal, BufferUsageHint.StaticDraw,
-                    quadVertices,
+                QuadVBO = new GLBuffer(_pal, BufferUsageHint.StaticDraw,
+                    MemoryMarshal.AsBytes(quadVertices),
                     nameof(QuadVBO));
 
                 QuadVAO = MakeQuadVao();

@@ -18,18 +18,15 @@ internal partial class PAL
 /// <summary>
 ///     Represents an OpenGL buffer object.
 /// </summary>
-[Virtual]
-internal class GLBuffer : GPUBuffer
+internal sealed class GLBuffer : GPUBuffer
 {
     private readonly PAL _pal;
     public uint ObjectHandle { get; private set; }
     public BufferUsageHint UsageHint { get; }
-    public string? Name { get; }
 
     public GLBuffer(PAL pal, BufferUsageHint usage, string? name = null)
     {
         _pal = pal;
-        Name = name;
         UsageHint = usage;
 
         GL.GenBuffers(1, out uint handle);
@@ -124,19 +121,5 @@ internal class GLBuffer : GPUBuffer
         Use(BufferTarget.ArrayBuffer);
         GL.BufferData(BufferTarget.ArrayBuffer, size, IntPtr.Zero, UsageHint);
         _pal.CheckGlError();
-    }
-}
-
-/// <inheritdoc />
-/// <summary>
-///     Subtype of buffers so that we can have a generic constructor.
-///     Functionally equivalent to <see cref="GLBuffer"/> otherwise.
-/// </summary>
-internal sealed class GLBuffer<T> : GLBuffer where T : unmanaged
-{
-    public GLBuffer(PAL clyde, BufferUsageHint usage, Span<T> initialize,
-        string? name = null)
-        : base(clyde, usage, MemoryMarshal.AsBytes(initialize), name)
-    {
     }
 }

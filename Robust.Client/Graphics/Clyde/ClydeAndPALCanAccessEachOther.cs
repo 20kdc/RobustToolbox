@@ -21,6 +21,8 @@ internal sealed partial class Clyde
     public OwnedTexture CreateBlankTexture<T>(Vector2i size, string? name = null, in TextureLoadParameters? loadParams = null) where T : unmanaged, IPixel<T> => _pal.CreateBlankTexture<T>(size, name, loadParams);
 
     public GPUBuffer CreateBuffer(ReadOnlySpan<byte> span, GPUBuffer.Usage usage, string? name) => _pal.CreateBuffer(span, usage, name);
+
+    public GPUVertexArrayObject CreateVAO(string? name = null) => _pal.CreateVAO(name);
 }
 
 internal sealed partial class PAL
