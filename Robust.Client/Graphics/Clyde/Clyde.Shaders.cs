@@ -171,19 +171,18 @@ namespace Robust.Client.Graphics.Clyde
         private GLShaderProgram _compileProgram(string vertexSource, string fragmentSource,
             (string, uint)[] attribLocations, string[] textureUniforms, string? name = null, bool includeLib=true, Dictionary<string,string>? defines=null)
         {
-            var versionHeader = _hasGL.ShaderHeader;
+            // Version header and basic language fixes are handled internally.
 
+            var lib = includeLib ? _shaderLibrary : "";
             if (defines is not null)
             {
                 foreach (var k in defines.Keys)
                 {
-                    versionHeader += $"#define {k} {defines[k]}\n";
+                    lib += $"#define {k} {defines[k]}\n";
                 }
             }
-
-            var lib = includeLib ? _shaderLibrary : "";
-            vertexSource = versionHeader + "#define VERTEX_SHADER\n" + lib + vertexSource;
-            fragmentSource = versionHeader + "#define FRAGMENT_SHADER\n" + lib + fragmentSource;
+            vertexSource = lib + vertexSource;
+            fragmentSource = lib + fragmentSource;
 
             return new GLShaderProgram(_pal, vertexSource, fragmentSource, attribLocations, textureUniforms, name);
         }

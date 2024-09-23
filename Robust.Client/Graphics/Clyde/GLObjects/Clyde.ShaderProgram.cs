@@ -36,10 +36,32 @@ internal sealed class GLShaderProgram
         _pal = clyde;
         Name = name;
 
-        uint vertexShader = CompileShader(ShaderType.VertexShader, vertexSource);
+        string vertexHeader = clyde._hasGL.ShaderHeader + "#define VERTEX_SHADER\n";
+        string fragmentHeader = clyde._hasGL.ShaderHeader + "#define FRAGMENT_SHADER\n";
+
+        if (!clyde._hasGL.HasVaryingAttribute)
+        {
+            // GLES2 uses the (IMO much more consistent & header-friendly) varying/attribute qualifiers.
+            // GLES3 and GL3 in general doesn't. Smooth it out.
+            // This used to be part of z-library.glsl, but was moved into PAL since Content may get to use this.
+            vertexHeader += "#define texture2D texture\n";
+            fragmentHeader += "#define texture2D texture\n";
+
+            vertexHeader += "#define varying out\n";
+            vertexHeader += "#define attribute in\n";
+
+            fragmentHeader += "#define varying in\n";
+            // For some reason, gl_FragColor isn't available on these targets.
+            // Instead, you're supposed to do some sorta dance where you bind outputs to fragment colours.
+            // See, say, OpenGL ES 3.2 spec, pages 376-377.
+            fragmentHeader += "#define gl_FragColor palGLFragColor\n";
+            fragmentHeader += "out highp vec4 palGLFragColor;\n";
+        }
+
+        uint vertexShader = CompileShader(ShaderType.VertexShader, vertexHeader + vertexSource);
         try
         {
-            uint fragmentShader = CompileShader(ShaderType.FragmentShader, fragmentSource);
+            uint fragmentShader = CompileShader(ShaderType.FragmentShader, fragmentHeader + fragmentSource);
             try
             {
                 Handle = (uint) GL.CreateProgram();

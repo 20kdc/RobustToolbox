@@ -4,20 +4,7 @@
 // It's literally just called the Z-Library for alphabetical ordering reasons.
 //  - 20kdc
 
-// -- varying/attribute/texture2D --
-
-#ifndef HAS_VARYING_ATTRIBUTE
-#define texture2D texture
-#ifdef VERTEX_SHADER
-#define varying out
-#define attribute in
-#else
-#define varying in
-#define attribute in
-#define gl_FragColor colourOutput
-out highp vec4 colourOutput;
-#endif
-#endif
+// -- array precision (?) --
 
 #ifndef NO_ARRAY_PRECISION
 #define ARRAY_LOWP lowp
