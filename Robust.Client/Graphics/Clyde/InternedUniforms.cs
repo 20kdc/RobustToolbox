@@ -1,18 +1,21 @@
 namespace Robust.Client.Graphics.Clyde;
 
 /// <summary>Interned uniform names.</summary>
-internal static class InternedUniforms
+internal sealed class InternedUniform
 {
-    public const int UniIModUV = 0;
-    public const int UniIModelMatrix = 1;
-    public const int UniITexturePixelSize = 2;
-    public const int UniIMainTexture = 3;
-    public const int UniILightTexture = 4;
+    public static readonly InternedUniform UniIModUV = new(0, "modifyUV");
+    public static readonly InternedUniform UniIModelMatrix = new(1, "modelMatrix");
+    public static readonly InternedUniform UniITexturePixelSize = new(2, "TEXTURE_PIXEL_SIZE");
+    public static readonly InternedUniform UniIMainTexture = new(3, "TEXTURE");
+    public static readonly InternedUniform UniILightTexture = new(4, "lightMap");
     public const int UniCount = 5;
 
-    public const string UniModUV = "modifyUV";
-    public const string UniModelMatrix = "modelMatrix";
-    public const string UniTexturePixelSize = "TEXTURE_PIXEL_SIZE";
-    public const string UniMainTexture = "TEXTURE";
-    public const string UniLightTexture = "lightMap";
+    public int Index { get; private set; }
+    public string Name { get; private set; }
+
+    private InternedUniform(int index, string name)
+    {
+        Index = index;
+        Name = name;
+    }
 }

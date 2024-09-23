@@ -24,7 +24,7 @@ internal partial class PAL
 /// </summary>
 internal sealed class GLShaderProgram
 {
-    private readonly sbyte?[] _uniformIntCache = new sbyte?[InternedUniforms.UniCount];
+    private readonly sbyte?[] _uniformIntCache = new sbyte?[InternedUniform.UniCount];
     private readonly Dictionary<string, int> _uniformCache = new();
     public uint Handle = 0;
     public string? Name { get; }
@@ -152,7 +152,7 @@ internal sealed class GLShaderProgram
         return result;
     }
 
-    public int GetUniform(int id)
+    public int GetUniform(InternedUniform id)
     {
         if (!TryGetUniform(id, out var result))
         {
@@ -177,12 +177,11 @@ internal sealed class GLShaderProgram
         return index != -1;
     }
 
-    public bool TryGetUniform(int id, out int index)
+    public bool TryGetUniform(InternedUniform id, out int index)
     {
         DebugTools.Assert(Handle != 0);
-        DebugTools.Assert(id < InternedUniforms.UniCount);
 
-        var value = _uniformIntCache[id];
+        var value = _uniformIntCache[id.Index];
         if (value.HasValue)
         {
             index = value.Value;
@@ -192,38 +191,18 @@ internal sealed class GLShaderProgram
         return InitIntUniform(id, out index);
     }
 
-    private bool InitIntUniform(int id, out int index)
+    private bool InitIntUniform(InternedUniform id, out int index)
     {
-        string name;
-        switch (id)
-        {
-            case InternedUniforms.UniIModUV:
-                name = InternedUniforms.UniModUV;
-                break;
-            case InternedUniforms.UniILightTexture:
-                name = InternedUniforms.UniLightTexture;
-                break;
-            case InternedUniforms.UniIMainTexture:
-                name = InternedUniforms.UniMainTexture;
-                break;
-            case InternedUniforms.UniIModelMatrix:
-                name = InternedUniforms.UniModelMatrix;
-                break;
-            case InternedUniforms.UniITexturePixelSize:
-                name = InternedUniforms.UniTexturePixelSize;
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
+        string name = id.Name;
 
         index = GL.GetUniformLocation(Handle, name);
         _pal.CheckGlError();
-        _uniformIntCache[id] = (sbyte)index;
+        _uniformIntCache[id.Index] = (sbyte)index;
         return index != -1;
     }
 
     public bool HasUniform(string name) => TryGetUniform(name, out _);
-    public bool HasUniform(int id) => TryGetUniform(id, out _);
+    public bool HasUniform(InternedUniform id) => TryGetUniform(id, out _);
 
     public void BindBlock(string blockName, uint blockBinding)
     {
@@ -247,7 +226,7 @@ internal sealed class GLShaderProgram
         _pal.CheckGlError();
     }
 
-    public void SetUniform(int uniformName, float single)
+    public void SetUniform(InternedUniform uniformName, float single)
     {
         var uniformId = GetUniform(uniformName);
         GL.Uniform1(uniformId, single);
@@ -260,7 +239,7 @@ internal sealed class GLShaderProgram
         _pal.CheckGlError();
     }
 
-    public void SetUniform(int uniformName, float[] singles)
+    public void SetUniform(InternedUniform uniformName, float[] singles)
     {
         var uniformId = GetUniform(uniformName);
         GL.Uniform1(uniformId, singles.Length, singles);
@@ -272,7 +251,7 @@ internal sealed class GLShaderProgram
         SetUniformDirect(uniformId, matrix);
     }
 
-    public void SetUniform(int uniformName, in Matrix3x2 matrix)
+    public void SetUniform(InternedUniform uniformName, in Matrix3x2 matrix)
     {
         var uniformId = GetUniform(uniformName);
         SetUniformDirect(uniformId, matrix);
@@ -321,7 +300,7 @@ internal sealed class GLShaderProgram
         SetUniformDirect(uniformId, vector);
     }
 
-    public void SetUniform(int uniformName, in Vector4 vector)
+    public void SetUniform(InternedUniform uniformName, in Vector4 vector)
     {
         var uniformId = GetUniform(uniformName);
         SetUniformDirect(uniformId, vector);
@@ -346,7 +325,7 @@ internal sealed class GLShaderProgram
         SetUniformDirect(uniformId, color, convertToLinear);
     }
 
-    public void SetUniform(int uniformName, in Color color, bool convertToLinear = true)
+    public void SetUniform(InternedUniform uniformName, in Color color, bool convertToLinear = true)
     {
         var uniformId = GetUniform(uniformName);
         SetUniformDirect(uniformId, color, convertToLinear);
@@ -393,7 +372,7 @@ internal sealed class GLShaderProgram
         SetUniformDirect(uniformId, vector);
     }
 
-    public void SetUniform(int uniformName, in Vector2 vector)
+    public void SetUniform(InternedUniform uniformName, in Vector2 vector)
     {
         var uniformId = GetUniform(uniformName);
         SetUniformDirect(uniformId, vector);
@@ -418,7 +397,7 @@ internal sealed class GLShaderProgram
         SetUniformDirect(uniformId, vector);
     }
 
-    public void SetUniform(int uniformName, Vector2[] vector)
+    public void SetUniform(InternedUniform uniformName, Vector2[] vector)
     {
         var uniformId = GetUniform(uniformName);
         SetUniformDirect(uniformId, vector);
@@ -458,7 +437,7 @@ internal sealed class GLShaderProgram
         }
     }
 
-    public void SetUniformTextureMaybe(int uniformName, TextureUnit value)
+    public void SetUniformTextureMaybe(InternedUniform uniformName, TextureUnit value)
     {
         if (TryGetUniform(uniformName, out var slot))
         {
@@ -474,7 +453,7 @@ internal sealed class GLShaderProgram
         }
     }
 
-    public void SetUniformMaybe(int uniformName, in Vector4 value)
+    public void SetUniformMaybe(InternedUniform uniformName, in Vector4 value)
     {
         if (TryGetUniform(uniformName, out var slot))
         {
@@ -490,7 +469,7 @@ internal sealed class GLShaderProgram
         }
     }
 
-    public void SetUniformMaybe(int uniformName, in Color value)
+    public void SetUniformMaybe(InternedUniform uniformName, in Color value)
     {
         if (TryGetUniform(uniformName, out var slot))
         {
@@ -514,7 +493,7 @@ internal sealed class GLShaderProgram
         }
     }
 
-    public void SetUniformMaybe(int uniformName, in Matrix3x2 value)
+    public void SetUniformMaybe(InternedUniform uniformName, in Matrix3x2 value)
     {
         if (TryGetUniform(uniformName, out var slot))
         {
@@ -538,7 +517,7 @@ internal sealed class GLShaderProgram
         }
     }
 
-    public void SetUniformMaybe(int uniformName, in Vector2 value)
+    public void SetUniformMaybe(InternedUniform uniformName, in Vector2 value)
     {
         if (TryGetUniform(uniformName, out var slot))
         {
