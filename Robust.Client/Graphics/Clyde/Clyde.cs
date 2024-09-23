@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics;
-using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Threading;
 using OpenToolkit;
@@ -461,6 +460,7 @@ namespace Robust.Client.Graphics.Clyde
             ShutdownWindowing();
         }
 
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
         private bool IsMainThread()
         {
             return Thread.CurrentThread == _gameThread;

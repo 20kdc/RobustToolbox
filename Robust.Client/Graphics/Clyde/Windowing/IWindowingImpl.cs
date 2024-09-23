@@ -112,7 +112,6 @@ internal interface IWindowingHost {
     void SetupDebugCallback();
     void EnableRenderWindowFlipY(Clyde.RenderWindow rw);
     Clyde.LoadedRenderTarget RtToLoaded(Clyde.RenderTargetBase rt);
-    Clyde.GLHandle TextureToGLHandle(ClydeHandle texture);
     Clyde.RenderTexture CreateWindowRenderTarget(Vector2i size);
 }
 

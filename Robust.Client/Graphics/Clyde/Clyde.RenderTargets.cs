@@ -210,7 +210,7 @@ namespace Robust.Client.Graphics.Clyde
                 DepthStencilHandle = depthStencilBuffer,
                 FramebufferHandle = fbo,
                 Size = size,
-                TextureHandle = textureObject.TextureId,
+                Texture = textureObject,
                 MemoryPressure = pressure,
                 ColorFormat = format.ColorFormat
             };
@@ -235,7 +235,7 @@ namespace Robust.Client.Graphics.Clyde
             renderTarget.FramebufferHandle = default;
             CheckGlError();
             _renderTargets.Remove(handle);
-            DeleteTexture(renderTarget.TextureHandle);
+            renderTarget.Texture!.Dispose();
 
             if (renderTarget.DepthStencilHandle != default)
             {
@@ -310,7 +310,7 @@ namespace Robust.Client.Graphics.Clyde
             public GLHandle FramebufferHandle;
 
             // Handle to the loaded clyde texture managing the color attachment.
-            public ClydeHandle TextureHandle;
+            public ClydeTexture? Texture;
 
             // Renderbuffer handle
             public GLHandle DepthStencilHandle;

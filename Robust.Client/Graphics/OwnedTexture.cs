@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using Robust.Shared.Maths;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -10,6 +11,9 @@ namespace Robust.Client.Graphics
     /// </summary>
     public abstract class OwnedTexture : Texture, IDisposable
     {
+        /// <summary>Guard to prevent this texture being disposed multiple times.</summary>
+        private int _disposed = 0;
+
         protected OwnedTexture(Vector2i size) : base(size)
         {
         }
@@ -47,17 +51,22 @@ namespace Robust.Client.Graphics
 
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            if (Interlocked.Exchange(ref _disposed, 1) == 0) {
+                Dispose(true);
+                GC.SuppressFinalize(this);
+            }
         }
 
+        /// <summary>Actual dispose implementation. This will only ever be called once.</summary>
         protected virtual void Dispose(bool disposing)
         {
         }
 
         ~OwnedTexture()
         {
-            Dispose(false);
+            if (Interlocked.Exchange(ref _disposed, 1) == 0) {
+                Dispose(false);
+            }
         }
     }
 }

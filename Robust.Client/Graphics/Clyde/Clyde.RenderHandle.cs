@@ -68,7 +68,7 @@ namespace Robust.Client.Graphics.Clyde
                 var (w, h) = clydeTexture.Size;
                 var sr = new Box2(csr.Left / w, (h - csr.Top) / h, csr.Right / w, (h - csr.Bottom) / h);
 
-                _clyde.DrawTexture(clydeTexture.TextureId, bl, br, tl, tr, in modulate, in sr);
+                _clyde.DrawTexture(clydeTexture, bl, br, tl, tr, in modulate, in sr);
             }
 
             /// <summary>
@@ -90,7 +90,7 @@ namespace Robust.Client.Graphics.Clyde
 
                 var sr = WorldTextureBoundsToUV(clydeTexture, csr);
 
-                _clyde.DrawTexture(clydeTexture.TextureId, bl, br, tl, tr, in modulate, in sr);
+                _clyde.DrawTexture(clydeTexture, bl, br, tl, tr, in modulate, in sr);
             }
 
             internal static Box2 WorldTextureBoundsToUV(ClydeTexture texture, UIBox2 csr)
@@ -269,7 +269,7 @@ namespace Robust.Client.Graphics.Clyde
 
                 var castSpan = MemoryMarshal.Cast<DrawVertexUV2DColor, Vertex2D>(vertices);
 
-                _clyde.DrawPrimitives(primitiveTopology, clydeTexture.TextureId, castSpan);
+                _clyde.DrawPrimitives(primitiveTopology, clydeTexture, castSpan);
             }
 
             public void DrawPrimitives(DrawPrimitiveTopology primitiveTopology, Texture texture,
@@ -283,7 +283,7 @@ namespace Robust.Client.Graphics.Clyde
 
                 var castSpan = MemoryMarshal.Cast<DrawVertexUV2DColor, Vertex2D>(vertices);
 
-                _clyde.DrawPrimitives(primitiveTopology, clydeTexture.TextureId, indices, castSpan);
+                _clyde.DrawPrimitives(primitiveTopology, clydeTexture, indices, castSpan);
             }
 
             // ---- (end) ----

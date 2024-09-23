@@ -65,7 +65,5 @@ namespace Robust.Client.Graphics.Clyde
             var rt = RtToLoaded(rw);
             rt.FlipY = true;
         }
-
-        GLHandle IWindowingHost.TextureToGLHandle(ClydeHandle texture) => _loadedTextures[texture].OpenGLObject;
     }
 }

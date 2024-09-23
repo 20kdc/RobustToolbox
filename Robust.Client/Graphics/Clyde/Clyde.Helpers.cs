@@ -21,18 +21,17 @@ namespace Robust.Client.Graphics.Clyde
         private void SetTexture(TextureUnit unit, Texture texture)
         {
             var ct = (ClydeTexture) texture;
-            SetTexture(unit, ct.TextureId);
-            CheckGlError();
+            SetTexture(unit, ct.OpenGLObject);
         }
 
-        private void SetTexture(TextureUnit unit, ClydeHandle textureId)
+        private void SetTexture(TextureUnit unit, GLHandle textureId)
         {
-            var glHandle = _loadedTextures[textureId].OpenGLObject;
             GL.ActiveTexture(unit);
             CheckGlError();
-            GL.BindTexture(TextureTarget.Texture2D, glHandle.Handle);
+            GL.BindTexture(TextureTarget.Texture2D, textureId.Handle);
             CheckGlError();
             GL.ActiveTexture(TextureUnit.Texture0);
+            CheckGlError();
         }
 
         private void CopyRenderTextureToTexture(RenderTexture source, ClydeTexture target) {
@@ -45,7 +44,7 @@ namespace Robust.Client.Graphics.Clyde
                 CheckGlError();
             }
 
-            GL.BindTexture(TextureTarget.Texture2D, _loadedTextures[target.TextureId].OpenGLObject.Handle);
+            GL.BindTexture(TextureTarget.Texture2D, target.OpenGLObject.Handle);
             CheckGlError();
             GL.CopyTexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, 0, 0, source.Size.X, source.Size.Y);
             CheckGlError();

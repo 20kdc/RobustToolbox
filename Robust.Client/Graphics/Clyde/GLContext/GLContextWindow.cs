@@ -219,7 +219,7 @@ namespace Robust.Client.Graphics.Clyde
                 GL.Viewport(0, 0, window.Reg.FramebufferSize.X, window.Reg.FramebufferSize.Y);
                 GLWrapper!.CheckGlError();
 
-                var tex = Clyde.TextureToGLHandle(window.RenderTexture!.Texture.TextureId);
+                var tex = window.RenderTexture!.Texture.OpenGLObject;
                 GL.BindTexture(TextureTarget.Texture2D, tex.Handle);
                 GLWrapper!.CheckGlError();
 
@@ -297,7 +297,7 @@ namespace Robust.Client.Graphics.Clyde
                 GL.DeleteShader(shaderVtx);
                 GL.DeleteShader(shaderFrg);
 
-                var tex = Clyde.TextureToGLHandle(reg.RenderTexture!.Texture.TextureId);
+                var tex = reg.RenderTexture!.Texture.OpenGLObject;
                 GL.BindTexture(TextureTarget.Texture2D, tex.Handle);
                 GLWrapper!.CheckGlError();
 
