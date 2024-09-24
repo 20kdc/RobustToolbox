@@ -1,27 +1,80 @@
 using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using OpenToolkit.Graphics.OpenGL4;
+using Robust.Shared.Maths;
+using Robust.Shared.Utility;
 using TKStencilOp = OpenToolkit.Graphics.OpenGL4.StencilOp;
 
 namespace Robust.Client.Graphics.Clyde;
 
+// Ok, so, here's the deal.
+// PAL is layered atop _hasGL.
+// In PAL, there's the "backup handles" layer.
+// Micro-operations like uniform updates that should be stateless (but aren't) access this layer to save/restore data.
+// (Any operation that is too complicated to handle this way should be using the next layer!)
+// IGPURenderState provides the next, "outer" layer.
+// It basically provides contexts within contexts.
+// Clyde is then layered on top of IGPURenderState.
+
 internal partial class PAL
 {
+    public int LastGLDrawCalls { get; set; }
+
+    private GLRenderState? _currentRenderState = null;
+
+    // Some simple flags that basically just tracks the current state of glEnable(GL_STENCIL/GL_SCISSOR_TEST)
     private bool _isStencilling;
+    private bool _isScissoring;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DisableStencil()
+    public PAL.GLRenderState CreateRenderState() => new(this);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    IGPURenderState IGPUAbstraction.CreateRenderState() => new GLRenderState(this);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void SetScissorImmediate(Clyde.LoadedRenderTarget renderTarget, in UIBox2i? box)
     {
-        if (_isStencilling)
+        if (box != null)
         {
-            GL.Disable(EnableCap.StencilTest);
+            var val = box!.Value;
+            if (!_isScissoring)
+            {
+                GL.Enable(EnableCap.ScissorTest);
+                CheckGlError();
+            }
+
+            // Don't forget to flip it, these coordinates have bottom left as origin.
+            // TODO: Broken when rendering to non-screen render targets.
+
+            if (renderTarget.FlipY)
+            {
+                GL.Scissor(val.Left, val.Top, val.Width, val.Height);
+            }
+            else
+            {
+                GL.Scissor(val.Left, renderTarget.Size.Y - val.Bottom, val.Width, val.Height);
+            }
             CheckGlError();
-            _isStencilling = false;
+        }
+        else if (_isScissoring)
+        {
+            _isScissoring = false;
+            GL.Disable(EnableCap.ScissorTest);
+            CheckGlError();
         }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ApplyStencilParameters(in StencilParameters sp)
+    private void SetViewportImmediate(Box2i box)
+    {
+        GL.Viewport(box.Left, box.Bottom, box.Width, box.Height);
+        CheckGlError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void ApplyStencilParameters(in StencilParameters sp)
     {
         // Handle stencil parameters.
         if (sp.Enabled)
@@ -33,8 +86,6 @@ internal partial class PAL
                 _isStencilling = true;
             }
 
-            GL.StencilMask(sp.WriteMask);
-            CheckGlError();
             GL.StencilFunc(ToGLStencilFunc(sp.Func), sp.Ref, sp.ReadMask);
             CheckGlError();
             GL.StencilOp(TKStencilOp.Keep, TKStencilOp.Keep, ToGLStencilOp(sp.Op));
@@ -46,6 +97,8 @@ internal partial class PAL
             CheckGlError();
             _isStencilling = false;
         }
+        GL.StencilMask(sp.WriteMask);
+        CheckGlError();
     }
 
     private static TKStencilOp ToGLStencilOp(StencilOp op)
@@ -95,76 +148,199 @@ internal partial class PAL
         };
     }
 
-    public void ExecuteDraw(in GPUDrawCall draw)
+    internal sealed class GLRenderState(PAL pal) : IGPURenderState
     {
-        var rt = _clyde.RtToLoaded((Clyde.RenderTargetBase) draw.RenderTarget);
-        _clyde.BindRenderTargetImmediate(rt);
+        private readonly PAL _pal = pal;
 
-        // Do nothing for now...
-        switch (draw.TextureCount)
+        private Clyde.RenderTargetBase? _renderTarget = null;
+        public IRenderTarget? RenderTarget
         {
-            case 8: goto T7;
-            case 7: goto T6;
-            case 6: goto T5;
-            case 5: goto T4;
-            case 4: goto T3;
-            case 3: goto T2;
-            case 2: goto T1;
-            case 1: goto T0;
-            case 0: goto TN;
-            default: throw new IndexOutOfRangeException("Too many textures!");
+            get => _renderTarget;
+            set
+            {
+                _renderTarget = (Clyde.RenderTargetBase?) value;
+                if (_pal._currentRenderState == this && _renderTarget != null)
+                {
+                    var loaded = _pal._clyde.RtToLoaded(_renderTarget!);
+                    _pal._clyde.BindRenderTargetImmediate(loaded);
+                    _pal.SetScissorImmediate(loaded, _scissor);
+                }
+            }
         }
-        T7:
-        if (draw.Texture7 != null)
-            _clyde.SetTexture(TextureUnit.Texture7, draw.Texture7);
-        T6:
-        if (draw.Texture6 != null)
-            _clyde.SetTexture(TextureUnit.Texture6, draw.Texture6);
-        T5:
-        if (draw.Texture5 != null)
-            _clyde.SetTexture(TextureUnit.Texture5, draw.Texture5);
-        T4:
-        if (draw.Texture4 != null)
-            _clyde.SetTexture(TextureUnit.Texture4, draw.Texture4);
-        T3:
-        if (draw.Texture3 != null)
-            _clyde.SetTexture(TextureUnit.Texture3, draw.Texture3);
-        T2:
-        if (draw.Texture2 != null)
-            _clyde.SetTexture(TextureUnit.Texture2, draw.Texture2);
-        T1:
-        if (draw.Texture1 != null)
-            _clyde.SetTexture(TextureUnit.Texture1, draw.Texture1);
-        T0:
-        if (draw.Texture0 != null)
-            _clyde.SetTexture(TextureUnit.Texture0, draw.Texture0);
-        TN:
-        ((GLShaderProgram) draw.Program).Use();
-        ((GLVAOBase) draw.VAO).Use();
-        ApplyStencilParameters(draw.Stencil);
-        if (draw.Scissor != null)
+
+        private GLShaderProgram? _program = null;
+        public GPUShaderProgram? Program
         {
-            var value = draw.Scissor!.Value;
-            GL.Scissor(value.Left, value.Bottom, value.Width, value.Height);
-            CheckGlError();
-            GL.Enable(EnableCap.ScissorTest);
-            CheckGlError();
+            get => _program;
+            set
+            {
+                _program = (GLShaderProgram?) value;
+                if (_pal._currentRenderState == this && _program != null)
+                {
+                    _pal.DCUseProgram(_program.Handle);
+                }
+            }
         }
-        GL.Viewport(draw.Viewport.Left, draw.Viewport.Bottom, draw.Viewport.Width, draw.Viewport.Height);
-        if (draw.Indexed)
+
+        private GLVAOBase? _vao = null;
+        public GPUVertexArrayObject? VAO
         {
-            GL.DrawElements(MapPrimitiveType(draw.Topology), draw.Count, DrawElementsType.UnsignedShort, draw.Offset);
+            get => _vao;
+            set
+            {
+                _vao = (GLVAOBase?) value;
+                if (_pal._currentRenderState == this && _vao != null)
+                {
+                    _pal.DCBindVAO(_vao.ObjectHandle);
+                }
+            }
         }
-        else
+
+        private StencilParameters _stencil = new();
+        public StencilParameters Stencil
         {
-            GL.DrawArrays(MapPrimitiveType(draw.Topology), draw.Offset, draw.Count);
+            get => _stencil;
+            set
+            {
+                _stencil = value;
+                if (_pal._currentRenderState == this)
+                    _pal.ApplyStencilParameters(value);
+            }
         }
-        CheckGlError();
-        DisableStencil();
-        if (draw.Scissor != null)
+
+        private UIBox2i? _scissor = null;
+        public UIBox2i? Scissor
         {
-            GL.Disable(EnableCap.ScissorTest);
-            CheckGlError();
+            get => _scissor;
+            set
+            {
+                _scissor = value;
+                if (_renderTarget != null)
+                {
+                    var loaded = _pal._clyde.RtToLoaded(_renderTarget!);
+                    _pal.SetScissorImmediate(loaded, _scissor);
+                }
+            }
+        }
+
+        private Box2i _viewport = new();
+        public Box2i Viewport
+        {
+            get => _viewport;
+            set
+            {
+                _viewport = value;
+                _pal.SetViewportImmediate(_viewport);
+            }
+        }
+
+        private Dictionary<TextureUnit, WholeTexture> _textures = new();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public WholeTexture? GetTexture(int unit)
+        {
+            if (_textures.TryGetValue(TextureUnit.Texture0 + unit, out var res))
+            {
+                return res;
+            }
+            return null;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetTexture(int unit, WholeTexture? value)
+        {
+            var tu = TextureUnit.Texture0 + unit;
+            if (value != null)
+            {
+                _textures[tu] = value;
+            }
+            else
+            {
+                _textures.Remove(tu);
+            }
+            if (_pal._currentRenderState == this)
+            {
+                GL.ActiveTexture(tu);
+                _pal.CheckGlError();
+                if (value != null)
+                {
+                    var ct = (ClydeTexture) value!;
+                    GL.BindTexture(TextureTarget.Texture2D, ct.OpenGLObject.Handle);
+                }
+                else
+                {
+                    GL.BindTexture(TextureTarget.Texture2D, 0);
+                }
+                _pal.CheckGlError();
+                if (unit != 0)
+                    GL.ActiveTexture(TextureUnit.Texture0);
+                // ActiveTexture(Texture0) is essentially guaranteed to succeed.
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Bind()
+        {
+            if (_pal._currentRenderState != this)
+            {
+                if (_renderTarget != null)
+                {
+                    var loaded = _pal._clyde.RtToLoaded(_renderTarget!);
+                    _pal._clyde.BindRenderTargetImmediate(loaded);
+                    _pal.SetScissorImmediate(loaded, _scissor);
+                }
+                _pal._currentRenderState = this;
+                if (_program != null)
+                    _pal.DCUseProgram(_program.Handle);
+                if (_vao != null)
+                    _pal.DCBindVAO(_vao.ObjectHandle);
+                _pal.ApplyStencilParameters(_stencil);
+                _pal.SetViewportImmediate(_viewport);
+                foreach (var entry in _textures)
+                {
+                    GL.ActiveTexture(entry.Key);
+                    _pal.CheckGlError();
+                    var ct = (ClydeTexture) entry.Value!;
+                    GL.BindTexture(TextureTarget.Texture2D, ct.OpenGLObject.Handle);
+                    _pal.CheckGlError();
+                }
+                GL.ActiveTexture(TextureUnit.Texture0);
+                // pretty much guaranteed to succeed.
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Unbind()
+        {
+            if (_pal._currentRenderState == this)
+                _pal._currentRenderState = null;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void DrawArrays(DrawPrimitiveTopology topology, int offset, int count)
+        {
+            Bind();
+            DebugTools.AssertNotNull(_vao);
+            GL.DrawArrays(MapPrimitiveType(topology), offset, count);
+            _pal.CheckGlError();
+            _pal.LastGLDrawCalls += 1;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void DrawElements(DrawPrimitiveTopology topology, int offset, int count)
+        {
+            Bind();
+            DebugTools.AssertNotNull(_vao);
+            DebugTools.Assert(_vao!.IndexBufferIsBound);
+            if (_pal._hasGL.VertexArrayObject)
+                DebugTools.Assert(GL.GetInteger(GetPName.VertexArrayBinding) == _vao.ObjectHandle);
+            // In the hands of a skilled evildoer, the crash that would result from this could leak arbitrary memory.
+            // Just to be clear, that's bad.
+            if (GL.GetInteger(GetPName.ElementArrayBufferBinding) == 0)
+                throw new Exception("Somehow, ElementArrayBufferBinding == 0");
+            GL.DrawElements(MapPrimitiveType(topology), count, DrawElementsType.UnsignedShort, offset);
+            _pal.CheckGlError();
+            _pal.LastGLDrawCalls += 1;
         }
     }
 }

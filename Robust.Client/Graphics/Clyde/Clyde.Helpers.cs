@@ -36,7 +36,7 @@ namespace Robust.Client.Graphics.Clyde
             FullStoredRendererState? store = null;
             if (pause) {
                 store = PushRenderStateFull();
-                BindRenderTargetFull(sourceLoaded);
+                BindRenderTargetFull(source);
                 CheckGlError();
             }
 

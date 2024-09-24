@@ -28,7 +28,7 @@ namespace Robust.Client.Graphics.Clyde
         // This is always kept up-to-date, except in CreateRenderTarget (because it restores the old value)
         // It, like _mainWindowRenderTarget, is initialized in Clyde's constructor.
         // It is used by CopyRenderTextureToTexture, along with by sRGB emulation.
-        private LoadedRenderTarget _currentBoundRenderTarget;
+        internal LoadedRenderTarget _currentBoundRenderTarget;
 
         IRenderTexture IClyde.CreateRenderTarget(Vector2i size, RenderTargetFormatParameters format,
             TextureSampleParameters? sampleParameters, string? name)
@@ -321,6 +321,8 @@ namespace Robust.Client.Graphics.Clyde
 
             public abstract Vector2i Size { get; }
 
+            public abstract bool FlipY { get; }
+
             public void CopyPixelsToMemory<T>(CopyPixelsDelegate<T> callback, UIBox2i? subRegion = null) where T : unmanaged, IPixel<T>
             {
                 Clyde.CopyRenderTargetPixels(Handle, subRegion, callback);
@@ -377,6 +379,7 @@ namespace Robust.Client.Graphics.Clyde
             }
 
             public override Vector2i Size { get; }
+            public override bool FlipY => Clyde._renderTargets[Handle].FlipY;
             public ClydeTexture Texture { get; }
             Texture IRenderTexture.Texture => Texture;
 
@@ -401,6 +404,7 @@ namespace Robust.Client.Graphics.Clyde
         internal sealed class RenderWindow : RenderTargetBase
         {
             public override Vector2i Size => Clyde._renderTargets[Handle].Size;
+            public override bool FlipY => Clyde._renderTargets[Handle].FlipY;
 
             public RenderWindow(Clyde clyde, ClydeHandle handle) : base(clyde, handle)
             {

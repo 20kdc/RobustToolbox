@@ -64,7 +64,7 @@ namespace Robust.Client.Graphics.Clyde
         private GPUBuffer _occlusionVbo = default!;
         private GPUBuffer _occlusionVIVbo = default!;
         private GPUBuffer _occlusionEbo = default!;
-        private GLVAOBase _occlusionVao = default!;
+        private GPUVertexArrayObject _occlusionVao = default!;
 
 
         // Occlusion mask geometry that represents the area with occluders.
@@ -76,7 +76,7 @@ namespace Robust.Client.Graphics.Clyde
         // Actual GL objects used for rendering.
         private GPUBuffer _occlusionMaskVbo = default!;
         private GPUBuffer _occlusionMaskEbo = default!;
-        private GLVAOBase _occlusionMaskVao = default!;
+        private GPUVertexArrayObject _occlusionMaskVao = default!;
 
         // For depth calculation for FOV.
         private RenderTexture _fovRenderTarget = default!;
@@ -233,19 +233,14 @@ namespace Robust.Client.Graphics.Clyde
             _fovCalculationProgram.SetUniform("shadowLightCentre", lightPos);
 
             // Shift viewport around so we write to the correct quadrant of the depth map.
-            GL.Viewport(0, viewportY, width, 1);
-            CheckGlError();
+            ((IGPURenderState) _renderState).SetViewport(0, viewportY, width, 1);
 
             // Make two draw calls. This allows a faked "generation" of additional polygons.
             _fovCalculationProgram.SetUniform("shadowOverlapSide", 0.0f);
-            GL.DrawElements(GetQuadGLPrimitiveType(), _occlusionDataLength, DrawElementsType.UnsignedShort, 0);
-            CheckGlError();
-            _debugStats.LastGLDrawCalls += 1;
+            _renderState.DrawElements(GetQuadBatchPrimitiveType(), 0, _occlusionDataLength);
             // Yup, it's the other draw call.
             _fovCalculationProgram.SetUniform("shadowOverlapSide", 1.0f);
-            GL.DrawElements(GetQuadGLPrimitiveType(), _occlusionDataLength, DrawElementsType.UnsignedShort, 0);
-            CheckGlError();
-            _debugStats.LastGLDrawCalls += 1;
+            _renderState.DrawElements(GetQuadBatchPrimitiveType(), 0, _occlusionDataLength);
         }
 
         private void PrepareDepthDraw(LoadedRenderTarget target)
@@ -284,9 +279,9 @@ namespace Robust.Client.Graphics.Clyde
             GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
             CheckGlError();
 
-            _occlusionVao.Use();
+            _renderState.VAO = _occlusionVao;
 
-            _fovCalculationProgram.Use();
+            _renderState.Program = _fovCalculationProgram;
 
             SetupGlobalUniformsImmediate(_fovCalculationProgram, null);
         }
@@ -383,7 +378,7 @@ namespace Robust.Client.Graphics.Clyde
 
             var lightShader = _loadedShaders[_enableSoftShadows ? _lightSoftShaderHandle : _lightHardShaderHandle]
                 .Program;
-            lightShader.Use();
+            _renderState.Program = lightShader;
 
             SetupGlobalUniformsImmediate(lightShader, ShadowTexture);
 
@@ -392,7 +387,7 @@ namespace Robust.Client.Graphics.Clyde
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.One);
             CheckGlError();
 
-            _pal.ApplyStencilParameters(new StencilParameters
+            _renderState.Stencil = new StencilParameters
             {
                 Enabled = true,
                 ReadMask = 0xFF,
@@ -400,7 +395,7 @@ namespace Robust.Client.Graphics.Clyde
                 Ref = 0xFF,
                 Op = StencilOp.Keep,
                 Func = StencilFunc.Equal
-            });
+            };
 
             var lastRange = float.NaN;
             var lastPower = float.NaN;
@@ -482,7 +477,7 @@ namespace Robust.Client.Graphics.Clyde
             }
 
             ResetBlendFunc();
-            _pal.DisableStencil();
+            _renderState.Stencil = new();
 
             CheckGlError();
 
@@ -629,15 +624,14 @@ namespace Robust.Client.Graphics.Clyde
             SetProjViewBuffer(proj, view);
 
             var shader = _loadedShaders[_lightBlurShaderHandle].Program;
-            shader.Use();
+            _renderState.Program = shader;
 
             SetupGlobalUniformsImmediate(shader, viewport.LightRenderTarget.Texture);
 
             var size = viewport.LightRenderTarget.Size;
             shader.SetUniformMaybe("size", (Vector2)size);
 
-            GL.Viewport(0, 0, size.X, size.Y);
-            CheckGlError();
+            ((IGPURenderState) _renderState).SetViewport(0, 0, size.X, size.Y);
 
             // Initially we're pulling from the light render target.
             // So we set it out of the loop so
@@ -691,7 +685,7 @@ namespace Robust.Client.Graphics.Clyde
             SetProjViewBuffer(proj, view);
 
             var shader = _loadedShaders[_wallBleedBlurShaderHandle].Program;
-            shader.Use();
+            _renderState.Program = shader;
 
             SetupGlobalUniformsImmediate(shader, viewport.LightRenderTarget.Texture);
 
@@ -753,7 +747,7 @@ namespace Robust.Client.Graphics.Clyde
             CheckGlError();
 
             var shader = _loadedShaders[_mergeWallLayerShaderHandle].Program;
-            shader.Use();
+            _renderState.Program = shader;
 
             var tex = viewport.WallBleedIntermediateRenderTarget2.Texture;
 
@@ -761,7 +755,7 @@ namespace Robust.Client.Graphics.Clyde
 
             SetTexture(InternedUniform.MainTextureUnit, tex);
 
-            _occlusionMaskVao.Use();
+            _renderState.VAO = _occlusionMaskVao;
 
             GL.DrawElements(GetQuadGLPrimitiveType(), _occlusionMaskDataLength, DrawElementsType.UnsignedShort,
                 IntPtr.Zero);
@@ -773,21 +767,24 @@ namespace Robust.Client.Graphics.Clyde
 
         private void ApplyFovToBuffer(Viewport viewport, IEye eye)
         {
+            _renderState.Stencil = new StencilParameters
+            {
+                WriteMask = 0xFF,
+            };
             GL.ClearStencil(0xFF);
-            GL.StencilMask(0xFF);
             GL.Clear(ClearBufferMask.StencilBufferBit);
-            _pal.ApplyStencilParameters(new StencilParameters
+            _renderState.Stencil = new StencilParameters
             {
                 Enabled = true,
                 WriteMask = 0xFF,
                 Ref = 1,
                 Op = StencilOp.Replace
-            });
+            };
 
             // Applies FOV to the final framebuffer.
 
             var fovShader = _loadedShaders[_fovShaderHandle].Program;
-            fovShader.Use();
+            _renderState.Program = fovShader;
 
             SetupGlobalUniformsImmediate(fovShader, FovTexture);
 
@@ -799,7 +796,7 @@ namespace Robust.Client.Graphics.Clyde
             fovShader.SetUniformMaybe("occludeColor", color);
             FovSetTransformAndBlit(viewport, eye.Position.Position, fovShader);
 
-            _pal.DisableStencil();
+            _renderState.Stencil = new();
         }
 
         private void ApplyLightingFovToBuffer(Viewport viewport, IEye eye)
@@ -807,7 +804,7 @@ namespace Robust.Client.Graphics.Clyde
             // Applies FOV to the lighting framebuffer.
 
             var fovShader = _loadedShaders[_fovLightShaderHandle].Program;
-            fovShader.Use();
+            _renderState.Program = fovShader;
 
             SetupGlobalUniformsImmediate(fovShader, FovTexture);
 
@@ -820,13 +817,13 @@ namespace Robust.Client.Graphics.Clyde
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)All.Linear);
             CheckGlError();
 
-            _pal.ApplyStencilParameters(new StencilParameters
+            _renderState.Stencil = new StencilParameters
             {
                 Enabled = true,
                 WriteMask = 0xFF,
                 Ref = 0,
                 Op = StencilOp.Replace
-            });
+            };
 
             fovShader.SetUniformMaybe("occludeColor", Color.Black);
             FovSetTransformAndBlit(viewport, eye.Position.Position, fovShader);

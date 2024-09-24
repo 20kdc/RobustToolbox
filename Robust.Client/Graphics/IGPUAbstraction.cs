@@ -68,6 +68,6 @@ public interface IGPUAbstraction
     /// <summary>Creates a Vertex Array Object. This object specifies the vertex data of a draw call.</summary>
     GPUVertexArrayObject CreateVAO(string? name = null);
 
-    /// <summary>Executes a draw call.</summary>
-    void ExecuteDraw(in GPUDrawCall draw);
+    /// <summary>Creates a new render state. This is similar to render passes in WebGPU, but you can do all sorts of fun stuff.</summary>
+    IGPURenderState CreateRenderState();
 }

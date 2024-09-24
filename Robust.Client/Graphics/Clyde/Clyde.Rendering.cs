@@ -55,7 +55,7 @@ namespace Robust.Client.Graphics.Clyde
         // The current render target we're rendering to during queue state.
         // This gets immediately updated when switching render targets during (queue) and (misc),
         // but not during (submit).
-        private LoadedRenderTarget _currentRenderTarget;
+        private RenderTargetBase _currentRenderTarget;
 
         // Current model matrix used by the (queue) state.
         // This matrix is applied to most normal geometry coming in.
@@ -88,9 +88,6 @@ namespace Robust.Client.Graphics.Clyde
 
         // (queue) and (misc), current state of the scissor test. Null if disabled.
         private UIBox2i? _currentScissorState;
-
-        // Some simple flags that basically just tracks the current state of glEnable(GL_STENCIL/GL_SCISSOR_TEST)
-        private bool _isScissoring;
 
         private readonly RefList<RenderCommand> _queuedRenderCommands = new RefList<RenderCommand>();
 
@@ -168,7 +165,7 @@ namespace Robust.Client.Graphics.Clyde
 
         private void ProcessRenderCommands()
         {
-            BatchVAO.Use();
+            _renderState.VAO = BatchVAO;
 
             foreach (ref var command in _queuedRenderCommands)
             {
@@ -179,7 +176,14 @@ namespace Robust.Client.Graphics.Clyde
                         break;
 
                     case RenderCommandType.Scissor:
-                        SetScissorImmediate(command.Scissor.EnableScissor, command.Scissor.Scissor);
+                        if (command.Scissor.EnableScissor)
+                        {
+                            _renderState.Scissor = command.Scissor.Scissor;
+                        }
+                        else
+                        {
+                            _renderState.Scissor = null;
+                        }
                         break;
 
                     case RenderCommandType.ProjViewMatrix:
@@ -187,16 +191,14 @@ namespace Robust.Client.Graphics.Clyde
                         break;
 
                     case RenderCommandType.RenderTarget:
-                        var rt = _renderTargets[command.RenderTarget.RenderTarget];
-                        BindRenderTargetImmediate(rt);
-                        GL.Viewport(0, 0, rt.Size.X, rt.Size.Y);
-                        CheckGlError();
+                        _renderState.RenderTarget = command.RenderTarget;
+                        var size = command.RenderTarget!.Size;
+                        ((IGPURenderState) _renderState).SetViewport(0, 0, size.X, size.Y);
                         break;
 
                     case RenderCommandType.Viewport:
                         ref var vp = ref command.Viewport.Viewport;
-                        GL.Viewport(vp.Left, vp.Bottom, vp.Width, vp.Height);
-                        CheckGlError();
+                        _renderState.Viewport = vp;
                         break;
 
                     case RenderCommandType.Clear:
@@ -246,23 +248,17 @@ namespace Robust.Client.Graphics.Clyde
 
             SetBlendFunc(loaded.BlendMode);
 
-            var primitiveType = PAL.MapPrimitiveType(command.PrimitiveType);
             if (command.Indexed)
             {
-                GL.DrawElements(primitiveType, command.Count, DrawElementsType.UnsignedShort,
-                    command.StartIndex * sizeof(ushort));
-                CheckGlError();
+                _renderState.DrawElements(command.PrimitiveType, command.StartIndex * sizeof(ushort), command.Count);
             }
             else
             {
-                GL.DrawArrays(primitiveType, command.StartIndex, command.Count);
-                CheckGlError();
+                _renderState.DrawArrays(command.PrimitiveType, command.StartIndex, command.Count);
             }
 
             ResetBlendFunc();
             GL.BlendEquation(BlendEquationMode.FuncAdd);
-
-            _debugStats.LastGLDrawCalls += 1;
         }
 
         private void _drawQuad(Vector2 a, Vector2 b, in Matrix3x2 modelMatrix, GLShaderProgram program)
@@ -270,10 +266,10 @@ namespace Robust.Client.Graphics.Clyde
             DrawQuadWithVao(QuadVAO, a, b, modelMatrix, program);
         }
 
-        private void DrawQuadWithVao(GLVAOBase vao, Vector2 a, Vector2 b, in Matrix3x2 modelMatrix,
+        private void DrawQuadWithVao(GPUVertexArrayObject vao, Vector2 a, Vector2 b, in Matrix3x2 modelMatrix,
             GLShaderProgram program)
         {
-            vao.Use();
+            _renderState.VAO = vao;
 
             var rectTransform = Matrix3x2.Identity;
             (rectTransform.M11, rectTransform.M22) = b - a;
@@ -281,9 +277,7 @@ namespace Robust.Client.Graphics.Clyde
             rectTransform = rectTransform * modelMatrix;
             program.SetUniformMaybe(InternedUniform.UniIModelMatrix, rectTransform);
 
-            _debugStats.LastGLDrawCalls += 1;
-            GL.DrawArrays(PrimitiveType.TriangleStrip, 0, 4);
-            CheckGlError();
+            _renderState.DrawArrays(DrawPrimitiveTopology.TriangleStrip, 0, 4);
         }
 
         /// <summary>
@@ -326,48 +320,9 @@ namespace Robust.Client.Graphics.Clyde
 
         private void SetScissorFull(UIBox2i? state)
         {
-            if (state.HasValue)
-            {
-                SetScissorImmediate(true, state.Value);
-            }
-            else
-            {
-                SetScissorImmediate(false, default);
-            }
+            _renderState.Scissor = state;
 
             _currentScissorState = state;
-        }
-
-        private void SetScissorImmediate(bool enable, in UIBox2i box)
-        {
-            var oldIsScissoring = _isScissoring;
-            _isScissoring = enable;
-            if (_isScissoring)
-            {
-                if (!oldIsScissoring)
-                {
-                    GL.Enable(EnableCap.ScissorTest);
-                    CheckGlError();
-                }
-
-                // Don't forget to flip it, these coordinates have bottom left as origin.
-                // TODO: Broken when rendering to non-screen render targets.
-
-                if (_currentRenderTarget.FlipY)
-                {
-                    GL.Scissor(box.Left, box.Top, box.Width, box.Height);
-                }
-                else
-                {
-                    GL.Scissor(box.Left, _currentRenderTarget.Size.Y - box.Bottom, box.Width, box.Height);
-                }
-                CheckGlError();
-            }
-            else if (oldIsScissoring)
-            {
-                GL.Disable(EnableCap.ScissorTest);
-                CheckGlError();
-            }
         }
 
         // NOTE: sRGB IS IN LINEAR IF FRAMEBUFFER_SRGB IS ACTIVE.
@@ -395,9 +350,9 @@ namespace Robust.Client.Graphics.Clyde
             var shader = _loadedShaders[instance.ShaderHandle];
             var program = shader.Program;
 
-            program.Use();
+            _renderState.Program = program;
 
-            _pal.ApplyStencilParameters(instance.Stencil);
+            _renderState.Stencil = instance.Stencil;
 
             if (instance.Parameters.Count == 0)
                 return (program, instance);
@@ -669,15 +624,15 @@ namespace Robust.Client.Graphics.Clyde
             command.Viewport.Viewport = viewport;
         }
 
-        private void DrawRenderTarget(ClydeHandle handle)
+        private void DrawRenderTarget(RenderTargetBase handle)
         {
             BreakBatch();
 
             ref var command = ref AllocRenderCommand(RenderCommandType.RenderTarget);
 
-            command.RenderTarget.RenderTarget = handle;
+            command.RenderTarget = handle;
 
-            _currentRenderTarget = _renderTargets[handle];
+            _currentRenderTarget = handle;
         }
 
         /// <summary>
@@ -766,18 +721,15 @@ namespace Robust.Client.Graphics.Clyde
             BindRenderTargetFull(state.RenderTarget);
 
             var (width, height) = state.RenderTarget.Size;
-            GL.Viewport(0, 0, width, height);
-            CheckGlError();
-        }
-
-        private void SetViewportImmediate(Box2i box)
-        {
-            GL.Viewport(box.Left, box.Bottom, box.Width, box.Height);
+            ((IGPURenderState) _renderState).SetViewport(0, 0, width, height);
             CheckGlError();
         }
 
         private void ClearRenderState()
         {
+            ((IGPURenderState) _renderState).Reset();
+            _renderState.Bind();
+
             BatchVertexIndex = 0;
             BatchIndexIndex = 0;
             _queuedRenderCommands.Clear();
@@ -789,7 +741,7 @@ namespace Robust.Client.Graphics.Clyde
             _batchMetaData = null;
             _queuedShaderInstance = _defaultShader;
 
-            GL.Viewport(0, 0, _mainWindow!.FramebufferSize.X, _mainWindow!.FramebufferSize.Y);
+            ((IGPURenderState) _renderState).SetViewport(0, 0, _mainWindow!.FramebufferSize.X, _mainWindow!.FramebufferSize.Y);
         }
 
         private void SetBlendFunc(ShaderBlendMode blend)
@@ -846,13 +798,13 @@ namespace Robust.Client.Graphics.Clyde
             // GC-relevant objects live here.
             // Be sure to null these out in ProcessRenderCommands.
             [FieldOffset(8)] public ClydeTexture? Texture;
+            [FieldOffset(16)] public RenderTargetBase? RenderTarget;
 
-            [FieldOffset(16)] public RenderCommandDrawBatch DrawBatch;
-            [FieldOffset(16)] public RenderCommandProjViewMatrix ProjView;
-            [FieldOffset(16)] public RenderCommandScissor Scissor;
-            [FieldOffset(16)] public RenderCommandRenderTarget RenderTarget;
-            [FieldOffset(16)] public RenderCommandViewport Viewport;
-            [FieldOffset(16)] public RenderCommandClear Clear;
+            [FieldOffset(24)] public RenderCommandDrawBatch DrawBatch;
+            [FieldOffset(24)] public RenderCommandProjViewMatrix ProjView;
+            [FieldOffset(24)] public RenderCommandScissor Scissor;
+            [FieldOffset(24)] public RenderCommandViewport Viewport;
+            [FieldOffset(24)] public RenderCommandClear Clear;
         }
 
         private struct RenderCommandDrawBatch
@@ -879,11 +831,6 @@ namespace Robust.Client.Graphics.Clyde
         {
             public bool EnableScissor;
             public UIBox2i Scissor;
-        }
-
-        private struct RenderCommandRenderTarget
-        {
-            public ClydeHandle RenderTarget;
         }
 
         private struct RenderCommandViewport
@@ -952,10 +899,10 @@ namespace Robust.Client.Graphics.Clyde
         {
             public readonly Matrix3x2 ProjMatrix;
             public readonly Matrix3x2 ViewMatrix;
-            public readonly LoadedRenderTarget RenderTarget;
+            public readonly RenderTargetBase RenderTarget;
 
             public FullStoredRendererState(in Matrix3x2 projMatrix, in Matrix3x2 viewMatrix,
-                LoadedRenderTarget renderTarget)
+                RenderTargetBase renderTarget)
             {
                 ProjMatrix = projMatrix;
                 ViewMatrix = viewMatrix;

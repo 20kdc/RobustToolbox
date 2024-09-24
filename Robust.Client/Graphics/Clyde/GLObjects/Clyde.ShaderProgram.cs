@@ -11,12 +11,6 @@ using Vector4 = Robust.Shared.Maths.Vector4;
 
 namespace Robust.Client.Graphics.Clyde;
 
-
-internal partial class PAL
-{
-    internal GLShaderProgram? _currentProgram;
-}
-
 /// <summary>
 ///     This is an utility class. It does not check whether the OpenGL state machine is set up correctly.
 ///     You've been warned:
@@ -103,24 +97,33 @@ internal sealed class GLShaderProgram : GPUShaderProgram
                 // -- After this point, everything is mostly initialized, except... --
 
                 // Below code uses this since uniforms are being set.
-                Use();
+                GL.UseProgram(Handle);
+                clyde.CheckGlError();
 
-                // Bind texture uniforms to units.
-                // By doing this we skip having to go fetch them later.
-                // By placing uniforms at preallocated spots (including dummies you don't have),
-                //  you can do stuff like Clyde's Main/Light units, without needing to intern uniforms.
-                var currentTextureUnit = 0;
-                foreach (var uniform in textureUniforms)
+                try
                 {
-                    // We have to still allocate the unit even if there's no uniform.
-                    // The texture uniforms array is a 1:1 mapping to texture units.
-                    if (uniform != "")
+                    // Bind texture uniforms to units.
+                    // By doing this we skip having to go fetch them later.
+                    // By placing uniforms at preallocated spots (including dummies you don't have),
+                    //  you can do stuff like Clyde's Main/Light units, without needing to intern uniforms.
+                    var currentTextureUnit = 0;
+                    foreach (var uniform in textureUniforms)
                     {
-                        // The use of Add here is intentional, to catch doubly-added uniforms.
-                        _textureUnits.Add(uniform, TextureUnit.Texture0 + currentTextureUnit);
-                        SetUniformMaybe(uniform, currentTextureUnit);
+                        // We have to still allocate the unit even if there's no uniform.
+                        // The texture uniforms array is a 1:1 mapping to texture units.
+                        if (uniform != "")
+                        {
+                            // The use of Add here is intentional, to catch doubly-added uniforms.
+                            _textureUnits.Add(uniform, TextureUnit.Texture0 + currentTextureUnit);
+                            SetUniformMaybe(uniform, currentTextureUnit);
+                        }
+                        currentTextureUnit += 1;
                     }
-                    currentTextureUnit += 1;
+                }
+                finally
+                {
+                    GL.UseProgram(_pal._backupProgram);
+                    clyde.CheckGlError();
                 }
             }
             finally
@@ -157,27 +160,12 @@ internal sealed class GLShaderProgram : GPUShaderProgram
 
     }
 
-    public void Use()
-    {
-        if (_pal._currentProgram == this)
-        {
-            return;
-        }
-
-        DebugTools.Assert(Handle != 0);
-
-        _pal._currentProgram = this;
-        GL.UseProgram(Handle);
-        _pal.CheckGlError();
-    }
-
     protected override void DisposeImpl()
     {
         if (_pal.IsMainThread())
         {
             // Main thread, do direct GL deletion.
-            GL.DeleteProgram(Handle);
-            _pal.CheckGlError();
+            _pal.DeleteProgram(Handle);
         }
         else
         {
@@ -272,34 +260,96 @@ internal sealed class GLShaderProgram : GPUShaderProgram
     public void SetUniform(string uniformName, int integer)
     {
         var uniformId = GetUniform(uniformName);
-        GL.Uniform1(uniformId, integer);
-        _pal.CheckGlError();
+        if (_pal._backupProgram != Handle)
+        {
+            GL.UseProgram(Handle);
+            _pal.CheckGlError();
+            GL.Uniform1(uniformId, integer);
+            _pal.CheckGlError();
+            GL.UseProgram(_pal._backupProgram);
+            _pal.CheckGlError();
+        }
+        else
+        {
+            GL.Uniform1(uniformId, integer);
+            _pal.CheckGlError();
+        }
     }
 
     public void SetUniform(string uniformName, float single)
     {
         var uniformId = GetUniform(uniformName);
-        GL.Uniform1(uniformId, single);
-        _pal.CheckGlError();
+        if (_pal._backupProgram != Handle)
+        {
+            GL.UseProgram(Handle);
+            _pal.CheckGlError();
+            GL.Uniform1(uniformId, single);
+            _pal.CheckGlError();
+            GL.UseProgram(_pal._backupProgram);
+            _pal.CheckGlError();
+        }
+        else
+        {
+            GL.Uniform1(uniformId, single);
+            _pal.CheckGlError();
+        }
     }
 
     public void SetUniform(InternedUniform uniformName, float single)
     {
         var uniformId = GetUniform(uniformName);
-        GL.Uniform1(uniformId, single);
+        if (_pal._backupProgram != Handle)
+        {
+            GL.UseProgram(Handle);
+            _pal.CheckGlError();
+            GL.Uniform1(uniformId, single);
+            _pal.CheckGlError();
+            GL.UseProgram(_pal._backupProgram);
+            _pal.CheckGlError();
+        }
+        else
+        {
+            GL.Uniform1(uniformId, single);
+            _pal.CheckGlError();
+        }
     }
 
     public void SetUniform(string uniformName, float[] singles)
     {
         var uniformId = GetUniform(uniformName);
-        GL.Uniform1(uniformId, singles.Length, singles);
-        _pal.CheckGlError();
+        if (_pal._backupProgram != Handle)
+        {
+            GL.UseProgram(Handle);
+            _pal.CheckGlError();
+            GL.Uniform1(uniformId, singles.Length, singles);
+            _pal.CheckGlError();
+            GL.UseProgram(_pal._backupProgram);
+            _pal.CheckGlError();
+        }
+        else
+        {
+            GL.Uniform1(uniformId, singles.Length, singles);
+            _pal.CheckGlError();
+        }
     }
 
     public void SetUniform(InternedUniform uniformName, float[] singles)
     {
         var uniformId = GetUniform(uniformName);
-        GL.Uniform1(uniformId, singles.Length, singles);
+        if (_pal._backupProgram != Handle)
+        {
+            GL.UseProgram(Handle);
+            _pal.CheckGlError();
+            GL.Uniform1(uniformId, singles.Length, singles);
+            _pal.CheckGlError();
+            GL.UseProgram(_pal._backupProgram);
+            _pal.CheckGlError();
+        }
+        else
+        {
+            GL.Uniform1(uniformId, singles.Length, singles);
+            _pal.CheckGlError();
+        }
     }
 
     public void SetUniform(string uniformName, in Matrix3x2 matrix)
@@ -328,8 +378,20 @@ internal sealed class GLShaderProgram : GPUShaderProgram
             value.M21, value.M22, 0,
             value.M31, value.M32, 1
         };
-        GL.UniformMatrix3(slot, 1, false, (float*)buf);
-        _pal.CheckGlError();
+        if (_pal._backupProgram != Handle)
+        {
+            GL.UseProgram(Handle);
+            _pal.CheckGlError();
+            GL.UniformMatrix3(slot, 1, false, (float*)buf);
+            _pal.CheckGlError();
+            GL.UseProgram(_pal._backupProgram);
+            _pal.CheckGlError();
+        }
+        else
+        {
+            GL.UniformMatrix3(slot, 1, false, (float*)buf);
+            _pal.CheckGlError();
+        }
     }
 
     public void SetUniform(string uniformName, in Matrix4 matrix, bool transpose=true)
@@ -347,7 +409,20 @@ internal sealed class GLShaderProgram : GPUShaderProgram
             // transposition not supported on GLES2, & no access to _hasGLES
             tmpTranspose.Transpose();
         }
-        GL.UniformMatrix4(uniformId, 1, false, (float*) &tmpTranspose);
+        if (_pal._backupProgram != Handle)
+        {
+            GL.UseProgram(Handle);
+            _pal.CheckGlError();
+            GL.UniformMatrix4(uniformId, 1, false, (float*) &tmpTranspose);
+            _pal.CheckGlError();
+            GL.UseProgram(_pal._backupProgram);
+            _pal.CheckGlError();
+        }
+        else
+        {
+            GL.UniformMatrix4(uniformId, 1, false, (float*) &tmpTranspose);
+            _pal.CheckGlError();
+        }
         _pal.CheckGlError();
     }
 
@@ -370,8 +445,20 @@ internal sealed class GLShaderProgram : GPUShaderProgram
         {
             fixed (Vector4* ptr = &vector)
             {
-                GL.Uniform4(slot, 1, (float*)ptr);
-                _pal.CheckGlError();
+                if (_pal._backupProgram != Handle)
+                {
+                    GL.UseProgram(Handle);
+                    _pal.CheckGlError();
+                    GL.Uniform4(slot, 1, (float*)ptr);
+                    _pal.CheckGlError();
+                    GL.UseProgram(_pal._backupProgram);
+                    _pal.CheckGlError();
+                }
+                else
+                {
+                    GL.Uniform4(slot, 1, (float*)ptr);
+                    _pal.CheckGlError();
+                }
             }
         }
     }
@@ -399,8 +486,20 @@ internal sealed class GLShaderProgram : GPUShaderProgram
 
         unsafe
         {
-            GL.Uniform4(slot, 1, (float*) &converted);
-            _pal.CheckGlError();
+            if (_pal._backupProgram != Handle)
+            {
+                GL.UseProgram(Handle);
+                _pal.CheckGlError();
+                GL.Uniform4(slot, 1, (float*) &converted);
+                _pal.CheckGlError();
+                GL.UseProgram(_pal._backupProgram);
+                _pal.CheckGlError();
+            }
+            else
+            {
+                GL.Uniform4(slot, 1, (float*) &converted);
+                _pal.CheckGlError();
+            }
         }
     }
 
@@ -417,8 +516,20 @@ internal sealed class GLShaderProgram : GPUShaderProgram
         {
             fixed (Vector3* ptr = &vector)
             {
-                GL.Uniform3(slot, 1, (float*)ptr);
-                _pal.CheckGlError();
+                if (_pal._backupProgram != Handle)
+                {
+                    GL.UseProgram(Handle);
+                    _pal.CheckGlError();
+                    GL.Uniform3(slot, 1, (float*)ptr);
+                    _pal.CheckGlError();
+                    GL.UseProgram(_pal._backupProgram);
+                    _pal.CheckGlError();
+                }
+                else
+                {
+                    GL.Uniform3(slot, 1, (float*)ptr);
+                    _pal.CheckGlError();
+                }
             }
         }
     }
@@ -442,8 +553,20 @@ internal sealed class GLShaderProgram : GPUShaderProgram
         {
             fixed (Vector2* ptr = &vector)
             {
-                GL.Uniform2(slot, 1, (float*)ptr);
-                _pal.CheckGlError();
+                if (_pal._backupProgram != Handle)
+                {
+                    GL.UseProgram(Handle);
+                    _pal.CheckGlError();
+                    GL.Uniform2(slot, 1, (float*)ptr);
+                    _pal.CheckGlError();
+                    GL.UseProgram(_pal._backupProgram);
+                    _pal.CheckGlError();
+                }
+                else
+                {
+                    GL.Uniform2(slot, 1, (float*)ptr);
+                    _pal.CheckGlError();
+                }
             }
         }
     }
@@ -467,8 +590,20 @@ internal sealed class GLShaderProgram : GPUShaderProgram
         {
             fixed (Vector2* ptr = &vectors[0])
             {
-                GL.Uniform2(slot, vectors.Length, (float*)ptr);
-                _pal.CheckGlError();
+                if (_pal._backupProgram != Handle)
+                {
+                    GL.UseProgram(Handle);
+                    _pal.CheckGlError();
+                    GL.Uniform2(slot, vectors.Length, (float*)ptr);
+                    _pal.CheckGlError();
+                    GL.UseProgram(_pal._backupProgram);
+                    _pal.CheckGlError();
+                }
+                else
+                {
+                    GL.Uniform2(slot, vectors.Length, (float*)ptr);
+                    _pal.CheckGlError();
+                }
             }
         }
     }

@@ -81,11 +81,8 @@ namespace Robust.Client.Graphics.Clyde
                     if (datum.TileCount == 0)
                         continue;
 
-                    datum.VAO.Use();
-
-                    _debugStats.LastGLDrawCalls += 1;
-                    GL.DrawElements(GetQuadGLPrimitiveType(), datum.TileCount * GetQuadBatchIndexCount(), DrawElementsType.UnsignedShort, 0);
-                    CheckGlError();
+                    _renderState.VAO = datum.VAO;
+                    _renderState.DrawElements(GetQuadBatchPrimitiveType(), 0, datum.TileCount * GetQuadBatchIndexCount());
                 }
 
                 requiresFlush = false;
@@ -244,12 +241,12 @@ namespace Robust.Client.Graphics.Clyde
         private sealed class MapChunkData
         {
             public bool Dirty;
-            public readonly GLVAOBase VAO;
+            public readonly GPUVertexArrayObject VAO;
             public readonly GPUBuffer VBO;
             public readonly GPUBuffer EBO;
             public int TileCount;
 
-            public MapChunkData(GLVAOBase vao, GPUBuffer vbo, GPUBuffer ebo)
+            public MapChunkData(GPUVertexArrayObject vao, GPUBuffer vbo, GPUBuffer ebo)
             {
                 VAO = vao;
                 VBO = vbo;

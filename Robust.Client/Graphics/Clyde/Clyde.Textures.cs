@@ -58,6 +58,8 @@ namespace Robust.Client.Graphics.Clyde
             // Flip image because OpenGL reads images upside down.
             using var copy = FlipClone(image);
 
+            var curTexture2D = GL.GetInteger(GetPName.TextureBinding2D);
+
             var texture = CreateBaseTextureInternal<T>(image.Width, image.Height, actualParams, name);
 
             unsafe
@@ -69,6 +71,8 @@ namespace Robust.Client.Graphics.Clyde
                     DoTexUpload(copy.Width, copy.Height, actualParams.Srgb, ptr);
                 }
             }
+
+            GL.BindTexture(TextureTarget.Texture2D, curTexture2D);
 
             return texture;
         }
@@ -90,6 +94,8 @@ namespace Robust.Client.Graphics.Clyde
                 }
             }
 
+            var curTexture2D = GL.GetInteger(GetPName.TextureBinding2D);
+
             var texture = CreateBaseTextureInternal<T>(
                 size.X, size.Y,
                 actualParams,
@@ -97,6 +103,8 @@ namespace Robust.Client.Graphics.Clyde
 
             // Texture still bound, run glTexImage2D with null data param to specify bounds.
             DoTexUpload<T>(size.X, size.Y, actualParams.Srgb, null);
+
+            GL.BindTexture(TextureTarget.Texture2D, curTexture2D);
 
             return texture;
         }

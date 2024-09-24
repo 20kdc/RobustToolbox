@@ -34,6 +34,9 @@ namespace Robust.Client.Graphics.Clyde
 
         private List<Overlay> _overlays = new();
 
+        /// <summary>Render state Clyde uses for its internal operations.</summary>
+        private PAL.GLRenderState _renderState = default!;
+
         public void Render()
         {
             CheckTransferringScreenshots();
@@ -417,38 +420,11 @@ namespace Robust.Client.Graphics.Clyde
             handle.DrawingHandleScreen.DrawTexture(texture, (ScreenSize - texture.Size) / 2);
         }
 
-        private void BindRenderTargetFull(LoadedRenderTarget rt)
-        {
-            BindRenderTargetImmediate(rt);
-            _currentRenderTarget = rt;
-        }
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void BindRenderTargetFull(RenderTargetBase rt)
         {
-            BindRenderTargetFull(RtToLoaded(rt));
-        }
-
-        public void ExecuteDraw(in GPUDrawCall draw)
-        {
-            var oldTransform = _currentMatrixModel;
-            var oldScissor = _currentScissorState;
-
-            FlushRenderQueue();
-
-            var state = PushRenderStateFull();
-
-            {
-                _pal.ExecuteDraw(draw);
-                _debugStats.LastGLDrawCalls += 1;
-            }
-
-            FenceRenderTarget((RenderTargetBase) draw.RenderTarget);
-
-            PopRenderStateFull(state);
-
-            SetScissorFull(oldScissor);
-            _currentMatrixModel = oldTransform;
+            BindRenderTargetImmediate(RtToLoaded(rt));
+            _currentRenderTarget = rt;
         }
 
         private void RenderInRenderTarget(RenderTargetBase rt, Action a, Color? clearColor=default)
@@ -464,11 +440,11 @@ namespace Robust.Client.Graphics.Clyde
             var state = PushRenderStateFull();
 
             {
-                BindRenderTargetFull(RtToLoaded(rt));
+                BindRenderTargetFull(rt);
                 if (clearColor is not null)
                     ClearFramebuffer(ConvertClearFromSrgb(clearColor.Value));
 
-                SetViewportImmediate(Box2i.FromDimensions(Vector2i.Zero, rt.Size));
+                _renderState.Viewport = Box2i.FromDimensions(Vector2i.Zero, rt.Size);
                 _updateUniformConstants(rt.Size);
                 CalcScreenMatrices(rt.Size, out var proj, out var view);
                 SetProjViewFull(proj, view);

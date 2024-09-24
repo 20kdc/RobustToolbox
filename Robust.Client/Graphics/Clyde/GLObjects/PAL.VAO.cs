@@ -9,152 +9,87 @@ namespace Robust.Client.Graphics.Clyde;
 
 internal partial class PAL
 {
-    GLVAOBase? _currentVAO = null;
+    public GPUVertexArrayObject CreateVAO(string? name) => new GLVAOBase(this, name);
 
-    GPUVertexArrayObject IGPUAbstraction.CreateVAO(string? name) => CreateVAO(name);
-
-    /// <summary>Creates a Vertex Array Object.</summary>
-    public GLVAOBase CreateVAO(string? name)
+    internal sealed class GLVAOBase : GPUVertexArrayObject
     {
-        if (_hasGL.VertexArrayObject)
-        {
-            return new GLVAOCore(this, name);
-        }
-        else
-        {
-            DebugTools.Assert(_hasGL.VertexArrayObjectOes);
-            return new GLVAOExtension(this, name);
-        }
-    }
+        private readonly PAL _pal;
+        public uint ObjectHandle { get; private set; }
+        internal bool IndexBufferIsBound { get; private set; }
 
-    private sealed class GLVAOCore : GLVAOBase
-    {
-        public GLVAOCore(PAL pal, string? name = null) : base(pal)
+        public GLVAOBase(PAL pal, string? name)
         {
-            ObjectHandle = (uint) GL.GenVertexArray();
+            _pal = pal;
+            ObjectHandle = pal._hasGL.GenVertexArray();
             pal.CheckGlError();
-
             pal._hasGL.ObjectLabelMaybe(ObjectLabelIdentifier.VertexArray, ObjectHandle, name);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override void Use()
+        public override GPUBuffer? IndexBuffer
         {
-            if (_pal._currentVAO == this)
+            set
             {
-                return;
+                var valueAdj = ((PAL.GLBuffer?) value)?.ObjectHandle ?? 0;
+                IndexBufferIsBound = valueAdj != 0;
+                if (_pal._backupVAO != ObjectHandle)
+                {
+                    _pal._hasGL.BindVertexArray(ObjectHandle);
+                    _pal.CheckGlError();
+                    GL.BindBuffer(BufferTarget.ElementArrayBuffer, valueAdj);
+                    _pal.CheckGlError();
+                    _pal._hasGL.BindVertexArray(_pal._backupVAO);
+                    _pal.CheckGlError();
+                }
+                else
+                {
+                    GL.BindBuffer(BufferTarget.ElementArrayBuffer, valueAdj);
+                    _pal.CheckGlError();
+                }
             }
-
-            DebugTools.Assert(ObjectHandle != 0);
-
-            _pal._currentVAO = this;
-            GL.BindVertexArray(ObjectHandle);
-            _pal.CheckGlError();
-        }
-
-        protected override void Delete()
-        {
-            GL.DeleteVertexArray(ObjectHandle);
-        }
-    }
-
-    private sealed class GLVAOExtension : GLVAOBase
-    {
-        public GLVAOExtension(PAL pal, string? name = null) : base(pal)
-        {
-            ObjectHandle = (uint) ES20.GL.Oes.GenVertexArray();
-            pal.CheckGlError();
-
-            pal._hasGL.ObjectLabelMaybe(ObjectLabelIdentifier.VertexArray, ObjectHandle, name);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override void Use()
+        public override void SetVertexAttrib(int index, GPUVertexAttrib? value)
         {
-            if (_pal._currentVAO == this)
+            if (_pal._backupVAO != ObjectHandle)
             {
-                return;
+                _pal._hasGL.BindVertexArray(ObjectHandle);
+                _pal.CheckGlError();
             }
-
-            DebugTools.Assert(ObjectHandle != 0);
-
-            _pal._currentVAO = this;
-            ES20.GL.Oes.BindVertexArray(ObjectHandle);
-            _pal.CheckGlError();
-        }
-
-        protected override void Delete()
-        {
-            ES20.GL.Oes.DeleteVertexArray(ObjectHandle);
-        }
-    }
-}
-
-/// <summary>
-/// Base class for actual VAO implementations.
-/// This is due to differences between the OES extension and regular endpoints.
-/// </summary>
-[Virtual]
-internal abstract class GLVAOBase : GPUVertexArrayObject
-{
-    protected readonly PAL _pal;
-    public uint ObjectHandle { get; protected set; }
-
-    public GLVAOBase(PAL pal)
-    {
-        _pal = pal;
-    }
-
-    public override GPUBuffer? IndexBuffer
-    {
-        set
-        {
-            Use();
             if (value != null)
             {
-                ((PAL.GLBuffer) value).Use(BufferTarget.ElementArrayBuffer);
+                var info = value!.Value;
+                ((PAL.GLBuffer) info.Buffer).Use(BufferTarget.ArrayBuffer);
+                GL.VertexAttribPointer(index, info.Size, (VertexAttribPointerType) info.Component, info.Normalized, info.Stride, (nint) info.Offset);
+                _pal.CheckGlError();
+                GL.EnableVertexAttribArray(index);
+                _pal.CheckGlError();
             }
             else
             {
-                GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
+                GL.DisableVertexAttribArray(index);
+                _pal.CheckGlError();
+            }
+            if (_pal._backupVAO != ObjectHandle)
+            {
+                _pal._hasGL.BindVertexArray(_pal._backupVAO);
+                _pal.CheckGlError();
             }
         }
-    }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public override void SetVertexAttrib(int index, GPUVertexAttrib? value)
-    {
-        Use();
-        if (value != null)
+        protected override void DisposeImpl()
         {
-            var info = value!.Value;
-            ((PAL.GLBuffer) info.Buffer).Use(BufferTarget.ArrayBuffer);
-            GL.VertexAttribPointer(index, info.Size, (VertexAttribPointerType) info.Component, info.Normalized, info.Stride, (nint) info.Offset);
-            GL.EnableVertexAttribArray(index);
-        }
-        else
-        {
-            GL.DisableVertexAttribArray(index);
+            if (_pal.IsMainThread())
+            {
+                // Main thread, do direct GL deletion.
+                _pal.DeleteVAO(ObjectHandle);
+            }
+            else
+            {
+                // Finalizer thread
+                _pal._vaoDisposeQueue.Enqueue(ObjectHandle);
+            }
+            ObjectHandle = 0;
         }
     }
-
-    protected override void DisposeImpl()
-    {
-        if (_pal.IsMainThread())
-        {
-            // Main thread, do direct GL deletion.
-            Delete();
-            _pal.CheckGlError();
-        }
-        else
-        {
-            // Finalizer thread
-            _pal._vaoDisposeQueue.Enqueue(ObjectHandle);
-        }
-        ObjectHandle = 0;
-    }
-
-    public abstract void Use();
-
-    protected abstract void Delete();
 }

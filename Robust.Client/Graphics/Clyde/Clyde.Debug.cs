@@ -2,7 +2,8 @@ namespace Robust.Client.Graphics.Clyde
 {
     internal sealed partial class Clyde
     {
-        private readonly ClydeDebugStats _debugStats = new();
+        // Setup in PostInject.
+        private ClydeDebugStats _debugStats = default!;
 
         private sealed record ClydeDebugInfo(
             OpenGLVersion OpenGLVersion,
@@ -12,9 +13,11 @@ namespace Robust.Client.Graphics.Clyde
             bool Overriding,
             string WindowingApi) : IClydeDebugInfo;
 
-        private sealed class ClydeDebugStats : IClydeDebugStats
+        private sealed class ClydeDebugStats(PAL pal) : IClydeDebugStats
         {
-            public int LastGLDrawCalls { get; set; }
+            private readonly PAL _pal = pal;
+
+            public int LastGLDrawCalls => _pal.LastGLDrawCalls;
             public int LastClydeDrawCalls { get; set; }
             public int LastBatches { get; set; }
             public (int vertices, int indices) LargestBatchSize => (LargestBatchVertices, LargestBatchIndices);
@@ -27,7 +30,7 @@ namespace Robust.Client.Graphics.Clyde
 
             public void Reset()
             {
-                LastGLDrawCalls = 0;
+                _pal.LastGLDrawCalls = 0;
                 LastClydeDrawCalls = 0;
                 LastBatches = 0;
                 LargestBatchVertices = 0;

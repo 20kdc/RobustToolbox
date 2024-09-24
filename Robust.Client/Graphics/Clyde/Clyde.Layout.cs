@@ -15,7 +15,7 @@ namespace Robust.Client.Graphics.Clyde
         ///     Sets up VAO layout for Vertex2D for base and raw shader types.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static unsafe void SetupVAOLayout(GLVAOBase vao, GPUBuffer buffer)
+        private static unsafe void SetupVAOLayout(GPUVertexArrayObject vao, GPUBuffer buffer)
         {
             // Vertex Coords
             vao.SetVertexAttrib(0, new GPUVertexAttrib(buffer, 2, GPUVertexAttrib.Type.Float, false, sizeof(Vertex2D), 0));

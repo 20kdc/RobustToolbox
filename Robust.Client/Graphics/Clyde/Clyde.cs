@@ -51,11 +51,11 @@ namespace Robust.Client.Graphics.Clyde
 
         private GPUBuffer BatchVBO = default!;
         private GPUBuffer BatchEBO = default!;
-        private GLVAOBase BatchVAO = default!;
+        private GPUVertexArrayObject BatchVAO = default!;
 
         // VBO to draw a single quad.
         private GPUBuffer QuadVBO = default!;
-        private GLVAOBase QuadVAO = default!;
+        private GPUVertexArrayObject QuadVAO = default!;
 
         private bool _drawingSplash = true;
         private float _lightResolutionScale = 0.5f;
@@ -153,6 +153,7 @@ namespace Robust.Client.Graphics.Clyde
 
         public void PostInject()
         {
+            _debugStats = new(_pal);
             // This cvar does not modify the actual GL version requested or anything,
             // it overrides the version we detect to detect GL features.
             GLWrapper.RegisterBlockCVars(_cfg);
@@ -175,6 +176,9 @@ namespace Robust.Client.Graphics.Clyde
         /// <summary>Called by InitMainWindowAndRenderer</summary>
         private void InitOpenGL()
         {
+            _renderState = _pal.CreateRenderState();
+            _renderState.Bind();
+
             SetupDebugCallback();
 
             var vendor = _hasGL.Vendor;

@@ -252,8 +252,7 @@ namespace Robust.Client.Graphics.Clyde
 
             _sawmillOgl.Debug("Setting viewport and rendering splash...");
 
-            GL.Viewport(0, 0, ScreenSize.X, ScreenSize.Y);
-            CheckGlError();
+            ((IGPURenderState) _renderState).SetViewport(0, 0, ScreenSize.X, ScreenSize.Y);
 
             // Quickly do a render with _drawingSplash = true so the screen isn't blank.
             Render();

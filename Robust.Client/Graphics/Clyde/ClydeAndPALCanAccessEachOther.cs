@@ -24,7 +24,7 @@ internal sealed partial class Clyde
 
     public GPUVertexArrayObject CreateVAO(string? name = null) => _pal.CreateVAO(name);
 
-    // ExecuteDraw is located in Clyde.HLR because it does some state push/pop stuff r/n
+    public IGPURenderState CreateRenderState() => _pal.CreateRenderState();
 }
 
 internal sealed partial class PAL

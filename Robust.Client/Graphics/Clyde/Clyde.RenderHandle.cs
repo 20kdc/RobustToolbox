@@ -251,7 +251,7 @@ namespace Robust.Client.Graphics.Clyde
             {
                 var target = (RenderTexture?) renderTarget;
 
-                _clyde.DrawRenderTarget(target?.Handle ?? default);
+                _clyde.DrawRenderTarget(target!);
             }
 
             public void Clear(Color color, int stencil = 0, ClearBufferMask mask = ClearBufferMask.ColorBufferBit)

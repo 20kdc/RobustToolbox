@@ -198,10 +198,7 @@ namespace Robust.Client.Graphics.Clyde
 
         public GPUVertexArrayObject CreateVAO(string? name) => new DummyVAO();
 
-        public void ExecuteDraw(in GPUDrawCall draw)
-        {
-            // Believe it or not, it does nothing...
-        }
+        public IGPURenderState CreateRenderState() => new DummyRenderState();
 
         public ICursor GetStandardCursor(StandardCursorShape shape)
         {
@@ -367,6 +364,42 @@ namespace Robust.Client.Graphics.Clyde
             public override Color GetPixel(int x, int y)
             {
                 return Color.Black;
+            }
+        }
+
+        private sealed class DummyRenderState : IGPURenderState
+        {
+            public IRenderTarget? RenderTarget { get; set; }
+
+            public GPUShaderProgram? Program { get; set; }
+
+            public GPUVertexArrayObject? VAO { get; set; }
+
+            public StencilParameters Stencil { get; set; }
+
+            public UIBox2i? Scissor { get; set; }
+
+            public Box2i Viewport { get; set; } = new();
+
+            public WholeTexture? GetTexture(int unit)
+            {
+                return null;
+            }
+
+            public void SetTexture(int unit, WholeTexture? value)
+            {
+            }
+
+            public void Unbind()
+            {
+            }
+
+            public void DrawArrays(DrawPrimitiveTopology topology, int offset, int count)
+            {
+            }
+
+            public void DrawElements(DrawPrimitiveTopology topology, int offset, int count)
+            {
             }
         }
 
