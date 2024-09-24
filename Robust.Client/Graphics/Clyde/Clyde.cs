@@ -72,7 +72,6 @@ namespace Robust.Client.Graphics.Clyde
 
         public Clyde()
         {
-            _currentBoundRenderTarget = default!;
             _currentRenderTarget = default!;
             SixLabors.ImageSharp.Configuration.Default.PreferContiguousImageBuffers = true;
         }

@@ -16,13 +16,14 @@ internal sealed partial class PAL
 
 
     // Backup bindings.
-    // These match the state in PAL.DrawCall.
+    // These match the state in GLRenderState.
     // They go out of sync with the GL for temporary operations and are then immediately restored.
     // They are also reset during disposal if necessary.
     internal uint _backupProgram;
     private uint _backupVAO;
+    internal PAL.RenderTargetBase _backupRenderTarget = default!;
 
-    /// <summary>To be called *only* from PAL.DrawCall</summary>
+    /// <summary>To be called *only* from GLRenderState</summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void DCUseProgram(uint program)
     {
@@ -30,13 +31,20 @@ internal sealed partial class PAL
         _hasGL.CheckGlError();
         _backupProgram = program;
     }
-    /// <summary>To be called *only* from PAL.DrawCall</summary>
+    /// <summary>To be called *only* from GLRenderState</summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void DCBindVAO(uint vao)
     {
         _hasGL.BindVertexArray(vao);
         _hasGL.CheckGlError();
         _backupVAO = vao;
+    }
+    /// <summary>To be called *only* from GLRenderState</summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void DCBindRenderTarget(RenderTargetBase rt)
+    {
+        BindRenderTargetImmediate(rt);
+        _backupRenderTarget = rt;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -53,7 +61,7 @@ internal sealed partial class PAL
     {
         if (_backupVAO == vao)
             _backupVAO = 0;
-        GL.DeleteVertexArray(vao);
+        _hasGL.DeleteVertexArray(vao);
         _hasGL.CheckGlError();
     }
 
@@ -96,26 +104,9 @@ internal sealed partial class PAL
         {
             DeleteProgram(handle);
         }
-
-        if (_hasGL.VertexArrayObject)
+        while (_vaoDisposeQueue.TryDequeue(out var handle))
         {
-            while (_vaoDisposeQueue.TryDequeue(out var handle))
-            {
-                if (handle == _backupVAO)
-                    _backupVAO = 0;
-                GL.DeleteVertexArray(handle);
-                _hasGL.CheckGlError();
-            }
-        }
-        else if (_hasGL.VertexArrayObjectOes)
-        {
-            while (_vaoDisposeQueue.TryDequeue(out var handle))
-            {
-                if (handle == _backupVAO)
-                    _backupVAO = 0;
-                ES20.GL.Oes.DeleteVertexArray(handle);
-                _hasGL.CheckGlError();
-            }
+            DeleteVAO(handle);
         }
     }
 }

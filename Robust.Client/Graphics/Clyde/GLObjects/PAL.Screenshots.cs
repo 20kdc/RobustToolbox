@@ -29,32 +29,7 @@ internal sealed partial class PAL
 
     private readonly List<TransferringPixelCopy> _transferringPixelCopies = new();
 
-    private void CopyRenderTargetPixels<T>(
-        PAL.RenderTargetBase renderTarget,
-        UIBox2i? subRegion,
-        CopyPixelsDelegate<T> callback)
-        where T : unmanaged, IPixel<T>
-    {
-        var original = GL.GetInteger(GetPName.ReadFramebufferBinding);
-
-        if (renderTarget is PAL.RenderTexture texture)
-        {
-            GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, texture.FramebufferHandle.Handle);
-        }
-        else
-        {
-            // HACK: While this mimics pre-KERB behaviour, it is extremely stupid & breaks with multi-window.
-            // In theory, we should be doing temporary changeover into the target framebuffer.
-            // In practice, we can't do that either, because of the insistence on async.
-            // Was the lagspike really that important to avoid?
-            GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, 0);
-        }
-
-        DoCopyPixels(renderTarget.Size, subRegion, callback);
-
-        GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, original);
-    }
-
+    /// This is used by CopyPixelsToMemory in order to copy out of the current framebuffer.
     private unsafe void DoCopyPixels<T>(
         Vector2i fbSize,
         UIBox2i? subRegion,

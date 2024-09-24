@@ -29,6 +29,21 @@ internal sealed partial class Clyde
     public GPUVertexArrayObject CreateVAO(string? name = null) => _pal.CreateVAO(name);
 
     public IGPURenderState CreateRenderState() => _pal.CreateRenderState();
+
+    IRenderTexture IClyde.CreateRenderTarget(Vector2i size, RenderTargetFormatParameters format,
+        TextureSampleParameters? sampleParameters, string? name)
+    {
+        return _pal.CreateRenderTarget(size, format, sampleParameters, name);
+    }
+
+    PAL.RenderTexture IWindowingHost.CreateWindowRenderTarget(Vector2i size)
+    {
+        return _pal.CreateRenderTarget(size, new RenderTargetFormatParameters
+        {
+            ColorFormat = RenderTargetColorFormat.Rgba8Srgb,
+            HasDepthStencil = true
+        });
+    }
 }
 
 internal sealed partial class PAL

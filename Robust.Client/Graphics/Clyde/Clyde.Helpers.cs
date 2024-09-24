@@ -29,7 +29,7 @@ namespace Robust.Client.Graphics.Clyde
             if (!_hasGL.Srgb)
             {
                 program.SetUniformMaybe("SRGB_EMU_CONFIG",
-                    new Vector2(texIsSrgb ? 1 : 0, _currentBoundRenderTarget.IsSrgb ? 1 : 0));
+                    new Vector2(texIsSrgb ? 1 : 0, ((PAL.RenderTargetBase) _renderState.RenderTarget!).IsSrgb ? 1 : 0));
             }
         }
 

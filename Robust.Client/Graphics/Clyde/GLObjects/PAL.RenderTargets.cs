@@ -181,8 +181,9 @@ namespace Robust.Client.Graphics.Clyde
             return new RenderTexture(size, textureObject, this, fbo, depthStencilBuffer, textureObject.IsSrgb);
         }
 
+        /// <summary>To be called *only* from this file (with extreme care) and DCBindRenderTarget</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal void BindRenderTargetImmediate(RenderTargetBase rt)
+        private void BindRenderTargetImmediate(RenderTargetBase rt)
         {
             // NOTE: It's critically important that this be the "focal point" of all framebuffer bindings.
             if (rt is RenderWindow window)
@@ -194,39 +195,42 @@ namespace Robust.Client.Graphics.Clyde
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, texture.FramebufferHandle.Handle);
                 CheckGlError();
             }
-            _clyde._currentBoundRenderTarget = rt;
         }
 
-        internal abstract class RenderTargetBase : GPUResource, IRenderTarget
+        internal abstract class RenderTargetBase(PAL clyde, bool isSrgb) : GPUResource, IRenderTarget
         {
-            protected readonly PAL PAL;
+            protected readonly PAL PAL = clyde;
 
             public bool MakeGLFence;
             public nint LastGLSync;
-
-            protected RenderTargetBase(PAL clyde, bool isSrgb)
-            {
-                PAL = clyde;
-                IsSrgb = isSrgb;
-            }
 
             public abstract Vector2i Size { get; }
 
             public abstract bool FlipY { get; }
 
-            public bool IsSrgb { get; }
+            public bool IsSrgb { get; } = isSrgb;
 
             public void CopyPixelsToMemory<T>(CopyPixelsDelegate<T> callback, UIBox2i? subRegion = null) where T : unmanaged, IPixel<T>
             {
-                PAL.CopyRenderTargetPixels(this, subRegion, callback);
+                bool pause = this != PAL._backupRenderTarget;
+
+                if (pause)
+                {
+                    PAL.BindRenderTargetImmediate(this);
+                }
+
+                PAL.DoCopyPixels(Size, subRegion, callback);
+
+                if (pause)
+                {
+                    PAL.BindRenderTargetImmediate(PAL._backupRenderTarget);
+                }
             }
 
             public void CopyPixelsToTexture(OwnedTexture target) {
                 ClydeTexture ct = (ClydeTexture) target;
 
-                RenderTargetBase sourceLoaded = PAL._clyde._currentBoundRenderTarget;
-
-                bool pause = this != PAL._clyde._currentBoundRenderTarget;
+                bool pause = this != PAL._backupRenderTarget;
 
                 if (pause)
                 {
@@ -244,7 +248,7 @@ namespace Robust.Client.Graphics.Clyde
 
                 if (pause)
                 {
-                    PAL.BindRenderTargetImmediate(sourceLoaded);
+                    PAL.BindRenderTargetImmediate(PAL._backupRenderTarget);
                 }
             }
         }

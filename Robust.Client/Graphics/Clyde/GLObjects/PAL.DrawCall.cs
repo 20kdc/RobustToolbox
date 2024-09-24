@@ -161,7 +161,7 @@ internal partial class PAL
                 _renderTarget = (RenderTargetBase?) value;
                 if (_pal._currentRenderState == this && GPUResource.IsValid(_renderTarget))
                 {
-                    _pal.BindRenderTargetImmediate(_renderTarget);
+                    _pal.DCBindRenderTarget(_renderTarget);
                     _pal.SetScissorImmediate(_renderTarget, _scissor);
                 }
             }
@@ -283,7 +283,7 @@ internal partial class PAL
             {
                 if (GPUResource.IsValid(_renderTarget))
                 {
-                    _pal.BindRenderTargetImmediate(_renderTarget);
+                    _pal.DCBindRenderTarget(_renderTarget);
                     _pal.SetScissorImmediate(_renderTarget, _scissor);
                 }
                 _pal._currentRenderState = this;
