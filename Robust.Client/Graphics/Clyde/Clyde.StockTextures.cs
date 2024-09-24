@@ -44,7 +44,7 @@ internal partial class Clyde
         _stockTextureTransparent = (ClydeTexture) Texture.LoadFromImage(blank);
     }
 
-    public Texture GetStockTexture(ClydeStockTexture stockTexture)
+    public WholeTexture GetStockTexture(ClydeStockTexture stockTexture)
     {
         return stockTexture switch
         {

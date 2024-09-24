@@ -9,117 +9,124 @@ namespace Robust.Client.Graphics.Clyde;
 internal partial class PAL
 {
     /// <summary>Creates a buffer on the GPU with the given contents. Beware: Pokes ArrayBuffer target.</summary>
-    public GPUBuffer CreateBuffer(ReadOnlySpan<byte> span, GPUBuffer.Usage usage, string? name)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public GLBuffer CreateBuffer(ReadOnlySpan<byte> span, GPUBuffer.Usage usage, string? name)
     {
         return new GLBuffer(this, (BufferUsageHint) usage, span, name);
     }
-}
-
-/// <summary>
-///     Represents an OpenGL buffer object.
-/// </summary>
-internal sealed class GLBuffer : GPUBuffer
-{
-    private readonly PAL _pal;
-    public uint ObjectHandle { get; private set; }
-    public BufferUsageHint UsageHint { get; }
-
-    public GLBuffer(PAL pal, BufferUsageHint usage, string? name = null)
-    {
-        _pal = pal;
-        UsageHint = usage;
-
-        GL.GenBuffers(1, out uint handle);
-        pal.CheckGlError();
-        ObjectHandle = handle;
-
-        GL.BindBuffer(BufferTarget.ArrayBuffer, handle);
-        pal.CheckGlError();
-
-        pal._hasGL.ObjectLabelMaybe(ObjectLabelIdentifier.Buffer, ObjectHandle, name);
-    }
-
-    public GLBuffer(PAL clyde, BufferUsageHint usage, int size, string? name = null)
-        : this(clyde, usage, name)
-    {
-        Reallocate(size);
-    }
-
-    public GLBuffer(PAL clyde, BufferUsageHint usage, ReadOnlySpan<byte> initialize,
-        string? name = null)
-        : this(clyde, usage, name)
-    {
-        Reallocate(initialize);
-    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Use(BufferTarget type)
+    GPUBuffer IGPUAbstraction.CreateBuffer(ReadOnlySpan<byte> span, GPUBuffer.Usage usage, string? name)
     {
-        DebugTools.Assert(ObjectHandle != 0);
-
-        GL.BindBuffer(type, ObjectHandle);
-        _pal.CheckGlError();
+        return CreateBuffer(span, usage, name);
     }
 
-    protected override void DisposeImpl()
+    /// <summary>
+    ///     Represents an OpenGL buffer object.
+    /// </summary>
+    internal sealed class GLBuffer : GPUBuffer
     {
-        if (_pal.IsMainThread())
+        private readonly PAL _pal;
+        public uint ObjectHandle { get; private set; }
+        public BufferUsageHint UsageHint { get; }
+
+        public GLBuffer(PAL pal, BufferUsageHint usage, string? name = null)
         {
-            // Main thread, do direct GL deletion.
-            GL.DeleteBuffer(ObjectHandle);
+            _pal = pal;
+            UsageHint = usage;
+
+            GL.GenBuffers(1, out uint handle);
+            pal.CheckGlError();
+            ObjectHandle = handle;
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, handle);
+            pal.CheckGlError();
+
+            pal._hasGL.ObjectLabelMaybe(ObjectLabelIdentifier.Buffer, ObjectHandle, name);
+        }
+
+        public GLBuffer(PAL clyde, BufferUsageHint usage, int size, string? name = null)
+            : this(clyde, usage, name)
+        {
+            Reallocate(size);
+        }
+
+        public GLBuffer(PAL clyde, BufferUsageHint usage, ReadOnlySpan<byte> initialize,
+            string? name = null)
+            : this(clyde, usage, name)
+        {
+            Reallocate(initialize);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Use(BufferTarget type)
+        {
+            DebugTools.Assert(ObjectHandle != 0);
+
+            GL.BindBuffer(type, ObjectHandle);
             _pal.CheckGlError();
         }
-        else
-        {
-            // Finalizer thread
-            _pal._bufferDisposeQueue.Enqueue(ObjectHandle);
-        }
-        ObjectHandle = 0;
-    }
 
-    /// <summary>
-    ///     <c>glBufferSubData</c>
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public override void WriteSubData(int start, ReadOnlySpan<byte> data)
-    {
-        Use(BufferTarget.ArrayBuffer);
-
-        unsafe
+        protected override void DisposeImpl()
         {
-            fixed (byte* ptr = data)
+            if (_pal.IsMainThread())
             {
-                GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr) start, data.Length, (IntPtr) ptr);
+                // Main thread, do direct GL deletion.
+                GL.DeleteBuffer(ObjectHandle);
+                _pal.CheckGlError();
             }
-        }
-
-        _pal.CheckGlError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public override void Reallocate(ReadOnlySpan<byte> data)
-    {
-        Use(BufferTarget.ArrayBuffer);
-
-        unsafe
-        {
-            fixed (byte* ptr = data)
+            else
             {
-                GL.BufferData(BufferTarget.ArrayBuffer, data.Length, (IntPtr) ptr, UsageHint);
+                // Finalizer thread
+                _pal._bufferDisposeQueue.Enqueue(ObjectHandle);
             }
+            ObjectHandle = 0;
         }
 
-        _pal.CheckGlError();
-    }
+        /// <summary>
+        ///     <c>glBufferSubData</c>
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void WriteSubData(int start, ReadOnlySpan<byte> data)
+        {
+            Use(BufferTarget.ArrayBuffer);
 
-    /// <summary>
-    ///     <c>glBufferData</c>
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Reallocate(int size)
-    {
-        Use(BufferTarget.ArrayBuffer);
-        GL.BufferData(BufferTarget.ArrayBuffer, size, IntPtr.Zero, UsageHint);
-        _pal.CheckGlError();
+            unsafe
+            {
+                fixed (byte* ptr = data)
+                {
+                    GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr) start, data.Length, (IntPtr) ptr);
+                }
+            }
+
+            _pal.CheckGlError();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void Reallocate(ReadOnlySpan<byte> data)
+        {
+            Use(BufferTarget.ArrayBuffer);
+
+            unsafe
+            {
+                fixed (byte* ptr = data)
+                {
+                    GL.BufferData(BufferTarget.ArrayBuffer, data.Length, (IntPtr) ptr, UsageHint);
+                }
+            }
+
+            _pal.CheckGlError();
+        }
+
+        /// <summary>
+        ///     <c>glBufferData</c>
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Reallocate(int size)
+        {
+            Use(BufferTarget.ArrayBuffer);
+            GL.BufferData(BufferTarget.ArrayBuffer, size, IntPtr.Zero, UsageHint);
+            _pal.CheckGlError();
+        }
     }
 }

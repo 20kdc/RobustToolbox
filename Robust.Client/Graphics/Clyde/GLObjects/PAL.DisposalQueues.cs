@@ -8,6 +8,7 @@ internal sealed partial class PAL
 {
     internal readonly ConcurrentQueue<GLHandle> _textureDisposeQueue = new();
     internal readonly ConcurrentQueue<uint> _bufferDisposeQueue = new();
+    internal readonly ConcurrentQueue<uint> _programDisposeQueue = new();
     internal readonly ConcurrentQueue<uint> _vaoDisposeQueue = new();
 
     /// <summary>Disposes of dead resources.</summary>
@@ -21,6 +22,11 @@ internal sealed partial class PAL
         while (_bufferDisposeQueue.TryDequeue(out var handle))
         {
             GL.DeleteBuffer(handle);
+            _hasGL.CheckGlError();
+        }
+        while (_programDisposeQueue.TryDequeue(out var handle))
+        {
+            GL.DeleteProgram(handle);
             _hasGL.CheckGlError();
         }
 

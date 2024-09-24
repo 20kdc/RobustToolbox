@@ -23,6 +23,8 @@ internal sealed partial class Clyde
     public GPUBuffer CreateBuffer(ReadOnlySpan<byte> span, GPUBuffer.Usage usage, string? name) => _pal.CreateBuffer(span, usage, name);
 
     public GPUVertexArrayObject CreateVAO(string? name = null) => _pal.CreateVAO(name);
+
+    // ExecuteDraw is located in Clyde.HLR because it does some state push/pop stuff r/n
 }
 
 internal sealed partial class PAL

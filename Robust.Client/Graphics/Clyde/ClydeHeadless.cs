@@ -65,7 +65,7 @@ namespace Robust.Client.Graphics.Clyde
         public event Action<WindowRequestClosedEventArgs>? CloseWindow { add { } remove { } }
         public event Action<WindowDestroyedEventArgs>? DestroyWindow { add { } remove { } }
 
-        public Texture GetStockTexture(ClydeStockTexture stockTexture)
+        public WholeTexture GetStockTexture(ClydeStockTexture stockTexture)
         {
             return new DummyTexture((1, 1));
         }
@@ -197,6 +197,11 @@ namespace Robust.Client.Graphics.Clyde
         public GPUBuffer CreateBuffer(ReadOnlySpan<byte> span, GPUBuffer.Usage usage, string? name) => new DummyBuffer();
 
         public GPUVertexArrayObject CreateVAO(string? name) => new DummyVAO();
+
+        public void ExecuteDraw(in GPUDrawCall draw)
+        {
+            // Believe it or not, it does nothing...
+        }
 
         public ICursor GetStandardCursor(StandardCursorShape shape)
         {

@@ -2,6 +2,7 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using OpenToolkit.Graphics.OpenGL4;
 using Robust.Client.GameObjects;
@@ -414,6 +415,40 @@ namespace Robust.Client.Graphics.Clyde
             var texture = _resourceCache.GetResource<TextureResource>(splashTex).Texture;
 
             handle.DrawingHandleScreen.DrawTexture(texture, (ScreenSize - texture.Size) / 2);
+        }
+
+        private void BindRenderTargetFull(LoadedRenderTarget rt)
+        {
+            BindRenderTargetImmediate(rt);
+            _currentRenderTarget = rt;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void BindRenderTargetFull(RenderTargetBase rt)
+        {
+            BindRenderTargetFull(RtToLoaded(rt));
+        }
+
+        public void ExecuteDraw(in GPUDrawCall draw)
+        {
+            var oldTransform = _currentMatrixModel;
+            var oldScissor = _currentScissorState;
+
+            FlushRenderQueue();
+
+            var state = PushRenderStateFull();
+
+            {
+                _pal.ExecuteDraw(draw);
+                _debugStats.LastGLDrawCalls += 1;
+            }
+
+            FenceRenderTarget((RenderTargetBase) draw.RenderTarget);
+
+            PopRenderStateFull(state);
+
+            SetScissorFull(oldScissor);
+            _currentMatrixModel = oldTransform;
         }
 
         private void RenderInRenderTarget(RenderTargetBase rt, Action a, Color? clearColor=default)

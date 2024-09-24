@@ -19,19 +19,13 @@ namespace Robust.Client.Graphics
             DebugTools.Assert(SubRegion.Left >= 0);
             DebugTools.Assert(SubRegion.Top >= 0);
 
-            SubRegion = subRegion;
-            SourceTexture = texture;
+            SubRegion = subRegion.Translated(texture.SubRegion.TopLeft);
+            SourceTexture = texture.SourceTexture;
         }
 
-        /// <summary>
-        ///     The texture this texture is a sub region of.
-        /// </summary>
-        public Texture SourceTexture { get; }
+        public override WholeTexture SourceTexture { get; }
 
-        /// <summary>
-        ///     Our sub region within our source, in pixel coordinates.
-        /// </summary>
-        public UIBox2 SubRegion { get; }
+        public override UIBox2 SubRegion { get; }
 
         public override Color GetPixel(int x, int y)
         {

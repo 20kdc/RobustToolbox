@@ -9,7 +9,7 @@ namespace Robust.Client.Graphics
     /// <summary>
     ///     Represents a mutable texture that can be modified and deleted.
     /// </summary>
-    public abstract class OwnedTexture : Texture, IDisposable
+    public abstract class OwnedTexture : WholeTexture, IDisposable
     {
         /// <summary>Guard to prevent this texture being disposed multiple times.</summary>
         private int _disposed = 0;

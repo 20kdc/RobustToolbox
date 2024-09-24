@@ -9,6 +9,8 @@ namespace Robust.Client.Graphics.Clyde;
 
 internal partial class PAL
 {
+    GLVAOBase? _currentVAO = null;
+
     GPUVertexArrayObject IGPUAbstraction.CreateVAO(string? name) => CreateVAO(name);
 
     /// <summary>Creates a Vertex Array Object.</summary>
@@ -38,8 +40,14 @@ internal partial class PAL
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void Use()
         {
+            if (_pal._currentVAO == this)
+            {
+                return;
+            }
+
             DebugTools.Assert(ObjectHandle != 0);
 
+            _pal._currentVAO = this;
             GL.BindVertexArray(ObjectHandle);
             _pal.CheckGlError();
         }
@@ -63,8 +71,14 @@ internal partial class PAL
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void Use()
         {
+            if (_pal._currentVAO == this)
+            {
+                return;
+            }
+
             DebugTools.Assert(ObjectHandle != 0);
 
+            _pal._currentVAO = this;
             ES20.GL.Oes.BindVertexArray(ObjectHandle);
             _pal.CheckGlError();
         }
@@ -98,7 +112,7 @@ internal abstract class GLVAOBase : GPUVertexArrayObject
             Use();
             if (value != null)
             {
-                ((GLBuffer) value).Use(BufferTarget.ElementArrayBuffer);
+                ((PAL.GLBuffer) value).Use(BufferTarget.ElementArrayBuffer);
             }
             else
             {
@@ -114,7 +128,7 @@ internal abstract class GLVAOBase : GPUVertexArrayObject
         if (value != null)
         {
             var info = value!.Value;
-            ((GLBuffer) info.Buffer).Use(BufferTarget.ArrayBuffer);
+            ((PAL.GLBuffer) info.Buffer).Use(BufferTarget.ArrayBuffer);
             GL.VertexAttribPointer(index, info.Size, (VertexAttribPointerType) info.Component, info.Normalized, info.Stride, (nint) info.Offset);
             GL.EnableVertexAttribArray(index);
         }

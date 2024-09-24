@@ -192,9 +192,9 @@ namespace Robust.Client.Graphics.Clyde
             var vboSize = _verticesPerChunk(chunk) * sizeof(Vertex2D);
             var eboSize = _indicesPerChunk(chunk) * sizeof(ushort);
 
-            var vbo = new GLBuffer(_pal, BufferUsageHint.DynamicDraw,
+            var vbo = new PAL.GLBuffer(_pal, BufferUsageHint.DynamicDraw,
                 vboSize, $"Grid {grid.Owner} chunk {chunk.Indices} VBO");
-            var ebo = new GLBuffer(_pal, BufferUsageHint.DynamicDraw,
+            var ebo = new PAL.GLBuffer(_pal, BufferUsageHint.DynamicDraw,
                 eboSize, $"Grid {grid.Owner} chunk {chunk.Indices} EBO");
 
             SetupVAOLayout(vao, vbo);
@@ -245,11 +245,11 @@ namespace Robust.Client.Graphics.Clyde
         {
             public bool Dirty;
             public readonly GLVAOBase VAO;
-            public readonly GLBuffer VBO;
-            public readonly GLBuffer EBO;
+            public readonly GPUBuffer VBO;
+            public readonly GPUBuffer EBO;
             public int TileCount;
 
-            public MapChunkData(GLVAOBase vao, GLBuffer vbo, GLBuffer ebo)
+            public MapChunkData(GLVAOBase vao, GPUBuffer vbo, GPUBuffer ebo)
             {
                 VAO = vao;
                 VBO = vbo;

@@ -37,7 +37,6 @@ namespace Robust.Client.Graphics.Clyde
         // This keeps track of whether that's necessary.
         public readonly bool KhrDebugESExtension;
         public readonly bool TextureSwizzle;
-        public readonly bool SamplerObjects;
         public readonly bool Srgb;
         public readonly bool PrimitiveRestart;
         public readonly bool PrimitiveRestartFixedIndex;
@@ -111,7 +110,6 @@ namespace Robust.Client.Graphics.Clyde
             {
                 // Desktop OpenGL capabilities.
                 CheckGLCap(ref KhrDebug, "khr_debug", (4, 2), "GL_KHR_debug");
-                CheckGLCap(ref SamplerObjects, "sampler_objects", (3, 3), "GL_ARB_sampler_objects");
                 CheckGLCap(ref TextureSwizzle, "texture_swizzle", (3, 3), "GL_ARB_texture_swizzle",
                     "GL_EXT_texture_swizzle");
                 CheckGLCap(ref VertexArrayObject, "vertex_array_object", (3, 0), "GL_ARB_vertex_array_object");

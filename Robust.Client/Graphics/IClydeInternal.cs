@@ -53,7 +53,7 @@ namespace Robust.Client.Graphics
 
         IClydeDebugStats DebugStats { get; }
 
-        Texture GetStockTexture(ClydeStockTexture stockTexture);
+        WholeTexture GetStockTexture(ClydeStockTexture stockTexture);
 
         ClydeDebugLayers DebugLayers { get; set; }
 

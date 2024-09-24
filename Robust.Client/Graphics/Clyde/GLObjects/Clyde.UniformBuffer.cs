@@ -28,7 +28,7 @@ namespace Robust.Client.Graphics.Clyde
             /// <summary>
             ///     GPU Buffer (only used when uniform buffers are available)
             /// </summary>
-            private GLBuffer? _implUBO = null;
+            private PAL.GLBuffer? _implUBO = null;
 
             /// <summary>
             ///     Mirror (only used when uniform buffers are unavailable)
@@ -41,7 +41,7 @@ namespace Robust.Client.Graphics.Clyde
                 _index = index;
                 if (_clyde._hasGL.UniformBuffers)
                 {
-                    _implUBO = new GLBuffer(clyde._pal, BufferUsageHint.StreamDraw, name);
+                    _implUBO = new PAL.GLBuffer(clyde._pal, BufferUsageHint.StreamDraw, name);
                     unsafe {
                         _implUBO.Reallocate(sizeof(T));
                     }

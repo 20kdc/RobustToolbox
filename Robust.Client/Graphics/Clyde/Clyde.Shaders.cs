@@ -116,7 +116,7 @@ namespace Robust.Client.Graphics.Clyde
 
             var program = _compileProgram(vertBody, fragBody, BaseShaderAttribLocations, textureUniforms, loaded.Name);
 
-            loaded.Program.Delete();
+            loaded.Program.Dispose();
 
             loaded.Program = program;
 

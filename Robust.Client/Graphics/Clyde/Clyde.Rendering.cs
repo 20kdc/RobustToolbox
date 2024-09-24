@@ -10,7 +10,6 @@ using Robust.Client.Utility;
 using Robust.Shared.Graphics;
 using Robust.Shared.Maths;
 using Robust.Shared.Utility;
-using TKStencilOp = OpenToolkit.Graphics.OpenGL4.StencilOp;
 using Vector3 = Robust.Shared.Maths.Vector3;
 using Vector4 = Robust.Shared.Maths.Vector4;
 
@@ -92,7 +91,6 @@ namespace Robust.Client.Graphics.Clyde
 
         // Some simple flags that basically just tracks the current state of glEnable(GL_STENCIL/GL_SCISSOR_TEST)
         private bool _isScissoring;
-        private bool _isStencilling;
 
         private readonly RefList<RenderCommand> _queuedRenderCommands = new RefList<RenderCommand>();
 
@@ -248,7 +246,7 @@ namespace Robust.Client.Graphics.Clyde
 
             SetBlendFunc(loaded.BlendMode);
 
-            var primitiveType = MapPrimitiveType(command.PrimitiveType);
+            var primitiveType = PAL.MapPrimitiveType(command.PrimitiveType);
             if (command.Indexed)
             {
                 GL.DrawElements(primitiveType, command.Count, DrawElementsType.UnsignedShort,
@@ -265,21 +263,6 @@ namespace Robust.Client.Graphics.Clyde
             GL.BlendEquation(BlendEquationMode.FuncAdd);
 
             _debugStats.LastGLDrawCalls += 1;
-        }
-
-        private static PrimitiveType MapPrimitiveType(BatchPrimitiveType type)
-        {
-            return type switch
-            {
-                BatchPrimitiveType.TriangleList => PrimitiveType.Triangles,
-                BatchPrimitiveType.TriangleFan => PrimitiveType.TriangleFan,
-                BatchPrimitiveType.TriangleStrip => PrimitiveType.TriangleStrip,
-                BatchPrimitiveType.LineList => PrimitiveType.Lines,
-                BatchPrimitiveType.LineStrip => PrimitiveType.LineStrip,
-                BatchPrimitiveType.LineLoop => PrimitiveType.LineLoop,
-                BatchPrimitiveType.PointList => PrimitiveType.Points,
-                _ => PrimitiveType.Triangles
-            };
         }
 
         private void _drawQuad(Vector2 a, Vector2 b, in Matrix3x2 modelMatrix, GLShaderProgram program)
@@ -414,29 +397,7 @@ namespace Robust.Client.Graphics.Clyde
 
             program.Use();
 
-            // Handle stencil parameters.
-            if (instance.Stencil.Enabled)
-            {
-                if (!_isStencilling)
-                {
-                    GL.Enable(EnableCap.StencilTest);
-                    CheckGlError();
-                    _isStencilling = true;
-                }
-
-                GL.StencilMask(instance.Stencil.WriteMask);
-                CheckGlError();
-                GL.StencilFunc(ToGLStencilFunc(instance.Stencil.Func), instance.Stencil.Ref, instance.Stencil.ReadMask);
-                CheckGlError();
-                GL.StencilOp(TKStencilOp.Keep, TKStencilOp.Keep, ToGLStencilOp(instance.Stencil.Op));
-                CheckGlError();
-            }
-            else if (_isStencilling)
-            {
-                GL.Disable(EnableCap.StencilTest);
-                CheckGlError();
-                _isStencilling = false;
-            }
+            _pal.ApplyStencilParameters(instance.Stencil);
 
             if (instance.Parameters.Count == 0)
                 return (program, instance);
@@ -605,7 +566,7 @@ namespace Robust.Client.Graphics.Clyde
 
             command.DrawBatch.Indexed = true;
             command.DrawBatch.StartIndex = BatchIndexIndex;
-            command.DrawBatch.PrimitiveType = MapDrawToBatchPrimitiveType(primitiveTopology);
+            command.DrawBatch.PrimitiveType = primitiveTopology;
             command.Texture = textureId;
             command.DrawBatch.ShaderInstance = _queuedShader;
 
@@ -631,7 +592,7 @@ namespace Robust.Client.Graphics.Clyde
 
             command.DrawBatch.Indexed = false;
             command.DrawBatch.StartIndex = BatchVertexIndex;
-            command.DrawBatch.PrimitiveType = MapDrawToBatchPrimitiveType(primitiveTopology);
+            command.DrawBatch.PrimitiveType = primitiveTopology;
             command.Texture = textureId;
             command.DrawBatch.ShaderInstance = _queuedShader;
 
@@ -643,25 +604,10 @@ namespace Robust.Client.Graphics.Clyde
             BatchVertexIndex += vertices.Length;
         }
 
-        private static BatchPrimitiveType MapDrawToBatchPrimitiveType(DrawPrimitiveTopology topology)
-        {
-            return topology switch
-            {
-                DrawPrimitiveTopology.TriangleList => BatchPrimitiveType.TriangleList,
-                DrawPrimitiveTopology.TriangleFan => BatchPrimitiveType.TriangleFan,
-                DrawPrimitiveTopology.TriangleStrip => BatchPrimitiveType.TriangleStrip,
-                DrawPrimitiveTopology.LineList => BatchPrimitiveType.LineList,
-                DrawPrimitiveTopology.LineStrip => BatchPrimitiveType.LineStrip,
-                DrawPrimitiveTopology.LineLoop => BatchPrimitiveType.LineLoop,
-                DrawPrimitiveTopology.PointList => BatchPrimitiveType.PointList,
-                _ => BatchPrimitiveType.TriangleList
-            };
-        }
-
         private void DrawLine(Vector2 a, Vector2 b, Color color)
         {
             EnsureBatchSpaceAvailable(2, 0);
-            EnsureBatchState(_stockTextureWhite, false, BatchPrimitiveType.LineList, _queuedShader);
+            EnsureBatchState(_stockTextureWhite, false, DrawPrimitiveTopology.LineList, _queuedShader);
 
             a = Vector2.Transform(a, _currentMatrixModel);
             b = Vector2.Transform(b, _currentMatrixModel);
@@ -739,7 +685,7 @@ namespace Robust.Client.Graphics.Clyde
         ///     If not, the current batch is finished and a new one is started.
         /// </summary>
         private void EnsureBatchState(ClydeTexture textureId, bool indexed,
-            BatchPrimitiveType primitiveType, ClydeHandle shaderInstance)
+            DrawPrimitiveTopology primitiveType, ClydeHandle shaderInstance)
         {
             if (_batchMetaData.HasValue)
             {
@@ -797,38 +743,6 @@ namespace Robust.Client.Graphics.Clyde
             command.DrawBatch.ModelMatrix = Matrix3x2.Identity;
 
             _debugStats.LastBatches += 1;
-        }
-
-        private static TKStencilOp ToGLStencilOp(StencilOp op)
-        {
-            return op switch
-            {
-                StencilOp.Keep => TKStencilOp.Keep,
-                StencilOp.Zero => TKStencilOp.Zero,
-                StencilOp.Replace => TKStencilOp.Replace,
-                StencilOp.IncrementClamp => TKStencilOp.Incr,
-                StencilOp.IncrementWrap => TKStencilOp.IncrWrap,
-                StencilOp.DecrementClamp => TKStencilOp.Decr,
-                StencilOp.DecrementWrap => TKStencilOp.DecrWrap,
-                StencilOp.Invert => TKStencilOp.Invert,
-                _ => throw new NotSupportedException()
-            };
-        }
-
-        private static StencilFunction ToGLStencilFunc(StencilFunc op)
-        {
-            return op switch
-            {
-                StencilFunc.Never => StencilFunction.Never,
-                StencilFunc.Always => StencilFunction.Always,
-                StencilFunc.Less => StencilFunction.Less,
-                StencilFunc.LessOrEqual => StencilFunction.Lequal,
-                StencilFunc.Greater => StencilFunction.Greater,
-                StencilFunc.GreaterOrEqual => StencilFunction.Gequal,
-                StencilFunc.NotEqual => StencilFunction.Notequal,
-                StencilFunc.Equal => StencilFunction.Equal,
-                _ => throw new NotSupportedException()
-            };
         }
 
         /// <summary>
@@ -949,7 +863,7 @@ namespace Robust.Client.Graphics.Clyde
             public int StartIndex;
             public int Count;
             public bool Indexed;
-            public BatchPrimitiveType PrimitiveType;
+            public DrawPrimitiveTopology PrimitiveType;
 
             // TODO: this makes the render commands so much more large please remove.
             public Matrix3x2 ModelMatrix;
@@ -1019,11 +933,11 @@ namespace Robust.Client.Graphics.Clyde
         {
             public readonly ClydeTexture Texture;
             public readonly bool Indexed;
-            public readonly BatchPrimitiveType PrimitiveType;
+            public readonly DrawPrimitiveTopology PrimitiveType;
             public readonly int StartIndex;
             public readonly ClydeHandle ShaderInstance;
 
-            public BatchMetaData(ClydeTexture textureId, bool indexed, BatchPrimitiveType primitiveType,
+            public BatchMetaData(ClydeTexture textureId, bool indexed, DrawPrimitiveTopology primitiveType,
                 int startIndex, ClydeHandle shaderInstance)
             {
                 Texture = textureId;
@@ -1032,17 +946,6 @@ namespace Robust.Client.Graphics.Clyde
                 StartIndex = startIndex;
                 ShaderInstance = shaderInstance;
             }
-        }
-
-        private enum BatchPrimitiveType : byte
-        {
-            TriangleList,
-            TriangleFan,
-            TriangleStrip,
-            LineList,
-            LineStrip,
-            LineLoop,
-            PointList,
         }
 
         private readonly struct FullStoredRendererState

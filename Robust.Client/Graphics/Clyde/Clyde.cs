@@ -49,12 +49,12 @@ namespace Robust.Client.Graphics.Clyde
         private GLUniformBuffer<ProjViewMatrices> ProjViewUBO = default!;
         private GLUniformBuffer<UniformConstants> UniformConstantsUBO = default!;
 
-        private GLBuffer BatchVBO = default!;
-        private GLBuffer BatchEBO = default!;
+        private GPUBuffer BatchVBO = default!;
+        private GPUBuffer BatchEBO = default!;
         private GLVAOBase BatchVAO = default!;
 
         // VBO to draw a single quad.
-        private GLBuffer QuadVBO = default!;
+        private GPUBuffer QuadVBO = default!;
         private GLVAOBase QuadVAO = default!;
 
         private bool _drawingSplash = true;
@@ -252,8 +252,8 @@ namespace Robust.Client.Graphics.Clyde
                     new Vertex2D(0, 1, 0, 0, Color.White)
                 };
 
-                QuadVBO = new GLBuffer(_pal, BufferUsageHint.StaticDraw,
-                    MemoryMarshal.AsBytes(quadVertices),
+                QuadVBO = _pal.CreateBuffer(MemoryMarshal.AsBytes(quadVertices),
+                    GPUBuffer.Usage.StaticDraw,
                     nameof(QuadVBO));
 
                 QuadVAO = _pal.CreateVAO(nameof(QuadVAO));
@@ -262,9 +262,9 @@ namespace Robust.Client.Graphics.Clyde
 
             // Batch rendering
             {
-                BatchVBO = new GLBuffer(_pal, BufferUsageHint.DynamicDraw,
+                BatchVBO = new PAL.GLBuffer(_pal, BufferUsageHint.DynamicDraw,
                     sizeof(Vertex2D) * BatchVertexData.Length, nameof(BatchVBO));
-                BatchEBO = new GLBuffer(_pal, BufferUsageHint.DynamicDraw,
+                BatchEBO = new PAL.GLBuffer(_pal, BufferUsageHint.DynamicDraw,
                     sizeof(ushort) * BatchIndexData.Length, nameof(BatchEBO));
 
                 BatchVAO = _pal.CreateVAO(nameof(BatchVAO));

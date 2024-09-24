@@ -34,6 +34,16 @@ public abstract class Texture : IRsiStateLike
 
     public Color this[int x, int y] => this.GetPixel(x, y);
 
+    /// <summary>
+    ///     The texture this texture is a sub region of.
+    /// </summary>
+    public abstract WholeTexture SourceTexture { get; }
+
+    /// <summary>
+    ///     Our sub region within our source, in pixel coordinates.
+    /// </summary>
+    public abstract UIBox2 SubRegion { get; }
+
     protected Texture(Vector2i size)
     {
         Size = size;
@@ -68,13 +78,13 @@ public abstract class Texture : IRsiStateLike
 
     public abstract Color GetPixel(int x, int y);
 
-    public static Texture Transparent =>
+    public static WholeTexture Transparent =>
                 IoCManager.Resolve<IClydeInternal>().GetStockTexture(ClydeStockTexture.Transparent);
 
-    public static Texture White =>
+    public static WholeTexture White =>
         IoCManager.Resolve<IClydeInternal>().GetStockTexture(ClydeStockTexture.White);
 
-    public static Texture Black =>
+    public static WholeTexture Black =>
         IoCManager.Resolve<IClydeInternal>().GetStockTexture(ClydeStockTexture.Black);
 
     /// <summary>
@@ -87,7 +97,7 @@ public abstract class Texture : IRsiStateLike
     ///     Defaults to <see cref="Robust.Client.Graphics.TextureLoadParameters.Default"/> if <c>null</c>.
     /// </param>
     /// <typeparam name="T">The type of pixels of the image. At the moment, images must be <see cref="Rgba32"/>.</typeparam>
-    public static Texture LoadFromImage<T>(Image<T> image, string? name = null,
+    public static OwnedTexture LoadFromImage<T>(Image<T> image, string? name = null,
         TextureLoadParameters? loadParameters = null) where T : unmanaged, IPixel<T>
     {
         var manager = IoCManager.Resolve<IClyde>();
@@ -103,10 +113,24 @@ public abstract class Texture : IRsiStateLike
     ///     Parameters that influence the loading of textures.
     ///     Defaults to <see cref="Robust.Client.Graphics.TextureLoadParameters.Default"/> if <c>null</c>.
     /// </param>
-    public static Texture LoadFromPNGStream(Stream stream, string? name = null,
+    public static OwnedTexture LoadFromPNGStream(Stream stream, string? name = null,
         TextureLoadParameters? loadParameters = null)
     {
         var manager = IoCManager.Resolve<IClyde>();
         return manager.LoadTextureFromPNGStream(stream, name, loadParameters);
+    }
+}
+
+/// <summary>
+///     Implies the texture is 'whole'; does not come from an atlas.
+/// </summary>
+[PublicAPI]
+public abstract class WholeTexture : Texture
+{
+    public override WholeTexture SourceTexture => this;
+    public override UIBox2 SubRegion => new(0, 0, Size.X, Size.Y);
+
+    protected WholeTexture(Vector2i size) : base(size)
+    {
     }
 }

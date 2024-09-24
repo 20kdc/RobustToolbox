@@ -26,8 +26,8 @@ namespace Robust.Client.Graphics.Clyde
             = new();
 
         // This is always kept up-to-date, except in CreateRenderTarget (because it restores the old value)
-        // It is used for SRGB emulation.
-        // It, like _mainWindowRenderTarget, is initialized in Clyde's constructor
+        // It, like _mainWindowRenderTarget, is initialized in Clyde's constructor.
+        // It is used by CopyRenderTextureToTexture, along with by sRGB emulation.
         private LoadedRenderTarget _currentBoundRenderTarget;
 
         IRenderTexture IClyde.CreateRenderTarget(Vector2i size, RenderTargetFormatParameters format,
@@ -246,31 +246,19 @@ namespace Robust.Client.Graphics.Clyde
             //GC.RemoveMemoryPressure(renderTarget.MemoryPressure);
         }
 
-        private void BindRenderTargetFull(LoadedRenderTarget rt)
-        {
-            BindRenderTargetImmediate(rt);
-            _currentRenderTarget = rt;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void BindRenderTargetFull(RenderTargetBase rt)
-        {
-            BindRenderTargetFull(RtToLoaded(rt));
-        }
-
         LoadedRenderTarget IWindowingHost.RtToLoaded(RenderTargetBase rt)
         {
             return _renderTargets[rt.Handle];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private LoadedRenderTarget RtToLoaded(RenderTargetBase rt)
+        internal LoadedRenderTarget RtToLoaded(RenderTargetBase rt)
         {
             return _renderTargets[rt.Handle];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void BindRenderTargetImmediate(LoadedRenderTarget rt)
+        internal void BindRenderTargetImmediate(LoadedRenderTarget rt)
         {
             // NOTE: It's critically important that this be the "focal point" of all framebuffer bindings.
             if (rt.IsWindow)

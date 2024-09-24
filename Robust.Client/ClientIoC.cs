@@ -105,6 +105,7 @@ namespace Robust.Client
             {
                 case GameController.DisplayMode.Headless:
                     deps.Register<IClyde, ClydeHeadless>();
+                    deps.Register<IGPUAbstraction, ClydeHeadless>();
                     deps.Register<IClipboardManager, ClydeHeadless>();
                     deps.Register<IClydeInternal, ClydeHeadless>();
                     deps.Register<IAudioManager, HeadlessAudioManager>();
@@ -117,6 +118,8 @@ namespace Robust.Client
                     deps.Register<PAL, PAL>();
                     deps.Register<Clyde, Clyde>();
                     deps.Register<IClyde, Clyde>();
+                    // Importantly, it has to go through Clyde so Clyde can flush before user-invoked draw calls.
+                    deps.Register<IGPUAbstraction, Clyde>();
                     deps.Register<IClipboardManager, Clyde>();
                     deps.Register<IClydeInternal, Clyde>();
                     deps.Register<IAudioManager, AudioManager>();

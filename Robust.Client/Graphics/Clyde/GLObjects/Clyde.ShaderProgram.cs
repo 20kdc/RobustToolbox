@@ -22,7 +22,7 @@ internal partial class PAL
 ///     You've been warned:
 ///     using things like <see cref="SetUniformTexture" /> if this buffer isn't bound WILL mess things up!
 /// </summary>
-internal sealed class GLShaderProgram
+internal sealed class GLShaderProgram : GPUShaderProgram
 {
     private readonly sbyte?[] _uniformIntCache = new sbyte?[InternedUniform.UniCount];
     private readonly Dictionary<string, int> _uniformCache = new();
@@ -102,7 +102,7 @@ internal sealed class GLShaderProgram
 
                 // -- After this point, everything is mostly initialized, except... --
 
-                // LoadShader relies on this happening somehow.
+                // Below code uses this since uniforms are being set.
                 Use();
 
                 // Bind texture uniforms to units.
@@ -164,11 +164,6 @@ internal sealed class GLShaderProgram
             return;
         }
 
-        ForceUse();
-    }
-
-    public void ForceUse()
-    {
         DebugTools.Assert(Handle != 0);
 
         _pal._currentProgram = this;
@@ -176,15 +171,19 @@ internal sealed class GLShaderProgram
         _pal.CheckGlError();
     }
 
-    public void Delete()
+    protected override void DisposeImpl()
     {
-        if (Handle == 0)
+        if (_pal.IsMainThread())
         {
-            return;
+            // Main thread, do direct GL deletion.
+            GL.DeleteProgram(Handle);
+            _pal.CheckGlError();
         }
-
-        GL.DeleteProgram(Handle);
-        _pal.CheckGlError();
+        else
+        {
+            // Finalizer thread
+            _pal._programDisposeQueue.Enqueue(Handle);
+        }
         Handle = 0;
     }
 

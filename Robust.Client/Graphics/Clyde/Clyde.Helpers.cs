@@ -18,20 +18,16 @@ namespace Robust.Client.Graphics.Clyde
             CheckGlError();
         }
 
-        private void SetTexture(TextureUnit unit, Texture texture)
+        internal void SetTexture(TextureUnit unit, Texture texture)
         {
             var ct = (ClydeTexture) texture;
-            SetTexture(unit, ct.OpenGLObject);
-        }
-
-        private void SetTexture(TextureUnit unit, GLHandle textureId)
-        {
             GL.ActiveTexture(unit);
             CheckGlError();
-            GL.BindTexture(TextureTarget.Texture2D, textureId.Handle);
+            GL.BindTexture(TextureTarget.Texture2D, ct.OpenGLObject.Handle);
             CheckGlError();
-            GL.ActiveTexture(TextureUnit.Texture0);
-            CheckGlError();
+            if (unit != TextureUnit.Texture0)
+                GL.ActiveTexture(TextureUnit.Texture0);
+            // ActiveTexture(Texture0) is essentially guaranteed to succeed.
         }
 
         private void CopyRenderTextureToTexture(RenderTexture source, ClydeTexture target) {
@@ -75,9 +71,9 @@ namespace Robust.Client.Graphics.Clyde
 
         // Gets the primitive type required by QuadBatchIndexWrite.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private BatchPrimitiveType GetQuadBatchPrimitiveType()
+        private DrawPrimitiveTopology GetQuadBatchPrimitiveType()
         {
-            return _hasGL.PrimitiveRestart ? BatchPrimitiveType.TriangleFan : BatchPrimitiveType.TriangleList;
+            return _hasGL.PrimitiveRestart ? DrawPrimitiveTopology.TriangleFan : DrawPrimitiveTopology.TriangleList;
         }
 
         // Gets the PrimitiveType version of GetQuadBatchPrimitiveType

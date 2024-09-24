@@ -51,10 +51,6 @@ namespace Robust.Client.Graphics.Clyde
         private ClydeHandle _lightBlurShaderHandle;
         private ClydeHandle _mergeWallLayerShaderHandle;
 
-        // Sampler used to sample the FovTexture with linear filtering, used in the lighting FOV pass
-        // (it uses VSM unlike final FOV).
-        private GLHandle _fovFilterSampler;
-
         // Shader program used to calculate depth for shadows/FOV.
         // Sadly not .swsl since it has a different vertex format and such.
         private GLShaderProgram _fovCalculationProgram = default!;
@@ -65,9 +61,9 @@ namespace Robust.Client.Graphics.Clyde
         private int _occlusionDataLength;
 
         // Actual GL objects used for rendering.
-        private GLBuffer _occlusionVbo = default!;
-        private GLBuffer _occlusionVIVbo = default!;
-        private GLBuffer _occlusionEbo = default!;
+        private GPUBuffer _occlusionVbo = default!;
+        private GPUBuffer _occlusionVIVbo = default!;
+        private GPUBuffer _occlusionEbo = default!;
         private GLVAOBase _occlusionVao = default!;
 
 
@@ -78,8 +74,8 @@ namespace Robust.Client.Graphics.Clyde
         private int _occlusionMaskDataLength;
 
         // Actual GL objects used for rendering.
-        private GLBuffer _occlusionMaskVbo = default!;
-        private GLBuffer _occlusionMaskEbo = default!;
+        private GPUBuffer _occlusionMaskVbo = default!;
+        private GPUBuffer _occlusionMaskEbo = default!;
         private GLVAOBase _occlusionMaskVao = default!;
 
         // For depth calculation for FOV.
@@ -112,13 +108,13 @@ namespace Robust.Client.Graphics.Clyde
                 // Only handles positions, no other vertex data necessary.
 
                 // aPos
-                _occlusionVbo = new GLBuffer(_pal, BufferUsageHint.DynamicDraw, nameof(_occlusionVbo));
+                _occlusionVbo = new PAL.GLBuffer(_pal, BufferUsageHint.DynamicDraw, nameof(_occlusionVbo));
 
                 // subVertex
-                _occlusionVIVbo = new GLBuffer(_pal, BufferUsageHint.DynamicDraw, nameof(_occlusionVIVbo));
+                _occlusionVIVbo = new PAL.GLBuffer(_pal, BufferUsageHint.DynamicDraw, nameof(_occlusionVIVbo));
 
                 // index
-                _occlusionEbo = new GLBuffer(_pal, BufferUsageHint.DynamicDraw, nameof(_occlusionEbo));
+                _occlusionEbo = new PAL.GLBuffer(_pal, BufferUsageHint.DynamicDraw, nameof(_occlusionEbo));
 
                 _occlusionVao = _pal.CreateVAO(nameof(_occlusionVao));
                 _occlusionVao.SetVertexAttrib(0, new GPUVertexAttrib(_occlusionVbo, 4, GPUVertexAttrib.Type.Float, false, sizeof(Vector4), 0));
@@ -132,9 +128,9 @@ namespace Robust.Client.Graphics.Clyde
                 // Occlusion mask VAO.
                 // Only handles positions, no other vertex data necessary.
 
-                _occlusionMaskVbo = new GLBuffer(_pal, BufferUsageHint.DynamicDraw, nameof(_occlusionMaskVbo));
+                _occlusionMaskVbo = new PAL.GLBuffer(_pal, BufferUsageHint.DynamicDraw, nameof(_occlusionMaskVbo));
 
-                _occlusionMaskEbo = new GLBuffer(_pal, BufferUsageHint.DynamicDraw, nameof(_occlusionMaskEbo));
+                _occlusionMaskEbo = new PAL.GLBuffer(_pal, BufferUsageHint.DynamicDraw, nameof(_occlusionMaskEbo));
 
                 _occlusionMaskVao = _pal.CreateVAO(nameof(_occlusionMaskVao));
                 _occlusionMaskVao.SetVertexAttrib(0, new GPUVertexAttrib(_occlusionMaskVbo, 2, GPUVertexAttrib.Type.Float, false, sizeof(Vector2), 0));
@@ -149,16 +145,6 @@ namespace Robust.Client.Graphics.Clyde
                     _hasGL.FloatFramebuffers ? RenderTargetColorFormat.RG32F : RenderTargetColorFormat.Rgba8, true),
                 new TextureSampleParameters { WrapMode = TextureWrapMode.Repeat },
                 nameof(_fovRenderTarget));
-
-            if (_hasGL.SamplerObjects)
-            {
-                _fovFilterSampler = new GLHandle(GL.GenSampler());
-                GL.SamplerParameter(_fovFilterSampler.Handle, SamplerParameterName.TextureMagFilter, (int)All.Linear);
-                GL.SamplerParameter(_fovFilterSampler.Handle, SamplerParameterName.TextureMinFilter, (int)All.Linear);
-                GL.SamplerParameter(_fovFilterSampler.Handle, SamplerParameterName.TextureWrapS, (int)All.Repeat);
-                GL.SamplerParameter(_fovFilterSampler.Handle, SamplerParameterName.TextureWrapT, (int)All.Repeat);
-                CheckGlError();
-            }
 
             // Shadow FBO.
             _shadowRenderTargetCanInitializeSafely = true;
@@ -381,9 +367,6 @@ namespace Robust.Client.Graphics.Clyde
                 FinalizeDepthDraw();
             }
 
-            GL.Enable(EnableCap.StencilTest);
-            _isStencilling = true;
-
             var (lightW, lightH) = GetLightMapSize(viewport.Size);
             GL.Viewport(0, 0, lightW, lightH);
             CheckGlError();
@@ -409,10 +392,15 @@ namespace Robust.Client.Graphics.Clyde
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.One);
             CheckGlError();
 
-            GL.StencilFunc(StencilFunction.Equal, 0xFF, 0xFF);
-            CheckGlError();
-            GL.StencilOp(TKStencilOp.Keep, TKStencilOp.Keep, TKStencilOp.Keep);
-            CheckGlError();
+            _pal.ApplyStencilParameters(new StencilParameters
+            {
+                Enabled = true,
+                ReadMask = 0xFF,
+                WriteMask = 0xFF,
+                Ref = 0xFF,
+                Op = StencilOp.Keep,
+                Func = StencilFunc.Equal
+            });
 
             var lastRange = float.NaN;
             var lastPower = float.NaN;
@@ -494,8 +482,7 @@ namespace Robust.Client.Graphics.Clyde
             }
 
             ResetBlendFunc();
-            GL.Disable(EnableCap.StencilTest);
-            _isStencilling = false;
+            _pal.DisableStencil();
 
             CheckGlError();
 
@@ -786,12 +773,16 @@ namespace Robust.Client.Graphics.Clyde
 
         private void ApplyFovToBuffer(Viewport viewport, IEye eye)
         {
-            GL.Clear(ClearBufferMask.StencilBufferBit);
-            GL.Enable(EnableCap.StencilTest);
-            GL.StencilOp(OpenToolkit.Graphics.OpenGL4.StencilOp.Keep, OpenToolkit.Graphics.OpenGL4.StencilOp.Keep,
-                OpenToolkit.Graphics.OpenGL4.StencilOp.Replace);
-            GL.StencilFunc(StencilFunction.Always, 1, 0xFF);
+            GL.ClearStencil(0xFF);
             GL.StencilMask(0xFF);
+            GL.Clear(ClearBufferMask.StencilBufferBit);
+            _pal.ApplyStencilParameters(new StencilParameters
+            {
+                Enabled = true,
+                WriteMask = 0xFF,
+                Ref = 1,
+                Op = StencilOp.Replace
+            });
 
             // Applies FOV to the final framebuffer.
 
@@ -808,9 +799,7 @@ namespace Robust.Client.Graphics.Clyde
             fovShader.SetUniformMaybe("occludeColor", color);
             FovSetTransformAndBlit(viewport, eye.Position.Position, fovShader);
 
-            GL.StencilMask(0x00);
-            GL.Disable(EnableCap.StencilTest);
-            _isStencilling = false;
+            _pal.DisableStencil();
         }
 
         private void ApplyLightingFovToBuffer(Viewport viewport, IEye eye)
@@ -826,42 +815,27 @@ namespace Robust.Client.Graphics.Clyde
 
             // Have to swap to linear filtering on the shadow map here.
             // VSM wants it.
-            if (_hasGL.SamplerObjects)
-            {
-                GL.BindSampler(0, _fovFilterSampler.Handle);
-                CheckGlError();
-            }
-            else
-            {
-                // OpenGL why do you torture me so.
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)All.Linear);
-                CheckGlError();
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)All.Linear);
-                CheckGlError();
-            }
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)All.Linear);
+            CheckGlError();
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)All.Linear);
+            CheckGlError();
 
-            GL.StencilMask(0xFF);
-            CheckGlError();
-            GL.StencilFunc(StencilFunction.Always, 0, 0);
-            CheckGlError();
-            GL.StencilOp(TKStencilOp.Keep, TKStencilOp.Keep, TKStencilOp.Replace);
-            CheckGlError();
+            _pal.ApplyStencilParameters(new StencilParameters
+            {
+                Enabled = true,
+                WriteMask = 0xFF,
+                Ref = 0,
+                Op = StencilOp.Replace
+            });
 
             fovShader.SetUniformMaybe("occludeColor", Color.Black);
             FovSetTransformAndBlit(viewport, eye.Position.Position, fovShader);
 
-            if (_hasGL.SamplerObjects)
-            {
-                GL.BindSampler(0, 0);
-                CheckGlError();
-            }
-            else
-            {
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)All.Nearest);
-                CheckGlError();
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)All.Nearest);
-                CheckGlError();
-            }
+            // Restore original filtering.
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)All.Nearest);
+            CheckGlError();
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)All.Nearest);
+            CheckGlError();
         }
 
         private void FovSetTransformAndBlit(Viewport vp, Vector2 fovCentre, GLShaderProgram fovShader)

@@ -67,4 +67,7 @@ public interface IGPUAbstraction
 
     /// <summary>Creates a Vertex Array Object. This object specifies the vertex data of a draw call.</summary>
     GPUVertexArrayObject CreateVAO(string? name = null);
+
+    /// <summary>Executes a draw call.</summary>
+    void ExecuteDraw(in GPUDrawCall draw);
 }
