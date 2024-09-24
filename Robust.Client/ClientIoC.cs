@@ -118,8 +118,7 @@ namespace Robust.Client
                     deps.Register<PAL, PAL>();
                     deps.Register<Clyde, Clyde>();
                     deps.Register<IClyde, Clyde>();
-                    // Importantly, it has to go through Clyde so Clyde can flush before user-invoked draw calls.
-                    deps.Register<IGPUAbstraction, Clyde>();
+                    deps.Register<IGPUAbstraction, PAL>();
                     deps.Register<IClipboardManager, Clyde>();
                     deps.Register<IClydeInternal, Clyde>();
                     deps.Register<IAudioManager, AudioManager>();

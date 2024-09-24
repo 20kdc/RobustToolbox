@@ -383,6 +383,8 @@ namespace Robust.Client.Graphics.Clyde
 
             public Box2i Viewport { get; set; } = new();
 
+            public ColourDepthMask ColourDepthMask { get; set; } = ColourDepthMask.RGBAMask;
+
             public WholeTexture? GetTexture(int unit)
             {
                 return null;
@@ -483,6 +485,11 @@ namespace Robust.Client.Graphics.Clyde
 
             public Vector2i Size { get; }
 
+            public void Clear(float? red, float? green, float? blue, float? alpha, int stencilValue = 0, int stencilMask = 0, float? depth = null, UIBox2i? scissor = null)
+            {
+
+            }
+
             public void CopyPixelsToMemory<T>(CopyPixelsDelegate<T> callback, UIBox2i? subRegion) where T : unmanaged, IPixel<T>
             {
                 var (x, y) = ClydeBase.ClampSubRegion(Size, subRegion);
@@ -510,6 +517,11 @@ namespace Robust.Client.Graphics.Clyde
             }
 
             public Vector2i Size => _clyde.ScreenSize;
+
+            public void Clear(float? red = null, float? green = null, float? blue = null, float? alpha = null, int stencilValue = 0, int stencilMask = 0, float? depth = null, UIBox2i? scissor = null)
+            {
+
+            }
 
             public void CopyPixelsToMemory<T>(CopyPixelsDelegate<T> callback, UIBox2i? subRegion) where T : unmanaged, IPixel<T>
             {

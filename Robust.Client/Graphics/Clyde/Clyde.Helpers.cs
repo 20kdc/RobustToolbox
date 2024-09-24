@@ -8,12 +8,6 @@ namespace Robust.Client.Graphics.Clyde
 {
     internal sealed partial class Clyde
     {
-        private void GLClearColor(Color color)
-        {
-            GL.ClearColor(color.R, color.G, color.B, color.A);
-            CheckGlError();
-        }
-
         // Sets up uniforms (It'd be nice to move this, or make some contextual stuff implicit, but things got complicated.)
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void SetupGlobalUniformsImmediate(GLShaderProgram program, ClydeTexture? tex)
@@ -112,15 +106,6 @@ namespace Robust.Client.Graphics.Clyde
             }
 
             return proc;
-        }
-    }
-
-    internal sealed partial class PAL
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal void CheckGlError([CallerFilePath] string? path = null, [CallerLineNumber] int line = default)
-        {
-            _hasGL.CheckGlError(path, line);
         }
     }
 }

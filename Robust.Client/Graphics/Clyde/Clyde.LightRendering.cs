@@ -254,30 +254,20 @@ namespace Robust.Client.Graphics.Clyde
             CheckGlError();
             GL.DepthFunc(DepthFunction.Lequal);
             CheckGlError();
-            GL.DepthMask(true);
-            CheckGlError();
+            _renderState.ColourDepthMask = ColourDepthMask.AllMask;
 
             GL.Enable(EnableCap.CullFace);
             CheckGlError();
-            GL.FrontFace(FrontFaceDirection.Cw);
-            CheckGlError();
 
             _renderState.RenderTarget = target;
-            CheckGlError();
-            GL.ClearDepth(1);
-            CheckGlError();
             if (_hasGL.FloatFramebuffers)
             {
-                GL.ClearColor(arbitraryDistanceMax, arbitraryDistanceMax * arbitraryDistanceMax, 0, 1);
+                target.Clear(arbitraryDistanceMax, arbitraryDistanceMax * arbitraryDistanceMax, 0, 1, depth: 1);
             }
             else
             {
-                GL.ClearColor(1, 1, 1, 1);
+                target.Clear(1, 1, 1, 1, depth: 1);
             }
-
-            CheckGlError();
-            GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
-            CheckGlError();
 
             _renderState.VAO = _occlusionVao;
 
@@ -291,10 +281,9 @@ namespace Robust.Client.Graphics.Clyde
             GL.Disable(EnableCap.CullFace);
             CheckGlError();
 
-            GL.DepthMask(false);
-            CheckGlError();
             GL.Disable(EnableCap.DepthTest);
             CheckGlError();
+            _renderState.ColourDepthMask = ColourDepthMask.RGBAMask;
 
             GL.Enable(EnableCap.Blend);
             CheckGlError();
@@ -366,11 +355,8 @@ namespace Robust.Client.Graphics.Clyde
 
             _renderState.RenderTarget = viewport.LightRenderTarget;
 
-            GLClearColor(_entityManager.GetComponentOrNull<MapLightComponent>(mapUid)?.AmbientLightColor ?? MapLightComponent.DefaultColor);
-            GL.ClearStencil(0xFF);
-            GL.StencilMask(0xFF);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.StencilBufferBit);
-            CheckGlError();
+            var clearColour = _entityManager.GetComponentOrNull<MapLightComponent>(mapUid)?.AmbientLightColor ?? MapLightComponent.DefaultColor;
+            viewport.LightRenderTarget.Clear(clearColour.R, clearColour.G, clearColour.B, clearColour.A, stencilValue: 0xFF, stencilMask: 0xFF);
 
             ApplyLightingFovToBuffer(viewport, eye);
 
@@ -763,12 +749,7 @@ namespace Robust.Client.Graphics.Clyde
 
         private void ApplyFovToBuffer(Viewport viewport, IEye eye)
         {
-            _renderState.Stencil = new StencilParameters
-            {
-                WriteMask = 0xFF,
-            };
-            GL.ClearStencil(0xFF);
-            GL.Clear(ClearBufferMask.StencilBufferBit);
+            viewport.RenderTarget.Clear(null, null, null, null, stencilValue: 0xFF, stencilMask: 0xFF);
             _renderState.Stencil = new StencilParameters
             {
                 Enabled = true,

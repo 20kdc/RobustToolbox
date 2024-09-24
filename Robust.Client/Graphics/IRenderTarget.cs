@@ -14,6 +14,11 @@ namespace Robust.Client.Graphics
         /// </summary>
         Vector2i Size { get; }
 
+        /// <summary>
+        /// Clears the render target.
+        /// </summary>
+        void Clear(float? r = null, float? g = null, float? b = null, float? a = null, int stencilValue = 0, int stencilMask = 0, float? depth = null, UIBox2i? scissor = null);
+
         void CopyPixelsToMemory<T>(CopyPixelsDelegate<T> callback, UIBox2i? subRegion = null) where T : unmanaged, IPixel<T>;
 
         /// <summary>

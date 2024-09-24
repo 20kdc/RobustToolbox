@@ -210,6 +210,57 @@ namespace Robust.Client.Graphics.Clyde
 
             public bool IsSrgb { get; } = isSrgb;
 
+            public void Clear(float? r = null, float? g = null, float? b = null, float? a = null, int stencilValue = 0, int stencilMask = 0, float? depth = null, UIBox2i? scissor = null)
+            {
+                // 'Push'
+                bool pause = this != PAL._backupRenderTarget;
+
+                if (pause)
+                {
+                    PAL.BindRenderTargetImmediate(this);
+                }
+                PAL.SetScissorImmediate(this, scissor);
+
+                ClearBufferMask mask = 0;
+                if (r != null || g != null || b != null || a != null)
+                {
+                    GL.ColorMask(r != null, g != null, b != null, a != null);
+                    PAL.CheckGlError();
+                    GL.ClearColor(r ?? 0, g ?? 0, b ?? 0, a ?? 0);
+                    PAL.CheckGlError();
+                    mask |= ClearBufferMask.ColorBufferBit;
+                }
+                if (depth != null)
+                {
+                    GL.DepthMask(true);
+                    PAL.CheckGlError();
+                    GL.ClearDepth(depth.Value);
+                    PAL.CheckGlError();
+                    mask |= ClearBufferMask.DepthBufferBit;
+                }
+                if (stencilMask != 0)
+                {
+                    GL.StencilMask(stencilMask);
+                    PAL.CheckGlError();
+                    GL.ClearStencil(stencilValue);
+                    PAL.CheckGlError();
+                    mask |= ClearBufferMask.StencilBufferBit;
+                }
+                GL.Clear(mask);
+                PAL.CheckGlError();
+
+                // Restore
+                if (pause)
+                {
+                    PAL.BindRenderTargetImmediate(PAL._backupRenderTarget);
+                }
+                PAL.SetScissorImmediate(PAL._backupRenderTarget, PAL._isScissoring);
+                GL.StencilMask(PAL._currentRenderState?.Stencil.WriteMask ?? int.MaxValue);
+                PAL.CheckGlError();
+                var cdMask = PAL._currentRenderState?.ColourDepthMask ?? ColourDepthMask.AllMask;
+                PAL.SetCDMaskImmediate(cdMask);
+            }
+
             public void CopyPixelsToMemory<T>(CopyPixelsDelegate<T> callback, UIBox2i? subRegion = null) where T : unmanaged, IPixel<T>
             {
                 bool pause = this != PAL._backupRenderTarget;

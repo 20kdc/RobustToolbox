@@ -27,6 +27,9 @@ public interface IGPURenderState
     /// <summary>Viewport box. (Translated to GL as Left, Bottom, Width, Height)</summary>
     Box2i Viewport { get; set; }
 
+    /// <summary>Colour/Depth mask.</summary>
+    ColourDepthMask ColourDepthMask { get; set; }
+
     /// <summary>Sets viewport by X/Y/Width/Height</summary>
     void SetViewport(int x, int y, int width, int height)
     {
@@ -58,5 +61,18 @@ public interface IGPURenderState
         Stencil = new StencilParameters();
         Scissor = null;
         Viewport = new();
+        ColourDepthMask = ColourDepthMask.RGBAMask;
     }
+}
+
+[PublicAPI]
+public enum ColourDepthMask
+{
+    RedMask = 1,
+    GreenMask = 2,
+    BlueMask = 4,
+    AlphaMask = 8,
+    DepthMask = 16,
+    AllMask = 31,
+    RGBAMask = 15
 }

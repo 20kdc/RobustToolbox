@@ -25,7 +25,7 @@ internal partial class PAL
 
     // Some simple flags that basically just tracks the current state of glEnable(GL_STENCIL/GL_SCISSOR_TEST)
     private bool _isStencilling;
-    private bool _isScissoring;
+    private UIBox2i? _isScissoring;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public GLRenderState CreateRenderState() => new(this);
@@ -34,19 +34,20 @@ internal partial class PAL
     IGPURenderState IGPUAbstraction.CreateRenderState() => new GLRenderState(this);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void DCSetScissor(RenderTargetBase renderTarget, in UIBox2i? box)
+    {
+        SetScissorImmediate(renderTarget, box);
+        _isScissoring = box;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void SetScissorImmediate(RenderTargetBase renderTarget, in UIBox2i? box)
     {
         if (box != null)
         {
             var val = box!.Value;
-            if (!_isScissoring)
-            {
-                GL.Enable(EnableCap.ScissorTest);
-                CheckGlError();
-            }
-
-            // Don't forget to flip it, these coordinates have bottom left as origin.
-            // TODO: Broken when rendering to non-screen render targets.
+            GL.Enable(EnableCap.ScissorTest);
+            CheckGlError();
 
             if (renderTarget.FlipY)
             {
@@ -58,12 +59,25 @@ internal partial class PAL
             }
             CheckGlError();
         }
-        else if (_isScissoring)
+        else
         {
-            _isScissoring = false;
             GL.Disable(EnableCap.ScissorTest);
             CheckGlError();
         }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void SetCDMaskImmediate(ColourDepthMask mask)
+    {
+        var red = (mask & ColourDepthMask.RedMask) != 0;
+        var green = (mask & ColourDepthMask.GreenMask) != 0;
+        var blue = (mask & ColourDepthMask.BlueMask) != 0;
+        var alpha = (mask & ColourDepthMask.AlphaMask) != 0;
+        var depth = (mask & ColourDepthMask.DepthMask) != 0;
+        GL.ColorMask(red, green, blue, alpha);
+        CheckGlError();
+        GL.DepthMask(depth);
+        CheckGlError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -162,7 +176,7 @@ internal partial class PAL
                 if (_pal._currentRenderState == this && GPUResource.IsValid(_renderTarget))
                 {
                     _pal.DCBindRenderTarget(_renderTarget);
-                    _pal.SetScissorImmediate(_renderTarget, _scissor);
+                    _pal.DCSetScissor(_renderTarget, _scissor);
                 }
             }
         }
@@ -214,9 +228,9 @@ internal partial class PAL
             set
             {
                 _scissor = value;
-                if (GPUResource.IsValid(_renderTarget))
+                if (_pal._currentRenderState == this && GPUResource.IsValid(_renderTarget))
                 {
-                    _pal.SetScissorImmediate(_renderTarget, _scissor);
+                    _pal.DCSetScissor(_renderTarget, _scissor);
                 }
             }
         }
@@ -228,7 +242,24 @@ internal partial class PAL
             set
             {
                 _viewport = value;
-                _pal.SetViewportImmediate(_viewport);
+                if (_pal._currentRenderState == this)
+                {
+                    _pal.SetViewportImmediate(_viewport);
+                }
+            }
+        }
+
+        private ColourDepthMask _colourDepthMask = ColourDepthMask.RGBAMask;
+        public ColourDepthMask ColourDepthMask
+        {
+            get => _colourDepthMask;
+            set
+            {
+                _colourDepthMask = value;
+                if (_pal._currentRenderState == this)
+                {
+                    _pal.SetCDMaskImmediate(value);
+                }
             }
         }
 
@@ -284,7 +315,7 @@ internal partial class PAL
                 if (GPUResource.IsValid(_renderTarget))
                 {
                     _pal.DCBindRenderTarget(_renderTarget);
-                    _pal.SetScissorImmediate(_renderTarget, _scissor);
+                    _pal.DCSetScissor(_renderTarget, _scissor);
                 }
                 _pal._currentRenderState = this;
                 if (_program != null)
@@ -293,6 +324,7 @@ internal partial class PAL
                     _pal.DCBindVAO(_vao.ObjectHandle);
                 _pal.ApplyStencilParameters(_stencil);
                 _pal.SetViewportImmediate(_viewport);
+                _pal.SetCDMaskImmediate(_colourDepthMask);
                 foreach (var entry in _textures)
                 {
                     GL.ActiveTexture(entry.Key);

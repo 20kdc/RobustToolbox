@@ -336,7 +336,7 @@ namespace Robust.Client.Graphics.Clyde
                         }
 
                         _renderHandle.UseRenderTarget(entityPostRenderTarget);
-                        _renderHandle.Clear(default, 0, ClearBufferMask.ColorBufferBit | ClearBufferMask.StencilBufferBit);
+                        _renderHandle.Clear(default, 0);
 
                         // Calculate viewport so that the entity thinks it's drawing to the same position,
                         // which is necessary for light application,

@@ -1,5 +1,5 @@
+using System.Runtime.CompilerServices;
 using System.Threading;
-using Robust.Shared.IoC;
 using Robust.Shared.Log;
 
 namespace Robust.Client.Graphics.Clyde;
@@ -14,9 +14,15 @@ internal sealed partial class PAL : IGPUAbstraction
 
     public bool HasPrimitiveRestart => _hasGL.PrimitiveRestart;
 
-    [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal bool IsMainThread()
     {
         return Thread.CurrentThread == _gameThread;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal void CheckGlError([CallerFilePath] string? path = null, [CallerLineNumber] int line = default)
+    {
+        _hasGL.CheckGlError(path, line);
     }
 }

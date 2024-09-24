@@ -203,12 +203,25 @@ namespace Robust.Client.Graphics.Clyde
 
                     case RenderCommandType.Clear:
                         ref var color = ref command.Clear.Color;
-                        GL.ClearColor(color.R, color.G, color.B, color.A);
-                        CheckGlError();
-                        GL.ClearStencil(command.Clear.Stencil);
-                        CheckGlError();
-                        GL.Clear(command.Clear.Mask);
-                        CheckGlError();
+                        if (color != null)
+                        {
+                            var cv = color.Value;
+                            if (command.Clear.Stencil != null)
+                            {
+                                _renderState.RenderTarget!.Clear(cv.R, cv.G, cv.B, cv.A, stencilMask: int.MaxValue, stencilValue: command.Clear.Stencil.Value, scissor: _renderState.Scissor);
+                            }
+                            else
+                            {
+                                _renderState.RenderTarget!.Clear(cv.R, cv.G, cv.B, cv.A, scissor: _renderState.Scissor);
+                            }
+                        }
+                        else
+                        {
+                            if (command.Clear.Stencil != null)
+                            {
+                                _renderState.RenderTarget!.Clear(stencilMask: int.MaxValue, stencilValue: command.Clear.Stencil.Value, scissor: _renderState.Scissor);
+                            }
+                        }
                         break;
 
                     default:
@@ -603,7 +616,7 @@ namespace Robust.Client.Graphics.Clyde
             _queuedShaderInstance = instance;
         }
 
-        private void DrawClear(Color color, int stencil, ClearBufferMask mask)
+        private void DrawClear(Color? color, int? stencil)
         {
             BreakBatch();
 
@@ -611,7 +624,6 @@ namespace Robust.Client.Graphics.Clyde
 
             command.Clear.Color = color;
             command.Clear.Stencil = stencil;
-            command.Clear.Mask = mask;
         }
 
         private void DrawViewport(Box2i viewport)
@@ -839,9 +851,8 @@ namespace Robust.Client.Graphics.Clyde
 
         private struct RenderCommandClear
         {
-            public Color Color;
-            public int Stencil;
-            public ClearBufferMask Mask;
+            public Color? Color;
+            public int? Stencil;
         }
 
         private enum RenderCommandType : byte

@@ -254,9 +254,9 @@ namespace Robust.Client.Graphics.Clyde
                 _clyde.DrawRenderTarget(target!);
             }
 
-            public void Clear(Color color, int stencil = 0, ClearBufferMask mask = ClearBufferMask.ColorBufferBit)
+            public void Clear(Color? color, int? stencil = 0)
             {
-                _clyde.DrawClear(color, stencil, mask);
+                _clyde.DrawClear(color, stencil);
             }
 
             public void DrawPrimitives(DrawPrimitiveTopology primitiveTopology, Texture texture,

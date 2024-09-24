@@ -13,10 +13,11 @@ using System.Diagnostics;
 namespace Robust.Client.Graphics.Clyde
 {
     /// <summary>
-    /// This class has three responsibilities:
+    /// This class has four responsibilities:
     /// 1. Enumerating GL version details and features.
     /// 2. Providing "extension-aware thunks" for cases of different names for the same function (VAOs).
     /// 3. Providing the universal shader header.
+    /// 4. Initializing GL 'globals' that we're NEVER GOING TO TOUCH. (If we are going to touch it anyway, there needs to be a dedicated 'restore' function here.)
     /// </summary>
     internal sealed class GLWrapper
     {
@@ -199,6 +200,8 @@ namespace Robust.Client.Graphics.Clyde
             GL.PixelStore(PixelStoreParameter.PackAlignment, 1);
             CheckGlError();
             GL.PixelStore(PixelStoreParameter.UnpackAlignment, 1);
+            CheckGlError();
+            GL.FrontFace(FrontFaceDirection.Cw);
             CheckGlError();
 
             _sawmill.Debug($"  GLES: {GLES}");

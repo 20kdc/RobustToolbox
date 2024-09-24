@@ -14,14 +14,15 @@ internal sealed partial class PAL
     internal readonly ConcurrentQueue<uint> _vaoDisposeQueue = new();
     internal readonly ConcurrentQueue<RenderTexture> _renderTextureDisposeQueue = new();
 
-
     // Backup bindings.
     // These match the state in GLRenderState.
     // They go out of sync with the GL for temporary operations and are then immediately restored.
     // They are also reset during disposal if necessary.
+    // This mechanism should only be used for items where checking with _currentRenderState is inconvenient,
+    //  or where it's REALLY necessary we restore to something that looks valid (in other words, resources).
     internal uint _backupProgram;
     private uint _backupVAO;
-    internal PAL.RenderTargetBase _backupRenderTarget = default!;
+    private RenderTargetBase _backupRenderTarget = default!;
 
     /// <summary>To be called *only* from GLRenderState</summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
