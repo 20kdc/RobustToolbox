@@ -20,7 +20,7 @@ internal sealed class GLShaderProgram : GPUShaderProgram
 {
     private readonly sbyte?[] _uniformIntCache = new sbyte?[InternedUniform.UniCount];
     private readonly Dictionary<string, int> _uniformCache = new();
-    private readonly Dictionary<string, TextureUnit> _textureUnits = new();
+    private readonly Dictionary<string, int> _textureUnits = new();
     public uint Handle = 0;
     public string? Name { get; }
     private readonly PAL _pal;
@@ -114,7 +114,7 @@ internal sealed class GLShaderProgram : GPUShaderProgram
                         if (uniform != "")
                         {
                             // The use of Add here is intentional, to catch doubly-added uniforms.
-                            _textureUnits.Add(uniform, TextureUnit.Texture0 + currentTextureUnit);
+                            _textureUnits.Add(uniform, currentTextureUnit);
                             SetUniformMaybe(uniform, currentTextureUnit);
                         }
                         currentTextureUnit += 1;
@@ -211,7 +211,7 @@ internal sealed class GLShaderProgram : GPUShaderProgram
     }
 
     /// <summary>Gets the texture unit assigned to a sampler uniform.</summary>
-    public TextureUnit GetTextureUnit(string name)
+    public int GetTextureUnit(string name)
     {
         if (!_textureUnits.TryGetValue(name, out var result))
             throw new ArgumentException($"Uniform \"{name}\" not assigned a texture unit!");
@@ -220,7 +220,7 @@ internal sealed class GLShaderProgram : GPUShaderProgram
     }
 
     /// <summary>Gets the texture unit assigned to a sampler uniform.</summary>
-    public bool TryGetTextureUnit(string name, out TextureUnit index) => _textureUnits.TryGetValue(name, out index);
+    public bool TryGetTextureUnit(string name, out int index) => _textureUnits.TryGetValue(name, out index);
 
     public bool TryGetUniform(InternedUniform id, out int index)
     {

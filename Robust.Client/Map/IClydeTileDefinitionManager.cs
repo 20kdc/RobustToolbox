@@ -16,7 +16,7 @@ namespace Robust.Client.Map
         /// <summary>
         ///     The texture atlas containing all the tiles.
         /// </summary>
-        Texture TileTextureAtlas { get; }
+        WholeTexture TileTextureAtlas { get; }
 
         /// <summary>
         ///     Gets the region inside the texture atlas to use to draw a tile.

@@ -6,10 +6,10 @@ namespace Robust.Client.Graphics.Clyde;
 internal sealed class InternedUniform
 {
     /// <summary>In Clyde-prepared shaders, this texture unit is reserved for TEXTURE.</summary>
-    public const TextureUnit MainTextureUnit = TextureUnit.Texture0;
+    public const int MainTextureUnit = 0;
 
     /// <summary>In Clyde-prepared shaders, this texture unit is reserved for lightMap.</summary>
-    public const TextureUnit LightTextureUnit = TextureUnit.Texture1;
+    public const int LightTextureUnit = 1;
 
     public static readonly InternedUniform UniIModUV = new(0, "modifyUV");
     public static readonly InternedUniform UniIModelMatrix = new(1, "modelMatrix");

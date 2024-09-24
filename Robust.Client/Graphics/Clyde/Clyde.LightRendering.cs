@@ -335,8 +335,7 @@ namespace Robust.Client.Graphics.Clyde
             if (!_lightManager.DrawLighting)
             {
                 BindRenderTargetFull(viewport.RenderTarget);
-                GL.Viewport(0, 0, viewport.Size.X, viewport.Size.Y);
-                CheckGlError();
+                ((IGPURenderState) _renderState).SetViewport(0, 0, viewport.Size.X, viewport.Size.Y);
                 return;
             }
 
@@ -363,11 +362,10 @@ namespace Robust.Client.Graphics.Clyde
             }
 
             var (lightW, lightH) = GetLightMapSize(viewport.Size);
-            GL.Viewport(0, 0, lightW, lightH);
-            CheckGlError();
+            ((IGPURenderState) _renderState).SetViewport(0, 0, lightW, lightH);
 
-            _pal.BindRenderTargetImmediate(viewport.LightRenderTarget);
-            CheckGlError();
+            _renderState.RenderTarget = viewport.LightRenderTarget;
+
             GLClearColor(_entityManager.GetComponentOrNull<MapLightComponent>(mapUid)?.AmbientLightColor ?? MapLightComponent.DefaultColor);
             GL.ClearStencil(0xFF);
             GL.StencilMask(0xFF);
@@ -382,7 +380,7 @@ namespace Robust.Client.Graphics.Clyde
 
             SetupGlobalUniformsImmediate(lightShader, ShadowTexture);
 
-            SetTexture(lightShader.GetTextureUnit("shadowMap"), ShadowTexture);
+            _renderState.SetTexture(lightShader.GetTextureUnit("shadowMap"), ShadowTexture);
 
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.One);
             CheckGlError();
@@ -409,11 +407,12 @@ namespace Robust.Client.Graphics.Clyde
                 {
                     var (component, lightPos, _, rot) = _lightsToRenderList[i];
 
-                    Texture? mask = null;
+                    WholeTexture? mask = null;
                     var rotation = Angle.Zero;
                     if (component.Mask != null)
                     {
-                        mask = component.Mask;
+                        // KERB: This is bad, but what can 'ya do? This mistake was in the code already.
+                        mask = component.Mask.SourceTexture;
                         rotation = component.Rotation;
 
                         if (component.MaskAutoRotate)
@@ -425,7 +424,7 @@ namespace Robust.Client.Graphics.Clyde
                     var maskTexture = mask ?? _stockTextureWhite;
                     if (lastMask != maskTexture)
                     {
-                        SetTexture(InternedUniform.MainTextureUnit, maskTexture);
+                        _renderState.SetTexture(InternedUniform.MainTextureUnit, maskTexture);
                         lastMask = maskTexture;
                     }
 
@@ -495,8 +494,7 @@ namespace Robust.Client.Graphics.Clyde
             }
 
             BindRenderTargetFull(viewport.RenderTarget);
-            GL.Viewport(0, 0, viewport.Size.X, viewport.Size.Y);
-            CheckGlError();
+            ((IGPURenderState) _renderState).SetViewport(0, 0, viewport.Size.X, viewport.Size.Y);
 
             Array.Clear(_lightsToRenderList, 0, count);
 
@@ -636,7 +634,7 @@ namespace Robust.Client.Graphics.Clyde
             // Initially we're pulling from the light render target.
             // So we set it out of the loop so
             // _wallBleedIntermediateRenderTarget2 gets bound at the end of the loop body.
-            SetTexture(InternedUniform.MainTextureUnit, viewport.LightRenderTarget.Texture);
+            _renderState.SetTexture(InternedUniform.MainTextureUnit, viewport.LightRenderTarget.Texture);
 
             // Have to scale the blurring radius based on viewport size and camera zoom.
             const float refCameraHeight = 14;
@@ -658,7 +656,7 @@ namespace Robust.Client.Graphics.Clyde
                 shader.SetUniformMaybe("direction", Vector2.UnitX);
                 _drawQuad(Vector2.Zero, viewport.Size, Matrix3x2.Identity, shader);
 
-                SetTexture(InternedUniform.MainTextureUnit, viewport.LightBlurTarget.Texture);
+                _renderState.SetTexture(InternedUniform.MainTextureUnit, viewport.LightBlurTarget.Texture);
 
                 BindRenderTargetFull(viewport.LightRenderTarget);
 
@@ -666,7 +664,7 @@ namespace Robust.Client.Graphics.Clyde
                 shader.SetUniformMaybe("direction", Vector2.UnitY);
                 _drawQuad(Vector2.Zero, viewport.Size, Matrix3x2.Identity, shader);
 
-                SetTexture(InternedUniform.MainTextureUnit, viewport.LightRenderTarget.Texture);
+                _renderState.SetTexture(InternedUniform.MainTextureUnit, viewport.LightRenderTarget.Texture);
             }
 
             GL.Enable(EnableCap.Blend);
@@ -692,13 +690,12 @@ namespace Robust.Client.Graphics.Clyde
             shader.SetUniformMaybe("size", (Vector2)viewport.WallBleedIntermediateRenderTarget1.Size);
 
             var size = viewport.WallBleedIntermediateRenderTarget1.Size;
-            GL.Viewport(0, 0, size.X, size.Y);
-            CheckGlError();
+            ((IGPURenderState) _renderState).SetViewport(0, 0, size.X, size.Y);
 
             // Initially we're pulling from the light render target.
             // So we set it out of the loop so
             // _wallBleedIntermediateRenderTarget2 gets bound at the end of the loop body.
-            SetTexture(InternedUniform.MainTextureUnit, viewport.LightRenderTarget.Texture);
+            _renderState.SetTexture(InternedUniform.MainTextureUnit, viewport.LightRenderTarget.Texture);
 
             // Have to scale the blurring radius based on viewport size and camera zoom.
             const float refCameraHeight = 14;
@@ -719,14 +716,14 @@ namespace Robust.Client.Graphics.Clyde
                 shader.SetUniformMaybe("direction", Vector2.UnitX);
                 _drawQuad(Vector2.Zero, viewport.Size, Matrix3x2.Identity, shader);
 
-                SetTexture(InternedUniform.MainTextureUnit, viewport.WallBleedIntermediateRenderTarget1.Texture);
+                _renderState.SetTexture(InternedUniform.MainTextureUnit, viewport.WallBleedIntermediateRenderTarget1.Texture);
                 BindRenderTargetFull(viewport.WallBleedIntermediateRenderTarget2);
 
                 // Blur vertically to _wallBleedIntermediateRenderTarget2.
                 shader.SetUniformMaybe("direction", Vector2.UnitY);
                 _drawQuad(Vector2.Zero, viewport.Size, Matrix3x2.Identity, shader);
 
-                SetTexture(InternedUniform.MainTextureUnit, viewport.WallBleedIntermediateRenderTarget2.Texture);
+                _renderState.SetTexture(InternedUniform.MainTextureUnit, viewport.WallBleedIntermediateRenderTarget2.Texture);
             }
 
             GL.Enable(EnableCap.Blend);
@@ -741,8 +738,7 @@ namespace Robust.Client.Graphics.Clyde
 
             BindRenderTargetFull(viewport.LightRenderTarget);
 
-            GL.Viewport(0, 0, viewport.LightRenderTarget.Size.X, viewport.LightRenderTarget.Size.Y);
-            CheckGlError();
+            ((IGPURenderState) _renderState).SetViewport(0, 0, viewport.LightRenderTarget.Size.X, viewport.LightRenderTarget.Size.Y);
             GL.Disable(EnableCap.Blend);
             CheckGlError();
 
@@ -753,7 +749,7 @@ namespace Robust.Client.Graphics.Clyde
 
             SetupGlobalUniformsImmediate(shader, tex);
 
-            SetTexture(InternedUniform.MainTextureUnit, tex);
+            _renderState.SetTexture(InternedUniform.MainTextureUnit, tex);
 
             _renderState.VAO = _occlusionMaskVao;
 
@@ -788,7 +784,7 @@ namespace Robust.Client.Graphics.Clyde
 
             SetupGlobalUniformsImmediate(fovShader, FovTexture);
 
-            SetTexture(InternedUniform.MainTextureUnit, FovTexture);
+            _renderState.SetTexture(InternedUniform.MainTextureUnit, FovTexture);
 
             if (!Color.TryParse(_cfg.GetCVar(CVars.RenderFOVColor), out var color))
                 color = Color.Black;
@@ -808,10 +804,11 @@ namespace Robust.Client.Graphics.Clyde
 
             SetupGlobalUniformsImmediate(fovShader, FovTexture);
 
-            SetTexture(InternedUniform.MainTextureUnit, FovTexture);
+            _renderState.SetTexture(InternedUniform.MainTextureUnit, FovTexture);
 
             // Have to swap to linear filtering on the shadow map here.
             // VSM wants it.
+            _renderState.Bind();
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)All.Linear);
             CheckGlError();
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)All.Linear);
@@ -829,6 +826,7 @@ namespace Robust.Client.Graphics.Clyde
             FovSetTransformAndBlit(viewport, eye.Position.Position, fovShader);
 
             // Restore original filtering.
+            _renderState.Bind();
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)All.Nearest);
             CheckGlError();
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)All.Nearest);

@@ -32,6 +32,7 @@ public sealed partial class PointLightComponent : SharedPointLightComponent, ICo
     /// <summary>
     ///     Set a mask texture that will be applied to the light while rendering.
     ///     The mask's red channel will be linearly multiplied.
+    ///     Beware: The mask is expected to be a WholeTexture. Funny things will happen if it isn't.
     /// </summary>
     [ViewVariables(VVAccess.ReadWrite)]
     internal Texture? Mask;

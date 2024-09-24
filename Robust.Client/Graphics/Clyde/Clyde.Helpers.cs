@@ -18,18 +18,6 @@ namespace Robust.Client.Graphics.Clyde
             CheckGlError();
         }
 
-        internal void SetTexture(TextureUnit unit, Texture texture)
-        {
-            var ct = (ClydeTexture) texture;
-            GL.ActiveTexture(unit);
-            CheckGlError();
-            GL.BindTexture(TextureTarget.Texture2D, ct.OpenGLObject.Handle);
-            CheckGlError();
-            if (unit != TextureUnit.Texture0)
-                GL.ActiveTexture(TextureUnit.Texture0);
-            // ActiveTexture(Texture0) is essentially guaranteed to succeed.
-        }
-
         private void CopyRenderTextureToTexture(PAL.RenderTexture source, ClydeTexture target) {
             PAL.RenderTargetBase sourceLoaded = source;
             bool pause = sourceLoaded != _currentBoundRenderTarget;

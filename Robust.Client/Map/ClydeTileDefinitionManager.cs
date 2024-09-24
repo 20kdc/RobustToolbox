@@ -25,9 +25,9 @@ namespace Robust.Client.Map
     {
         [Dependency] private readonly IResourceManager _manager = default!;
 
-        private Texture? _tileTextureAtlas;
+        private WholeTexture? _tileTextureAtlas;
 
-        public Texture TileTextureAtlas => _tileTextureAtlas ?? Texture.Transparent;
+        public WholeTexture TileTextureAtlas => _tileTextureAtlas ?? Texture.Transparent;
 
         private readonly Dictionary<int, Box2[]> _tileRegions = new();
 

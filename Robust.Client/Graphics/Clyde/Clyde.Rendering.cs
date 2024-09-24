@@ -225,18 +225,15 @@ namespace Robust.Client.Graphics.Clyde
             var (program, loaded) = ActivateShaderInstance(command.ShaderInstance);
             SetupGlobalUniformsImmediate(program, loadedTexture.IsSrgb);
 
-            GL.ActiveTexture(InternedUniform.MainTextureUnit);
-            CheckGlError();
-            GL.BindTexture(TextureTarget.Texture2D, loadedTexture.OpenGLObject.Handle);
-            CheckGlError();
+            _renderState.SetTexture(InternedUniform.MainTextureUnit, loadedTexture);
 
             if (_lightingReady && loaded.HasLighting)
             {
-                SetTexture(InternedUniform.LightTextureUnit, _currentViewport!.LightRenderTarget.Texture);
+                _renderState.SetTexture(InternedUniform.LightTextureUnit, _currentViewport!.LightRenderTarget.Texture);
             }
             else
             {
-                SetTexture(InternedUniform.LightTextureUnit, _stockTextureWhite);
+                _renderState.SetTexture(InternedUniform.LightTextureUnit, _stockTextureWhite);
             }
 
             // Model matrix becomes identity since it's built into the batch mesh.
@@ -412,7 +409,9 @@ namespace Robust.Client.Graphics.Clyde
                         break;
                     case ClydeTexture clydeTexture:
                         if (program.TryGetTextureUnit(name, out var cTarget))
-                            SetTexture(cTarget, clydeTexture);
+                        {
+                            _renderState.SetTexture(cTarget, clydeTexture);
+                        }
                         break;
                     default:
                         throw new InvalidOperationException($"Unable to handle shader parameter {name}: {value}");

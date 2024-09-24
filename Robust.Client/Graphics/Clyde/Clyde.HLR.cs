@@ -423,7 +423,7 @@ namespace Robust.Client.Graphics.Clyde
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void BindRenderTargetFull(PAL.RenderTargetBase rt)
         {
-            _pal.BindRenderTargetImmediate(rt);
+            _renderState.RenderTarget = rt;
             _currentRenderTarget = rt;
         }
 
