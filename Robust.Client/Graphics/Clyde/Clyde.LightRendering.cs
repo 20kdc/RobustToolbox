@@ -366,7 +366,7 @@ namespace Robust.Client.Graphics.Clyde
             GL.Viewport(0, 0, lightW, lightH);
             CheckGlError();
 
-            _pal.BindRenderTargetImmediate(_pal.RtToLoaded(viewport.LightRenderTarget));
+            _pal.BindRenderTargetImmediate(viewport.LightRenderTarget);
             CheckGlError();
             GLClearColor(_entityManager.GetComponentOrNull<MapLightComponent>(mapUid)?.AmbientLightColor ?? MapLightComponent.DefaultColor);
             GL.ClearStencil(0xFF);
@@ -1153,7 +1153,7 @@ namespace Robust.Client.Graphics.Clyde
 
             if (_shadowRenderTarget != null)
             {
-                _pal.DeleteRenderTexture(_shadowRenderTarget.Handle);
+                _shadowRenderTarget.Dispose();
             }
 
             // Shadow FBO.

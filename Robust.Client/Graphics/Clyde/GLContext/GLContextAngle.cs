@@ -87,7 +87,7 @@ namespace Robust.Client.Graphics.Clyde
 
                 _factory->MakeWindowAssociation(hWnd, DXGI_MWA_NO_ALT_ENTER);
 
-                Clyde.EnableRenderWindowFlipY(reg.RenderTarget);
+                reg.RenderTarget.FlipYActual = true;
 
                 if (reg.IsMainWindow)
                 {

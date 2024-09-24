@@ -399,7 +399,7 @@ namespace Robust.Client.Graphics.Clyde
             }
 
             ArrayPool<int>.Shared.Return(indexList);
-            entityPostRenderTarget?.DisposeDeferred();
+            entityPostRenderTarget?.Dispose();
 
             _debugStats.Entities += _drawingSpriteList.Count;
             _drawingSpriteList.Clear();
@@ -423,7 +423,7 @@ namespace Robust.Client.Graphics.Clyde
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void BindRenderTargetFull(PAL.RenderTargetBase rt)
         {
-            _pal.BindRenderTargetImmediate(_pal.RtToLoaded(rt));
+            _pal.BindRenderTargetImmediate(rt);
             _currentRenderTarget = rt;
         }
 

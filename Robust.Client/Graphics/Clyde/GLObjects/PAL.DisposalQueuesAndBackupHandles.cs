@@ -1,4 +1,5 @@
 using OpenToolkit.Graphics.OpenGL4;
+using Robust.Shared.Utility;
 using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using ES20 = OpenToolkit.Graphics.ES20;
@@ -11,6 +12,8 @@ internal sealed partial class PAL
     internal readonly ConcurrentQueue<uint> _bufferDisposeQueue = new();
     internal readonly ConcurrentQueue<uint> _programDisposeQueue = new();
     internal readonly ConcurrentQueue<uint> _vaoDisposeQueue = new();
+    internal readonly ConcurrentQueue<RenderTexture> _renderTextureDisposeQueue = new();
+
 
     // Backup bindings.
     // These match the state in PAL.DrawCall.
@@ -54,10 +57,28 @@ internal sealed partial class PAL
         _hasGL.CheckGlError();
     }
 
+    private void DeleteRenderTexture(RenderTexture renderTarget)
+    {
+        DebugTools.Assert(renderTarget.FramebufferHandle != default);
+
+        GL.DeleteFramebuffer(renderTarget.FramebufferHandle.Handle);
+        renderTarget.FramebufferHandle = default;
+        CheckGlError();
+        renderTarget.Texture!.Dispose();
+
+        if (renderTarget.DepthStencilHandle != default)
+        {
+            GL.DeleteRenderbuffer(renderTarget.DepthStencilHandle.Handle);
+            CheckGlError();
+        }
+
+        //GC.RemoveMemoryPressure(renderTarget.MemoryPressure);
+    }
+
     /// <summary>Disposes of dead resources.</summary>
     internal void FlushDispose()
     {
-        while (_renderTargetDisposeQueue.TryDequeue(out var handle))
+        while (_renderTextureDisposeQueue.TryDequeue(out var handle))
         {
             DeleteRenderTexture(handle);
         }

@@ -157,8 +157,7 @@ namespace Robust.Client.Graphics.Clyde
                 }
                 else
                 {
-                    var loaded = Clyde.RtToLoaded(data.RenderTexture!);
-                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, loaded.FramebufferHandle.Handle);
+                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, data.RenderTexture!.FramebufferHandle.Handle);
                 }
             }
 

@@ -27,11 +27,6 @@ internal sealed partial class Clyde
     public GPUVertexArrayObject CreateVAO(string? name = null) => _pal.CreateVAO(name);
 
     public IGPURenderState CreateRenderState() => _pal.CreateRenderState();
-
-    PAL.LoadedRenderTarget IWindowingHost.RtToLoaded(PAL.RenderTargetBase rt)
-    {
-        return _pal.RtToLoaded(rt);
-    }
 }
 
 internal sealed partial class PAL

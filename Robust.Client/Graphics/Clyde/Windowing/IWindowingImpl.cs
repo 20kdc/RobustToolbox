@@ -110,8 +110,6 @@ internal interface IWindowingHost {
     void SendInputModeChanged();
 
     void SetupDebugCallback();
-    void EnableRenderWindowFlipY(PAL.RenderWindow rw);
-    PAL.LoadedRenderTarget RtToLoaded(PAL.RenderTargetBase rt);
     PAL.RenderTexture CreateWindowRenderTarget(Vector2i size);
 }
 

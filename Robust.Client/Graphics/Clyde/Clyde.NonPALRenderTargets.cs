@@ -9,7 +9,7 @@ namespace Robust.Client.Graphics.Clyde
         // This is always kept up-to-date, except in CreateRenderTarget (because it restores the old value)
         // It, like _mainWindowRenderTarget, is initialized in Clyde's constructor.
         // It is used by CopyRenderTextureToTexture, along with by sRGB emulation.
-        internal PAL.LoadedRenderTarget _currentBoundRenderTarget;
+        internal PAL.RenderTargetBase _currentBoundRenderTarget;
 
         IRenderTexture IClyde.CreateRenderTarget(Vector2i size, RenderTargetFormatParameters format,
             TextureSampleParameters? sampleParameters, string? name)

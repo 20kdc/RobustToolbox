@@ -59,11 +59,5 @@ namespace Robust.Client.Graphics.Clyde
         {
             SetupDebugCallback();
         }
-
-        void IWindowingHost.EnableRenderWindowFlipY(PAL.RenderWindow rw)
-        {
-            var rt = _pal.RtToLoaded(rw);
-            rt.FlipY = true;
-        }
     }
 }

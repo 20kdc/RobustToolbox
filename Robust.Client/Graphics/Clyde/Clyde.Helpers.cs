@@ -31,7 +31,7 @@ namespace Robust.Client.Graphics.Clyde
         }
 
         private void CopyRenderTextureToTexture(PAL.RenderTexture source, ClydeTexture target) {
-            PAL.LoadedRenderTarget sourceLoaded = _pal.RtToLoaded(source);
+            PAL.RenderTargetBase sourceLoaded = source;
             bool pause = sourceLoaded != _currentBoundRenderTarget;
             FullStoredRendererState? store = null;
             if (pause) {

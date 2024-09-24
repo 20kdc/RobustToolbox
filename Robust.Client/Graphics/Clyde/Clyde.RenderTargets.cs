@@ -19,12 +19,6 @@ namespace Robust.Client.Graphics.Clyde
 {
     internal partial class PAL
     {
-        internal readonly Dictionary<ClydeHandle, LoadedRenderTarget> _renderTargets =
-            new();
-
-        private readonly ConcurrentQueue<ClydeHandle> _renderTargetDisposeQueue
-            = new();
-
         internal RenderTexture CreateRenderTarget(Vector2i size, RenderTargetFormatParameters format,
             TextureSampleParameters? sampleParameters = null, string? name = null)
         {
@@ -56,7 +50,7 @@ namespace Robust.Client.Graphics.Clyde
             ClydeTexture textureObject;
             GLHandle depthStencilBuffer = default;
 
-            var estPixSize = 0L;
+            // var estPixSize = 0L;
 
             // Color attachment.
             {
@@ -117,7 +111,7 @@ namespace Robust.Client.Graphics.Clyde
                     };
                 }
 
-                estPixSize += PAL.EstPixelSize(internalFormat);
+                // estPixSize += PAL.EstPixelSize(internalFormat);
 
                 GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, width, height, 0, pixFormat,
                     pixType, IntPtr.Zero);
@@ -155,7 +149,7 @@ namespace Robust.Client.Graphics.Clyde
                     height);
                 CheckGlError();
 
-                estPixSize += 4;
+                // estPixSize += 4;
 
                 GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment,
                     RenderbufferTarget.Renderbuffer, depthStencilBuffer.Handle);
@@ -181,201 +175,108 @@ namespace Robust.Client.Graphics.Clyde
                 CheckGlError();
             }
 
-            var pressure = estPixSize * size.X * size.Y;
-
-            var handle = _clyde.AllocRid();
-            var data = new LoadedRenderTarget
-            {
-                IsWindow = false,
-                IsSrgb = textureObject.IsSrgb,
-                DepthStencilHandle = depthStencilBuffer,
-                FramebufferHandle = fbo,
-                Size = size,
-                Texture = textureObject,
-                MemoryPressure = pressure,
-                ColorFormat = format.ColorFormat
-            };
+            // var pressure = estPixSize * size.X * size.Y;
 
             //GC.AddMemoryPressure(pressure);
-            var renderTarget = new RenderTexture(size, textureObject, this, handle);
-            _renderTargets.Add(handle, data);
-            return renderTarget;
-        }
-
-        internal void DeleteRenderTexture(ClydeHandle handle)
-        {
-            if (!_renderTargets.TryGetValue(handle, out var renderTarget))
-            {
-                return;
-            }
-
-            DebugTools.Assert(renderTarget.FramebufferHandle != default);
-            DebugTools.Assert(!renderTarget.IsWindow, "Cannot delete window-backed render targets directly.");
-
-            GL.DeleteFramebuffer(renderTarget.FramebufferHandle.Handle);
-            renderTarget.FramebufferHandle = default;
-            CheckGlError();
-            _renderTargets.Remove(handle);
-            renderTarget.Texture!.Dispose();
-
-            if (renderTarget.DepthStencilHandle != default)
-            {
-                GL.DeleteRenderbuffer(renderTarget.DepthStencilHandle.Handle);
-                CheckGlError();
-            }
-
-            //GC.RemoveMemoryPressure(renderTarget.MemoryPressure);
+            return new RenderTexture(size, textureObject, this, fbo, depthStencilBuffer, textureObject.IsSrgb);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal LoadedRenderTarget RtToLoaded(RenderTargetBase rt)
-        {
-            return _renderTargets[rt.Handle];
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal void BindRenderTargetImmediate(LoadedRenderTarget rt)
+        internal void BindRenderTargetImmediate(RenderTargetBase rt)
         {
             // NOTE: It's critically important that this be the "focal point" of all framebuffer bindings.
-            if (rt.IsWindow)
+            if (rt is RenderWindow window)
             {
-                _clyde._glContext!.BindWindowRenderTarget(rt.WindowId);
+                _clyde._glContext!.BindWindowRenderTarget(window.WindowId);
             }
-            else
+            else if (rt is RenderTexture texture)
             {
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, rt.FramebufferHandle.Handle);
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, texture.FramebufferHandle.Handle);
                 CheckGlError();
             }
             _clyde._currentBoundRenderTarget = rt;
         }
 
-        internal sealed class LoadedRenderTarget
-        {
-            public bool IsWindow;
-            public WindowId WindowId;
-
-            public Vector2i Size;
-            public bool IsSrgb;
-
-            public bool FlipY;
-
-            public RTCF ColorFormat;
-
-            // Remaining properties only apply if the render target is NOT a window.
-            // Handle to the framebuffer object.
-            public GLHandle FramebufferHandle;
-
-            // Handle to the loaded clyde texture managing the color attachment.
-            public ClydeTexture? Texture;
-
-            // Renderbuffer handle
-            public GLHandle DepthStencilHandle;
-            public long MemoryPressure;
-        }
-
-        internal abstract class RenderTargetBase : IRenderTarget
+        internal abstract class RenderTargetBase : GPUResource, IRenderTarget
         {
             protected readonly PAL Clyde;
-            private bool _disposed;
 
             public bool MakeGLFence;
             public nint LastGLSync;
 
-            protected RenderTargetBase(PAL clyde, ClydeHandle handle)
+            protected RenderTargetBase(PAL clyde, bool isSrgb)
             {
                 Clyde = clyde;
-                Handle = handle;
+                IsSrgb = isSrgb;
             }
 
             public abstract Vector2i Size { get; }
 
             public abstract bool FlipY { get; }
 
+            public bool IsSrgb { get; }
+
             public void CopyPixelsToMemory<T>(CopyPixelsDelegate<T> callback, UIBox2i? subRegion = null) where T : unmanaged, IPixel<T>
             {
-                Clyde._clyde.CopyRenderTargetPixels(Handle, subRegion, callback);
-            }
-
-            public ClydeHandle Handle { get; }
-
-            protected virtual void Dispose(bool disposing)
-            {
-            }
-
-            public void Dispose()
-            {
-                if (_disposed)
-                {
-                    return;
-                }
-
-                _disposed = true;
-                Dispose(true);
-                GC.SuppressFinalize(this);
-            }
-
-            public void DisposeDeferred()
-            {
-                if (_disposed)
-                {
-                    return;
-                }
-
-                _disposed = true;
-                DisposeDeferredImpl();
-                GC.SuppressFinalize(this);
-            }
-
-            protected virtual void DisposeDeferredImpl()
-            {
-
-            }
-
-            ~RenderTargetBase()
-            {
-                Dispose(false);
+                Clyde._clyde.CopyRenderTargetPixels(this, subRegion, callback);
             }
         }
 
         internal sealed class RenderTexture : RenderTargetBase, IRenderTexture
         {
-            public RenderTexture(Vector2i size, ClydeTexture texture, PAL clyde, ClydeHandle handle)
-                : base(clyde, handle)
+            public RenderTexture(Vector2i size, ClydeTexture texture, PAL clyde, GLHandle handle, GLHandle dsHandle, bool isSrgb)
+                : base(clyde, isSrgb)
             {
                 Size = size;
                 Texture = texture;
+                FramebufferHandle = handle;
+                DepthStencilHandle = dsHandle;
             }
 
             public override Vector2i Size { get; }
-            public override bool FlipY => Clyde._renderTargets[Handle].FlipY;
+            public override bool FlipY => false;
             public ClydeTexture Texture { get; }
             Texture IRenderTexture.Texture => Texture;
 
-            protected override void Dispose(bool disposing)
+            public GLHandle FramebufferHandle;
+
+            // Renderbuffer handle (optional)
+            public GLHandle DepthStencilHandle;
+
+            protected override void DisposeImpl()
             {
                 if (Clyde.IsMainThread())
                 {
-                    Clyde.DeleteRenderTexture(Handle);
+                    Clyde.DeleteRenderTexture(this);
                 }
                 else
                 {
-                    DisposeDeferredImpl();
+                    Clyde._renderTextureDisposeQueue.Enqueue(this);
                 }
-            }
-
-            protected override void DisposeDeferredImpl()
-            {
-                Clyde._renderTargetDisposeQueue.Enqueue(Handle);
             }
         }
 
         internal sealed class RenderWindow : RenderTargetBase
         {
-            public override Vector2i Size => Clyde._renderTargets[Handle].Size;
-            public override bool FlipY => Clyde._renderTargets[Handle].FlipY;
+            public WindowId WindowId { get; }
 
-            public RenderWindow(PAL clyde, ClydeHandle handle) : base(clyde, handle)
+            public override Vector2i Size => SizeActual;
+
+            public Vector2i SizeActual { get; set; }
+
+            public override bool FlipY => FlipYActual;
+
+            public bool FlipYActual { get; set; }
+
+            public RenderWindow(PAL clyde, WindowId id, bool isSrgb, Vector2i size) : base(clyde, isSrgb)
             {
+                WindowId = id;
+                SizeActual = size;
+            }
+
+            protected override void DisposeImpl()
+            {
+                // nope
             }
         }
     }

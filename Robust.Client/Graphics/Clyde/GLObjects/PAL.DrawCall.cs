@@ -34,7 +34,7 @@ internal partial class PAL
     IGPURenderState IGPUAbstraction.CreateRenderState() => new GLRenderState(this);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void SetScissorImmediate(LoadedRenderTarget renderTarget, in UIBox2i? box)
+    private void SetScissorImmediate(RenderTargetBase renderTarget, in UIBox2i? box)
     {
         if (box != null)
         {
@@ -159,11 +159,10 @@ internal partial class PAL
             set
             {
                 _renderTarget = (RenderTargetBase?) value;
-                if (_pal._currentRenderState == this && _renderTarget != null)
+                if (_pal._currentRenderState == this && GPUResource.IsValid(_renderTarget))
                 {
-                    var loaded = _pal.RtToLoaded(_renderTarget!);
-                    _pal.BindRenderTargetImmediate(loaded);
-                    _pal.SetScissorImmediate(loaded, _scissor);
+                    _pal.BindRenderTargetImmediate(_renderTarget);
+                    _pal.SetScissorImmediate(_renderTarget, _scissor);
                 }
             }
         }
@@ -175,7 +174,7 @@ internal partial class PAL
             set
             {
                 _program = (GLShaderProgram?) value;
-                if (_pal._currentRenderState == this && _program != null)
+                if (_pal._currentRenderState == this && GPUResource.IsValid(_program))
                 {
                     _pal.DCUseProgram(_program.Handle);
                 }
@@ -189,7 +188,7 @@ internal partial class PAL
             set
             {
                 _vao = (GLVAOBase?) value;
-                if (_pal._currentRenderState == this && _vao != null)
+                if (_pal._currentRenderState == this && GPUResource.IsValid(_vao))
                 {
                     _pal.DCBindVAO(_vao.ObjectHandle);
                 }
@@ -215,10 +214,9 @@ internal partial class PAL
             set
             {
                 _scissor = value;
-                if (_renderTarget != null)
+                if (GPUResource.IsValid(_renderTarget))
                 {
-                    var loaded = _pal.RtToLoaded(_renderTarget!);
-                    _pal.SetScissorImmediate(loaded, _scissor);
+                    _pal.SetScissorImmediate(_renderTarget, _scissor);
                 }
             }
         }
@@ -283,11 +281,10 @@ internal partial class PAL
         {
             if (_pal._currentRenderState != this)
             {
-                if (_renderTarget != null)
+                if (GPUResource.IsValid(_renderTarget))
                 {
-                    var loaded = _pal.RtToLoaded(_renderTarget!);
-                    _pal.BindRenderTargetImmediate(loaded);
-                    _pal.SetScissorImmediate(loaded, _scissor);
+                    _pal.BindRenderTargetImmediate(_renderTarget);
+                    _pal.SetScissorImmediate(_renderTarget, _scissor);
                 }
                 _pal._currentRenderState = this;
                 if (_program != null)

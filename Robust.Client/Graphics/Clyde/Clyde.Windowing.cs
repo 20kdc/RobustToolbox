@@ -355,16 +355,7 @@ namespace Robust.Client.Graphics.Clyde
                 _windows.Add(reg);
                 _windowHandles.Add(reg.Handle);
 
-                var rtId = AllocRid();
-                _pal._renderTargets.Add(rtId, new PAL.LoadedRenderTarget
-                {
-                    Size = reg.FramebufferSize,
-                    IsWindow = true,
-                    WindowId = reg.Id,
-                    IsSrgb = true
-                });
-
-                reg.RenderTarget = new PAL.RenderWindow(_pal, rtId);
+                reg.RenderTarget = new PAL.RenderWindow(_pal, reg.Id, true, reg.FramebufferSize);
 
                 _glContext!.WindowCreated(glSpec, reg);
                 _glContext!.UpdateVSync(_vSync);
