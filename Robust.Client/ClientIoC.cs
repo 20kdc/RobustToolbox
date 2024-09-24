@@ -106,6 +106,7 @@ namespace Robust.Client
                 case GameController.DisplayMode.Headless:
                     deps.Register<IClyde, ClydeHeadless>();
                     deps.Register<IGPUAbstraction, ClydeHeadless>();
+                    deps.Register<IWindowing, ClydeHeadless>();
                     deps.Register<IClipboardManager, ClydeHeadless>();
                     deps.Register<IClydeInternal, ClydeHeadless>();
                     deps.Register<IAudioManager, HeadlessAudioManager>();
@@ -119,6 +120,7 @@ namespace Robust.Client
                     deps.Register<Clyde, Clyde>();
                     deps.Register<IClyde, Clyde>();
                     deps.Register<IGPUAbstraction, PAL>();
+                    deps.Register<IWindowing, Clyde>();
                     deps.Register<IClipboardManager, Clyde>();
                     deps.Register<IClydeInternal, Clyde>();
                     deps.Register<IAudioManager, AudioManager>();

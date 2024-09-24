@@ -28,7 +28,7 @@ namespace Robust.Client.Graphics.Clyde
     /// <summary>
     ///     Responsible for most things rendering on OpenGL mode.
     /// </summary>
-    internal sealed partial class Clyde : IClydeInternal, IPostInjectInit, IEntityEventSubscriber, IWindowingHost
+    internal sealed partial class Clyde : IClydeInternal, IPostInjectInit, IEntityEventSubscriber, IWindowingHost, IWindowing
     {
         [Dependency] private readonly IClydeTileDefinitionManager _tileDefinitionManager = default!;
         [Dependency] private readonly IEyeManager _eyeManager = default!;

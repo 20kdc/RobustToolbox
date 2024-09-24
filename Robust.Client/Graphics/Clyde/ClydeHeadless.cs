@@ -24,7 +24,7 @@ namespace Robust.Client.Graphics.Clyde
     ///     Hey look, it's Clyde's evil twin brother!
     /// </summary>
     [UsedImplicitly]
-    internal sealed class ClydeHeadless : IClydeInternal, IGPUAbstraction
+    internal sealed class ClydeHeadless : IClydeInternal, IGPUAbstraction, IWindowing
     {
         // Would it make sense to report a fake resolution like 720p here so code doesn't break? idk.
         public IClydeWindow MainWindow { get; }
