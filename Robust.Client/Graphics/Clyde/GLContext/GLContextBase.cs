@@ -44,8 +44,6 @@ namespace Robust.Client.Graphics.Clyde
                 _glVersionToUse = glVersion;
 
                 bool isGLES = RendererOpenGLVersionUtils.IsGLES(glVersion);
-                bool isGLES2 = glVersion is RendererOpenGLVersion.GLES2;
-                bool isCore = RendererOpenGLVersionUtils.IsCore(glVersion);
 
                 // Initialize bindings...
                 GL.LoadBindings(BindingsContext);
@@ -57,7 +55,7 @@ namespace Robust.Client.Graphics.Clyde
                 }
 
                 var hasBrokenWindowSrgb = HasBrokenWindowSrgb(glVersion);
-                GLWrapper = new GLWrapper(isGLES, isGLES2, isCore, hasBrokenWindowSrgb, Clyde.LogManager, Clyde.Cfg);
+                GLWrapper = new GLWrapper(glVersion, hasBrokenWindowSrgb, Clyde.LogManager.GetSawmill("clyde.ogl"), Clyde.Cfg);
             }
 
             protected abstract GLContextSpec? SpecWithOpenGLVersion(RendererOpenGLVersion version);

@@ -14,6 +14,9 @@ namespace Robust.Client.Graphics;
 
 public interface IGPUAbstraction
 {
+    // <summary>If the GPU has primitive restart (index 65535 resets primitive state machine)</summary>
+    bool HasPrimitiveRestart { get; }
+
     OwnedTexture LoadTextureFromPNGStream(Stream stream, string? name = null,
         TextureLoadParameters? loadParams = null)
     {

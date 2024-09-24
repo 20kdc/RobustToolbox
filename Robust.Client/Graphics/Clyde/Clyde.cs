@@ -197,23 +197,6 @@ namespace Robust.Client.Graphics.Clyde
                 _windowing!.GetDescription());
 
             GL.Enable(EnableCap.Blend);
-            if (_hasGL.Srgb && !_hasGL.GLES)
-            {
-                GL.Enable(EnableCap.FramebufferSrgb);
-                CheckGlError();
-            }
-            if (_hasGL.PrimitiveRestart)
-            {
-                GL.Enable(EnableCap.PrimitiveRestart);
-                CheckGlError();
-                GL.PrimitiveRestartIndex(PrimitiveRestartIndex);
-                CheckGlError();
-            }
-            if (_hasGL.PrimitiveRestartFixedIndex)
-            {
-                GL.Enable(EnableCap.PrimitiveRestartFixedIndex);
-                CheckGlError();
-            }
             if (!_hasGL.AnyVertexArrayObjects)
             {
                 _sawmillOgl.Warning("NO VERTEX ARRAY OBJECTS! Things will probably go terribly, terribly wrong (no fallback path yet)");

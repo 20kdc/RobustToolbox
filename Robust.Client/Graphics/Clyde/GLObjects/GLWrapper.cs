@@ -39,7 +39,6 @@ namespace Robust.Client.Graphics.Clyde
         public readonly bool TextureSwizzle;
         public readonly bool Srgb;
         public readonly bool PrimitiveRestart;
-        public readonly bool PrimitiveRestartFixedIndex;
         public readonly bool ReadFramebuffer;
         public readonly bool UniformBuffers;
         public bool AnyVertexArrayObjects => VertexArrayObject || VertexArrayObjectOes;
@@ -67,9 +66,13 @@ namespace Robust.Client.Graphics.Clyde
 
         private bool _checkGLErrors;
 
-        /// <summary>Probes the current context for features.</summary>
-        public GLWrapper(bool gles, bool isES2, bool core, bool hasBrokenWindowSrgb, ILogManager log, IConfigurationManager cfg)
+        /// <summary>Probes the current context for features, and sets some initial state we want on ALL contexts.</summary>
+        public GLWrapper(RendererOpenGLVersion mode, bool hasBrokenWindowSrgb, ISawmill log, IConfigurationManager cfg)
         {
+            bool gles = RendererOpenGLVersionUtils.IsGLES(mode);
+            bool core = RendererOpenGLVersionUtils.IsCore(mode);
+            bool isES2 = mode is RendererOpenGLVersion.GLES2;
+
             Vendor = GL.GetString(StringName.Vendor);
             Renderer = GL.GetString(StringName.Renderer);
             Version = GL.GetString(StringName.Version);
@@ -77,7 +80,7 @@ namespace Robust.Client.Graphics.Clyde
             var major = isES2 ? 2 : GL.GetInteger(GetPName.MajorVersion);
             var minor = isES2 ? 0 : GL.GetInteger(GetPName.MinorVersion);
 
-            _sawmill = log.GetSawmill("clyde.ogl");
+            _sawmill = log;
 
             cfg.OnValueChanged(CVars.DisplayOGLCheckErrors, b => _checkGLErrors = b, true);
 
@@ -124,6 +127,11 @@ namespace Robust.Client.Graphics.Clyde
                 PrimitiveRestart = true;
                 UniformBuffers = true;
                 FloatFramebuffers = true;
+
+                GL.Enable(EnableCap.PrimitiveRestart);
+                CheckGlError();
+                GL.PrimitiveRestartIndex(ushort.MaxValue);
+                CheckGlError();
             }
             else
             {
@@ -136,6 +144,8 @@ namespace Robust.Client.Graphics.Clyde
                     _sawmill.Debug("  khr_debug is ES extension!");
                 }
 
+                var primitiveRestartFixedIndex = false;
+
                 CheckGLCap(ref VertexArrayObject, "vertex_array_object", (3, 0));
                 CheckGLCap(ref VertexArrayObjectOes, "vertex_array_object_oes",
                     exts: "GL_OES_vertex_array_object");
@@ -147,10 +157,18 @@ namespace Robust.Client.Graphics.Clyde
                 CheckGLCap(ref PixelBufferObjects, "pixel_buffer_object", (3, 0));
                 CheckGLCap(ref StandardDerivatives, "standard_derivatives", (3, 0), "GL_OES_standard_derivatives");
                 CheckGLCap(ref ReadFramebuffer, "read_framebuffer", (3, 0));
-                CheckGLCap(ref PrimitiveRestartFixedIndex, "primitive_restart", (3, 0));
+                CheckGLCap(ref primitiveRestartFixedIndex, "primitive_restart", (3, 0));
                 CheckGLCap(ref UniformBuffers, "uniform_buffers", (3, 0));
                 CheckGLCap(ref FloatFramebuffers, "float_framebuffers", (3, 2), "GL_EXT_color_buffer_float");
                 CheckGLCap(ref GLES3Shaders, "gles3_shaders", (3, 0));
+
+                PrimitiveRestart = primitiveRestartFixedIndex;
+
+                if (primitiveRestartFixedIndex)
+                {
+                    GL.Enable(EnableCap.PrimitiveRestartFixedIndex);
+                    CheckGlError();
+                }
 
                 if (Major >= 3)
                 {
@@ -170,6 +188,12 @@ namespace Robust.Client.Graphics.Clyde
                     Srgb = false;
                     _sawmill.Debug("  sRGB: false");
                 }
+            }
+
+            if (Srgb && !GLES)
+            {
+                GL.Enable(EnableCap.FramebufferSrgb);
+                CheckGlError();
             }
 
             _sawmill.Debug($"  GLES: {GLES}");

@@ -12,6 +12,8 @@ internal sealed partial class PAL : IGPUAbstraction
     internal Thread? _gameThread;
     internal ISawmill _sawmillOgl = default!;
 
+    public bool HasPrimitiveRestart => _hasGL.PrimitiveRestart;
+
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     internal bool IsMainThread()
     {

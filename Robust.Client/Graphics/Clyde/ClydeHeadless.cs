@@ -164,6 +164,8 @@ namespace Robust.Client.Graphics.Clyde
             return true;
         }
 
+        public bool HasPrimitiveRestart => true;
+
         public OwnedTexture LoadTextureFromPNGStream(Stream stream, string? name = null,
             TextureLoadParameters? loadParams = null)
         {

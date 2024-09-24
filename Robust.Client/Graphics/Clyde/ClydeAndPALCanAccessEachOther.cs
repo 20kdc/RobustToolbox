@@ -19,6 +19,8 @@ internal sealed partial class Clyde
     private ISawmill _sawmillOgl => _pal._sawmillOgl;
 
     // interface proxies
+    public bool HasPrimitiveRestart => _pal.HasPrimitiveRestart;
+
     public OwnedTexture LoadTextureFromImage<T>(Image<T> image, string? name = null, TextureLoadParameters? loadParams = null) where T : unmanaged, IPixel<T> => _pal.LoadTextureFromImage<T>(image, name, loadParams);
     public OwnedTexture CreateBlankTexture<T>(Vector2i size, string? name = null, in TextureLoadParameters? loadParams = null) where T : unmanaged, IPixel<T> => _pal.CreateBlankTexture<T>(size, name, loadParams);
 

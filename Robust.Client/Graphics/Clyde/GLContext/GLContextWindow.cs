@@ -82,7 +82,8 @@ namespace Robust.Client.Graphics.Clyde
 
                 var data = new WindowData
                 {
-                    Reg = reg
+                    Reg = reg,
+                    GLVersion = spec!.Value.OpenGLVersion
                 };
 
                 _windowData[reg.Id] = data;
@@ -91,6 +92,7 @@ namespace Robust.Client.Graphics.Clyde
                 {
                     Clyde.Windowing!.GLMakeContextCurrent(reg);
                     InitOpenGL(spec!.Value.OpenGLVersion);
+                    data.GLWrapper = GLWrapper!;
                 }
                 else
                 {
@@ -172,7 +174,7 @@ namespace Robust.Client.Graphics.Clyde
                 if (Clyde.Windows.Count == 1)
                     return;
 
-                if (!Clyde.HasGL.FenceSync && Clyde.Cfg.GetCVar(CVars.DisplayForceSyncWindows))
+                if (!GLWrapper!.FenceSync && Clyde.Cfg.GetCVar(CVars.DisplayForceSyncWindows))
                 {
                     GL.Finish();
                 }
@@ -206,24 +208,24 @@ namespace Robust.Client.Graphics.Clyde
 
             private void BlitThreadDoSecondaryWindowBlit(WindowData window)
             {
-                if (Clyde.HasGL.FenceSync)
+                if (window.GLWrapper.FenceSync)
                 {
                     // 0xFFFFFFFFFFFFFFFFUL is GL_TIMEOUT_IGNORED
                     var rt = window.Reg.RenderTarget;
                     var sync = rt.LastGLSync;
                     GL.WaitSync(sync, WaitSyncFlags.None, unchecked((long) 0xFFFFFFFFFFFFFFFFUL));
-                    GLWrapper!.CheckGlError();
+                    window.GLWrapper.CheckGlError();
                 }
 
                 GL.Viewport(0, 0, window.Reg.FramebufferSize.X, window.Reg.FramebufferSize.Y);
-                GLWrapper!.CheckGlError();
+                window.GLWrapper.CheckGlError();
 
                 var tex = window.RenderTexture!.Texture.OpenGLObject;
                 GL.BindTexture(TextureTarget.Texture2D, tex.Handle);
-                GLWrapper!.CheckGlError();
+                window.GLWrapper.CheckGlError();
 
                 GL.DrawArrays(PrimitiveType.TriangleStrip, 0, 4);
-                GLWrapper!.CheckGlError();
+                window.GLWrapper.CheckGlError();
 
                 window.BlitDoneEvent?.Set();
                 Clyde.Windowing!.WindowSwapBuffers(window.Reg);
@@ -236,8 +238,7 @@ namespace Robust.Client.Graphics.Clyde
 
                 Clyde.SetupDebugCallback();
 
-                if (!Clyde.HasGL.GLES)
-                    GL.Enable(EnableCap.FramebufferSrgb);
+                reg.GLWrapper = new GLWrapper(reg.GLVersion, HasBrokenWindowSrgb(reg.GLVersion), Clyde.LogManager.GetSawmill("clyde.ogl.winblit"), Clyde.Cfg);
 
                 Span<float> winVertices = stackalloc[]
                 {
@@ -260,10 +261,10 @@ namespace Robust.Client.Graphics.Clyde
                     }
                 }
 
-                GLWrapper!.CheckGlError();
+                reg.GLWrapper.CheckGlError();
 
-                var vao = Clyde.HasGL.GenVertexArray();
-                Clyde.HasGL.BindVertexArray(vao);
+                var vao = reg.GLWrapper.GenVertexArray();
+                reg.GLWrapper.BindVertexArray(vao);
                 // Vertex Coords
                 GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 4 * sizeof(float), 0);
                 GL.EnableVertexAttribArray(0);
@@ -272,15 +273,15 @@ namespace Robust.Client.Graphics.Clyde
                 GL.EnableVertexAttribArray(1);
 
                 var shaderVtx = GL.CreateShader(ShaderType.VertexShader);
-                var header = Clyde.HasGL.ShaderHeader;
-                if (Clyde.HasGL.HasVaryingAttribute) {
+                var header = reg.GLWrapper.ShaderHeader;
+                if (reg.GLWrapper.HasVaryingAttribute) {
                     GL.ShaderSource((int) shaderVtx, header + "attribute vec2 aPos; attribute vec2 tCoord; varying vec2 UV; void main() { UV = tCoord; gl_Position = vec4(aPos, 0.0, 1.0); }");
                 } else {
                     GL.ShaderSource((int) shaderVtx, header + "in vec2 aPos; in vec2 tCoord; out vec2 UV; void main() { UV = tCoord; gl_Position = vec4(aPos, 0.0, 1.0); }");
                 }
                 GL.CompileShader(shaderVtx);
                 var shaderFrg = GL.CreateShader(ShaderType.FragmentShader);
-                if (Clyde.HasGL.HasVaryingAttribute) {
+                if (reg.GLWrapper.HasVaryingAttribute) {
                     GL.ShaderSource((int) shaderFrg, header + "varying highp vec2 UV; uniform sampler2D tex; void main() { gl_FragColor = texture2D(tex, UV); }");
                 } else {
                     GL.ShaderSource((int) shaderFrg, header + "out highp vec4 colourOutput; in highp vec2 UV; uniform sampler2D tex; void main() { colourOutput = texture(tex, UV); }");
@@ -298,7 +299,7 @@ namespace Robust.Client.Graphics.Clyde
 
                 var tex = reg.RenderTexture!.Texture.OpenGLObject;
                 GL.BindTexture(TextureTarget.Texture2D, tex.Handle);
-                GLWrapper!.CheckGlError();
+                reg.GLWrapper.CheckGlError();
 
                 var loc = GL.GetUniformLocation(program, "tex");
                 GL.Uniform1(loc, 0);
@@ -378,7 +379,7 @@ namespace Robust.Client.Graphics.Clyde
             private void BlitDataCleanup(WindowData reg)
             {
                 GL.DeleteProgram(reg.Program);
-                Clyde.HasGL.DeleteVertexArray(reg.WindowVAO);
+                reg.GLWrapper.DeleteVertexArray(reg.WindowVAO);
                 GL.DeleteBuffer(reg.WindowVBO);
             }
 
@@ -394,6 +395,8 @@ namespace Robust.Client.Graphics.Clyde
             private sealed class WindowData
             {
                 public WindowReg Reg = default!;
+                public RendererOpenGLVersion GLVersion;
+                public GLWrapper GLWrapper = default!;
 
                 public RenderTexture? RenderTexture;
                 // Used EXCLUSIVELY to run the two rendering commands to blit to the window.

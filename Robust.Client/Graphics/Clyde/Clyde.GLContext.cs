@@ -11,7 +11,6 @@ namespace Robust.Client.Graphics.Clyde
 
         IConfigurationManager IWindowingHost.Cfg => _cfg;
         ILogManager IWindowingHost.LogManager => _logManager;
-        GLWrapper IWindowingHost.HasGL => _hasGL;
 
         private void InitGLContextManager()
         {

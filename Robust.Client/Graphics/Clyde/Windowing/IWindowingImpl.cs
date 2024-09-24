@@ -86,7 +86,6 @@ internal interface IWindowingHost {
     Dictionary<int, MonitorHandle> MonitorHandles { get; }
     IConfigurationManager Cfg { get; }
     ILogManager LogManager { get; }
-    GLWrapper HasGL { get; }
 
     ClydeHandle AllocRid();
 
