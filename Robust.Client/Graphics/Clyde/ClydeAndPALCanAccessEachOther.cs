@@ -3,6 +3,7 @@ using System.IO;
 using Robust.Shared.Graphics;
 using Robust.Shared.IoC;
 using Robust.Shared.Maths;
+using Robust.Shared.Log;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
@@ -14,7 +15,8 @@ internal sealed partial class Clyde
 {
     [Dependency] internal readonly PAL _pal = default!;
 
-    internal GLWrapper _hasGL => _pal._hasGL;
+    private GLWrapper _hasGL => _pal._hasGL;
+    private ISawmill _sawmillOgl => _pal._sawmillOgl;
 
     // interface proxies
     public OwnedTexture LoadTextureFromImage<T>(Image<T> image, string? name = null, TextureLoadParameters? loadParams = null) where T : unmanaged, IPixel<T> => _pal.LoadTextureFromImage<T>(image, name, loadParams);
@@ -25,6 +27,11 @@ internal sealed partial class Clyde
     public GPUVertexArrayObject CreateVAO(string? name = null) => _pal.CreateVAO(name);
 
     public IGPURenderState CreateRenderState() => _pal.CreateRenderState();
+
+    PAL.LoadedRenderTarget IWindowingHost.RtToLoaded(PAL.RenderTargetBase rt)
+    {
+        return _pal.RtToLoaded(rt);
+    }
 }
 
 internal sealed partial class PAL

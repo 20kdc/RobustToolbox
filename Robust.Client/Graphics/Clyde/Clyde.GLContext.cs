@@ -7,7 +7,7 @@ namespace Robust.Client.Graphics.Clyde
 {
     internal sealed partial class Clyde
     {
-        private PAL.GLContextBase? _glContext;
+        internal PAL.GLContextBase? _glContext;
 
         IConfigurationManager IWindowingHost.Cfg => _cfg;
         ILogManager IWindowingHost.LogManager => _logManager;
@@ -60,9 +60,9 @@ namespace Robust.Client.Graphics.Clyde
             SetupDebugCallback();
         }
 
-        void IWindowingHost.EnableRenderWindowFlipY(RenderWindow rw)
+        void IWindowingHost.EnableRenderWindowFlipY(PAL.RenderWindow rw)
         {
-            var rt = RtToLoaded(rw);
+            var rt = _pal.RtToLoaded(rw);
             rt.FlipY = true;
         }
     }

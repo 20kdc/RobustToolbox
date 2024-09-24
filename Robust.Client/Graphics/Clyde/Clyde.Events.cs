@@ -109,7 +109,7 @@ namespace Robust.Client.Graphics.Clyde
 
         void IWindowingHost.SendWindowResized(WindowReg reg, Vector2i oldSize)
         {
-            var loaded = RtToLoaded(reg.RenderTarget);
+            var loaded = _pal.RtToLoaded(reg.RenderTarget);
             loaded.Size = reg.FramebufferSize;
 
             _glContext!.WindowResized(reg, oldSize);

@@ -57,6 +57,10 @@ internal sealed partial class PAL
     /// <summary>Disposes of dead resources.</summary>
     internal void FlushDispose()
     {
+        while (_renderTargetDisposeQueue.TryDequeue(out var handle))
+        {
+            DeleteRenderTexture(handle);
+        }
         while (_textureDisposeQueue.TryDequeue(out var handle))
         {
             GL.DeleteTexture(handle.Handle);

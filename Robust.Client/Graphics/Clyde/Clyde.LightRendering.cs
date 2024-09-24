@@ -79,10 +79,10 @@ namespace Robust.Client.Graphics.Clyde
         private GPUVertexArrayObject _occlusionMaskVao = default!;
 
         // For depth calculation for FOV.
-        private RenderTexture _fovRenderTarget = default!;
+        private PAL.RenderTexture _fovRenderTarget = default!;
 
         // For depth calculation of lighting shadows.
-        private RenderTexture _shadowRenderTarget = default!;
+        private PAL.RenderTexture _shadowRenderTarget = default!;
 
         // Used because otherwise a MaxLightsPerScene change callback getting hit on startup causes interesting issues (read: bugs)
         private bool _shadowRenderTargetCanInitializeSafely = false;
@@ -140,7 +140,7 @@ namespace Robust.Client.Graphics.Clyde
             }
 
             // FOV FBO.
-            _fovRenderTarget = CreateRenderTarget((FovMapSize, 2),
+            _fovRenderTarget = _pal.CreateRenderTarget((FovMapSize, 2),
                 new RenderTargetFormatParameters(
                     _hasGL.FloatFramebuffers ? RenderTargetColorFormat.RG32F : RenderTargetColorFormat.Rgba8, true),
                 new TextureSampleParameters { WrapMode = TextureWrapMode.Repeat },
@@ -194,7 +194,7 @@ namespace Robust.Client.Graphics.Clyde
             using var _ = DebugGroup(nameof(DrawFov));
             using var _p = _prof.Group("DrawFov");
 
-            PrepareDepthDraw(RtToLoaded(_fovRenderTarget));
+            PrepareDepthDraw(_fovRenderTarget);
 
             if (eye.DrawFov)
             {
@@ -243,7 +243,7 @@ namespace Robust.Client.Graphics.Clyde
             _renderState.DrawElements(GetQuadBatchPrimitiveType(), 0, _occlusionDataLength);
         }
 
-        private void PrepareDepthDraw(LoadedRenderTarget target)
+        private void PrepareDepthDraw(PAL.RenderTargetBase target)
         {
             const float arbitraryDistanceMax = 1234;
 
@@ -262,7 +262,7 @@ namespace Robust.Client.Graphics.Clyde
             GL.FrontFace(FrontFaceDirection.Cw);
             CheckGlError();
 
-            BindRenderTargetImmediate(target);
+            _renderState.RenderTarget = target;
             CheckGlError();
             GL.ClearDepth(1);
             CheckGlError();
@@ -343,7 +343,7 @@ namespace Robust.Client.Graphics.Clyde
             using (DebugGroup("Draw shadow depth"))
             using (_prof.Group("Draw shadow depth"))
             {
-                PrepareDepthDraw(RtToLoaded(_shadowRenderTarget));
+                PrepareDepthDraw(_shadowRenderTarget);
                 GL.CullFace(CullFaceMode.Back);
                 CheckGlError();
 
@@ -366,7 +366,7 @@ namespace Robust.Client.Graphics.Clyde
             GL.Viewport(0, 0, lightW, lightH);
             CheckGlError();
 
-            BindRenderTargetImmediate(RtToLoaded(viewport.LightRenderTarget));
+            _pal.BindRenderTargetImmediate(_pal.RtToLoaded(viewport.LightRenderTarget));
             CheckGlError();
             GLClearColor(_entityManager.GetComponentOrNull<MapLightComponent>(mapUid)?.AmbientLightColor ?? MapLightComponent.DefaultColor);
             GL.ClearStencil(0xFF);
@@ -1089,28 +1089,24 @@ namespace Robust.Client.Graphics.Clyde
             var lightMapSampleParameters = new TextureSampleParameters { Filter = true };
 
             viewport.LightRenderTarget?.Dispose();
-            viewport.WallMaskRenderTarget?.Dispose();
             viewport.WallBleedIntermediateRenderTarget1?.Dispose();
             viewport.WallBleedIntermediateRenderTarget2?.Dispose();
 
-            viewport.WallMaskRenderTarget = CreateRenderTarget(viewport.Size, RenderTargetColorFormat.R8,
-                name: $"{viewport.Name}-{nameof(viewport.WallMaskRenderTarget)}");
-
-            viewport.LightRenderTarget = CreateRenderTarget(lightMapSize,
+            viewport.LightRenderTarget = _pal.CreateRenderTarget(lightMapSize,
                 new RenderTargetFormatParameters(lightMapColorFormat, hasDepthStencil: true),
                 lightMapSampleParameters,
                 $"{viewport.Name}-{nameof(viewport.LightRenderTarget)}");
 
-            viewport.LightBlurTarget = CreateRenderTarget(lightMapSize,
+            viewport.LightBlurTarget = _pal.CreateRenderTarget(lightMapSize,
                 new RenderTargetFormatParameters(lightMapColorFormat),
                 lightMapSampleParameters,
                 $"{viewport.Name}-{nameof(viewport.LightBlurTarget)}");
 
-            viewport.WallBleedIntermediateRenderTarget1 = CreateRenderTarget(lightMapSizeQuart, lightMapColorFormat,
+            viewport.WallBleedIntermediateRenderTarget1 = _pal.CreateRenderTarget(lightMapSizeQuart, lightMapColorFormat,
                 lightMapSampleParameters,
                 $"{viewport.Name}-{nameof(viewport.WallBleedIntermediateRenderTarget1)}");
 
-            viewport.WallBleedIntermediateRenderTarget2 = CreateRenderTarget(lightMapSizeQuart, lightMapColorFormat,
+            viewport.WallBleedIntermediateRenderTarget2 = _pal.CreateRenderTarget(lightMapSizeQuart, lightMapColorFormat,
                 lightMapSampleParameters,
                 $"{viewport.Name}-{nameof(viewport.WallBleedIntermediateRenderTarget2)}");
         }
@@ -1157,11 +1153,11 @@ namespace Robust.Client.Graphics.Clyde
 
             if (_shadowRenderTarget != null)
             {
-                DeleteRenderTexture(_shadowRenderTarget.Handle);
+                _pal.DeleteRenderTexture(_shadowRenderTarget.Handle);
             }
 
             // Shadow FBO.
-            _shadowRenderTarget = CreateRenderTarget((ShadowMapSize, _maxShadowcastingLights),
+            _shadowRenderTarget = _pal.CreateRenderTarget((ShadowMapSize, _maxShadowcastingLights),
                 new RenderTargetFormatParameters(
                     _hasGL.FloatFramebuffers ? RenderTargetColorFormat.RG32F : RenderTargetColorFormat.Rgba8, true),
                 new TextureSampleParameters { WrapMode = TextureWrapMode.Repeat, Filter = true },

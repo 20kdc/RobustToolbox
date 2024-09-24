@@ -17,34 +17,15 @@ using PT = OpenToolkit.Graphics.OpenGL4.PixelType;
 
 namespace Robust.Client.Graphics.Clyde
 {
-    internal partial class Clyde
+    internal partial class PAL
     {
-        private readonly Dictionary<ClydeHandle, LoadedRenderTarget> _renderTargets =
+        internal readonly Dictionary<ClydeHandle, LoadedRenderTarget> _renderTargets =
             new();
 
         private readonly ConcurrentQueue<ClydeHandle> _renderTargetDisposeQueue
             = new();
 
-        // This is always kept up-to-date, except in CreateRenderTarget (because it restores the old value)
-        // It, like _mainWindowRenderTarget, is initialized in Clyde's constructor.
-        // It is used by CopyRenderTextureToTexture, along with by sRGB emulation.
-        internal LoadedRenderTarget _currentBoundRenderTarget;
-
-        IRenderTexture IClyde.CreateRenderTarget(Vector2i size, RenderTargetFormatParameters format,
-            TextureSampleParameters? sampleParameters, string? name)
-        {
-            return CreateRenderTarget(size, format, sampleParameters, name);
-        }
-
-        RenderTexture IWindowingHost.CreateWindowRenderTarget(Vector2i size)
-        {
-            return CreateRenderTarget(size, new RenderTargetFormatParameters
-            {
-                ColorFormat = RenderTargetColorFormat.Rgba8Srgb,
-                HasDepthStencil = true
-            });
-        }
-        private RenderTexture CreateRenderTarget(Vector2i size, RenderTargetFormatParameters format,
+        internal RenderTexture CreateRenderTarget(Vector2i size, RenderTargetFormatParameters format,
             TextureSampleParameters? sampleParameters = null, string? name = null)
         {
             DebugTools.Assert(size.X != 0);
@@ -85,7 +66,7 @@ namespace Robust.Client.Graphics.Clyde
                 GL.BindTexture(TextureTarget.Texture2D, texture.Handle);
                 CheckGlError();
 
-                _pal.ApplySampleParameters(sampleParameters);
+                ApplySampleParameters(sampleParameters);
 
                 var colorFormat = format.ColorFormat;
                 if ((!_hasGL.Srgb) && (colorFormat == RTCF.Rgba8Srgb))
@@ -157,7 +138,7 @@ namespace Robust.Client.Graphics.Clyde
                 CheckGlError();
 
                 // Check on original format is NOT a bug, this is so srgb emulation works
-                textureObject = _pal.GenTexture(texture, size, format.ColorFormat == RTCF.Rgba8Srgb, name == null ? null : $"{name}-color", TexturePixelType.RenderTarget);
+                textureObject = GenTexture(texture, size, format.ColorFormat == RTCF.Rgba8Srgb, name == null ? null : $"{name}-color", TexturePixelType.RenderTarget);
             }
 
             // Depth/stencil buffers.
@@ -202,7 +183,7 @@ namespace Robust.Client.Graphics.Clyde
 
             var pressure = estPixSize * size.X * size.Y;
 
-            var handle = AllocRid();
+            var handle = _clyde.AllocRid();
             var data = new LoadedRenderTarget
             {
                 IsWindow = false,
@@ -221,7 +202,7 @@ namespace Robust.Client.Graphics.Clyde
             return renderTarget;
         }
 
-        private void DeleteRenderTexture(ClydeHandle handle)
+        internal void DeleteRenderTexture(ClydeHandle handle)
         {
             if (!_renderTargets.TryGetValue(handle, out var renderTarget))
             {
@@ -246,11 +227,6 @@ namespace Robust.Client.Graphics.Clyde
             //GC.RemoveMemoryPressure(renderTarget.MemoryPressure);
         }
 
-        LoadedRenderTarget IWindowingHost.RtToLoaded(RenderTargetBase rt)
-        {
-            return _renderTargets[rt.Handle];
-        }
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal LoadedRenderTarget RtToLoaded(RenderTargetBase rt)
         {
@@ -263,22 +239,14 @@ namespace Robust.Client.Graphics.Clyde
             // NOTE: It's critically important that this be the "focal point" of all framebuffer bindings.
             if (rt.IsWindow)
             {
-                _glContext!.BindWindowRenderTarget(rt.WindowId);
+                _clyde._glContext!.BindWindowRenderTarget(rt.WindowId);
             }
             else
             {
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, rt.FramebufferHandle.Handle);
                 CheckGlError();
             }
-            _currentBoundRenderTarget = rt;
-        }
-
-        private void FlushRenderTargetDispose()
-        {
-            while (_renderTargetDisposeQueue.TryDequeue(out var handle))
-            {
-                DeleteRenderTexture(handle);
-            }
+            _clyde._currentBoundRenderTarget = rt;
         }
 
         internal sealed class LoadedRenderTarget
@@ -307,13 +275,13 @@ namespace Robust.Client.Graphics.Clyde
 
         internal abstract class RenderTargetBase : IRenderTarget
         {
-            protected readonly Clyde Clyde;
+            protected readonly PAL Clyde;
             private bool _disposed;
 
             public bool MakeGLFence;
             public nint LastGLSync;
 
-            protected RenderTargetBase(Clyde clyde, ClydeHandle handle)
+            protected RenderTargetBase(PAL clyde, ClydeHandle handle)
             {
                 Clyde = clyde;
                 Handle = handle;
@@ -325,7 +293,7 @@ namespace Robust.Client.Graphics.Clyde
 
             public void CopyPixelsToMemory<T>(CopyPixelsDelegate<T> callback, UIBox2i? subRegion = null) where T : unmanaged, IPixel<T>
             {
-                Clyde.CopyRenderTargetPixels(Handle, subRegion, callback);
+                Clyde._clyde.CopyRenderTargetPixels(Handle, subRegion, callback);
             }
 
             public ClydeHandle Handle { get; }
@@ -371,7 +339,7 @@ namespace Robust.Client.Graphics.Clyde
 
         internal sealed class RenderTexture : RenderTargetBase, IRenderTexture
         {
-            public RenderTexture(Vector2i size, ClydeTexture texture, Clyde clyde, ClydeHandle handle)
+            public RenderTexture(Vector2i size, ClydeTexture texture, PAL clyde, ClydeHandle handle)
                 : base(clyde, handle)
             {
                 Size = size;
@@ -406,7 +374,7 @@ namespace Robust.Client.Graphics.Clyde
             public override Vector2i Size => Clyde._renderTargets[Handle].Size;
             public override bool FlipY => Clyde._renderTargets[Handle].FlipY;
 
-            public RenderWindow(Clyde clyde, ClydeHandle handle) : base(clyde, handle)
+            public RenderWindow(PAL clyde, ClydeHandle handle) : base(clyde, handle)
             {
             }
         }

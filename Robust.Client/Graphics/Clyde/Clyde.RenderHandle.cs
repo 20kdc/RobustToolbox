@@ -130,7 +130,7 @@ namespace Robust.Client.Graphics.Clyde
 
             public void RenderInRenderTarget(IRenderTarget target, Action a, Color? clearColor)
             {
-                _clyde.RenderInRenderTarget((RenderTargetBase) target, a, clearColor);
+                _clyde.RenderInRenderTarget((PAL.RenderTargetBase) target, a, clearColor);
             }
 
             public void SetScissor(UIBox2i? scissorBox)
@@ -249,7 +249,7 @@ namespace Robust.Client.Graphics.Clyde
 
             public void UseRenderTarget(IRenderTarget? renderTarget)
             {
-                var target = (RenderTexture?) renderTarget;
+                var target = (PAL.RenderTexture?) renderTarget;
 
                 _clyde.DrawRenderTarget(target!);
             }

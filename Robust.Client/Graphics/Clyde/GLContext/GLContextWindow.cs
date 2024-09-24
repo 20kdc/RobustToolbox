@@ -396,7 +396,7 @@ namespace Robust.Client.Graphics.Clyde
             {
                 public WindowReg Reg = default!;
 
-                public Clyde.RenderTexture? RenderTexture;
+                public RenderTexture? RenderTexture;
                 // Used EXCLUSIVELY to run the two rendering commands to blit to the window.
                 public Thread? BlitThread;
                 public ManualResetEventSlim? BlitStartEvent;

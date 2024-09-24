@@ -30,8 +30,8 @@ namespace Robust.Client.Graphics.Clyde
             // ActiveTexture(Texture0) is essentially guaranteed to succeed.
         }
 
-        private void CopyRenderTextureToTexture(RenderTexture source, ClydeTexture target) {
-            LoadedRenderTarget sourceLoaded = RtToLoaded(source);
+        private void CopyRenderTextureToTexture(PAL.RenderTexture source, ClydeTexture target) {
+            PAL.LoadedRenderTarget sourceLoaded = _pal.RtToLoaded(source);
             bool pause = sourceLoaded != _currentBoundRenderTarget;
             FullStoredRendererState? store = null;
             if (pause) {

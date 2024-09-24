@@ -55,7 +55,7 @@ namespace Robust.Client.Graphics.Clyde
         // The current render target we're rendering to during queue state.
         // This gets immediately updated when switching render targets during (queue) and (misc),
         // but not during (submit).
-        private RenderTargetBase _currentRenderTarget;
+        private PAL.RenderTargetBase _currentRenderTarget;
 
         // Current model matrix used by the (queue) state.
         // This matrix is applied to most normal geometry coming in.
@@ -624,7 +624,7 @@ namespace Robust.Client.Graphics.Clyde
             command.Viewport.Viewport = viewport;
         }
 
-        private void DrawRenderTarget(RenderTargetBase handle)
+        private void DrawRenderTarget(PAL.RenderTargetBase handle)
         {
             BreakBatch();
 
@@ -776,7 +776,7 @@ namespace Robust.Client.Graphics.Clyde
                 BlendingFactorDest.OneMinusSrcAlpha);
         }
 
-        private void FenceRenderTarget(RenderTargetBase rt)
+        private void FenceRenderTarget(PAL.RenderTargetBase rt)
         {
             if (!_hasGL.FenceSync || !rt.MakeGLFence)
                 return;
@@ -798,7 +798,7 @@ namespace Robust.Client.Graphics.Clyde
             // GC-relevant objects live here.
             // Be sure to null these out in ProcessRenderCommands.
             [FieldOffset(8)] public ClydeTexture? Texture;
-            [FieldOffset(16)] public RenderTargetBase? RenderTarget;
+            [FieldOffset(16)] public PAL.RenderTargetBase? RenderTarget;
 
             [FieldOffset(24)] public RenderCommandDrawBatch DrawBatch;
             [FieldOffset(24)] public RenderCommandProjViewMatrix ProjView;
@@ -899,10 +899,10 @@ namespace Robust.Client.Graphics.Clyde
         {
             public readonly Matrix3x2 ProjMatrix;
             public readonly Matrix3x2 ViewMatrix;
-            public readonly RenderTargetBase RenderTarget;
+            public readonly PAL.RenderTargetBase RenderTarget;
 
             public FullStoredRendererState(in Matrix3x2 projMatrix, in Matrix3x2 viewMatrix,
-                RenderTargetBase renderTarget)
+                PAL.RenderTargetBase renderTarget)
             {
                 ProjMatrix = projMatrix;
                 ViewMatrix = viewMatrix;

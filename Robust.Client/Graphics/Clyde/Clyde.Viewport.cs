@@ -21,7 +21,7 @@ namespace Robust.Client.Graphics.Clyde
             var viewport = new Viewport(handle, name, this)
             {
                 Size = size,
-                RenderTarget = CreateRenderTarget(size,
+                RenderTarget = _pal.CreateRenderTarget(size,
                     new RenderTargetFormatParameters(RenderTargetColorFormat.Rgba8Srgb, true),
                     sampleParameters: sampleParameters,
                     name: $"{name}-MainRenderTarget")
@@ -87,22 +87,19 @@ namespace Robust.Client.Graphics.Clyde
             private readonly Clyde _clyde;
 
             // Primary render target.
-            public RenderTexture RenderTarget = default!;
+            public PAL.RenderTexture RenderTarget = default!;
 
             // Various render targets used in the light rendering process.
 
             // Lighting is drawn into this. This then gets sampled later while rendering world-space stuff.
-            public RenderTexture LightRenderTarget = default!;
+            public PAL.RenderTexture LightRenderTarget = default!;
 
-            public RenderTexture LightBlurTarget = default!;
-
-            // Unused, to be removed.
-            public RenderTexture WallMaskRenderTarget = default!;
+            public PAL.RenderTexture LightBlurTarget = default!;
 
             // Two render targets used to apply gaussian blur to the _lightRenderTarget so it bleeds "into" walls.
             // We need two of them because efficient blur works in two stages and also we're doing multiple iterations.
-            public RenderTexture WallBleedIntermediateRenderTarget1 = default!;
-            public RenderTexture WallBleedIntermediateRenderTarget2 = default!;
+            public PAL.RenderTexture WallBleedIntermediateRenderTarget1 = default!;
+            public PAL.RenderTexture WallBleedIntermediateRenderTarget2 = default!;
 
             public string? Name { get; }
 
@@ -190,7 +187,6 @@ namespace Robust.Client.Graphics.Clyde
             {
                 RenderTarget.Dispose();
                 LightRenderTarget.Dispose();
-                WallMaskRenderTarget.Dispose();
                 WallBleedIntermediateRenderTarget1.Dispose();
                 WallBleedIntermediateRenderTarget2.Dispose();
 

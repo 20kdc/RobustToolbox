@@ -230,7 +230,7 @@ namespace Robust.Client.Graphics.Clyde
         /// <summary>
         ///    Sends SCREEN_TEXTURE to all overlays in the given OverlaySpace that request it.
         /// </summary>
-        private Texture? CopyScreenTexture(RenderTexture texture)
+        private Texture? CopyScreenTexture(PAL.RenderTexture texture)
         {
             //This currently does NOT consider viewports and just grabs the current screen framebuffer. This will need to be improved upon in the future.
 
@@ -267,7 +267,7 @@ namespace Robust.Client.Graphics.Clyde
             var screenSize = viewport.Size;
             var overlayIndex = 0;
 
-            RenderTexture? entityPostRenderTarget = null;
+            PAL.RenderTexture? entityPostRenderTarget = null;
             bool flushed = false;
             for (var i = 0; i < _drawingSpriteList.Count; i++)
             {
@@ -336,7 +336,7 @@ namespace Robust.Client.Graphics.Clyde
                             || entityPostRenderTarget.Size.X < screenSpriteSize.X
                             || entityPostRenderTarget.Size.Y < screenSpriteSize.Y)
                         {
-                            entityPostRenderTarget = CreateRenderTarget(screenSpriteSize,
+                            entityPostRenderTarget = _pal.CreateRenderTarget(screenSpriteSize,
                                 new RenderTargetFormatParameters(RenderTargetColorFormat.Rgba8Srgb, true),
                                 name: nameof(entityPostRenderTarget));
                         }
@@ -421,13 +421,13 @@ namespace Robust.Client.Graphics.Clyde
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void BindRenderTargetFull(RenderTargetBase rt)
+        private void BindRenderTargetFull(PAL.RenderTargetBase rt)
         {
-            BindRenderTargetImmediate(RtToLoaded(rt));
+            _pal.BindRenderTargetImmediate(_pal.RtToLoaded(rt));
             _currentRenderTarget = rt;
         }
 
-        private void RenderInRenderTarget(RenderTargetBase rt, Action a, Color? clearColor=default)
+        private void RenderInRenderTarget(PAL.RenderTargetBase rt, Action a, Color? clearColor=default)
         {
             // TODO: for the love of god all this state pushing/popping needs to be cleaned up.
 

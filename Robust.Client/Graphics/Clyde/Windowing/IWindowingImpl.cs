@@ -110,9 +110,9 @@ internal interface IWindowingHost {
     void SendInputModeChanged();
 
     void SetupDebugCallback();
-    void EnableRenderWindowFlipY(Clyde.RenderWindow rw);
-    Clyde.LoadedRenderTarget RtToLoaded(Clyde.RenderTargetBase rt);
-    Clyde.RenderTexture CreateWindowRenderTarget(Vector2i size);
+    void EnableRenderWindowFlipY(PAL.RenderWindow rw);
+    PAL.LoadedRenderTarget RtToLoaded(PAL.RenderTargetBase rt);
+    PAL.RenderTexture CreateWindowRenderTarget(Vector2i size);
 }
 
 internal abstract class WindowReg
@@ -138,7 +138,7 @@ internal abstract class WindowReg
 
     public bool IsMainWindow;
     public WindowHandle Handle = default!;
-    public Clyde.RenderWindow RenderTarget = default!;
+    public PAL.RenderWindow RenderTarget = default!;
     public Action<WindowRequestClosedEventArgs>? RequestClosed;
     public Action<WindowDestroyedEventArgs>? Closed;
     public Action<WindowResizedEventArgs>? Resized;

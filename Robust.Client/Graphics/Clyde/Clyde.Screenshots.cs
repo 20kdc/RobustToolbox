@@ -56,13 +56,13 @@ namespace Robust.Client.Graphics.Clyde
             }
         }
 
-        private void CopyRenderTargetPixels<T>(
+        internal void CopyRenderTargetPixels<T>(
             ClydeHandle renderTarget,
             UIBox2i? subRegion,
             CopyPixelsDelegate<T> callback)
             where T : unmanaged, IPixel<T>
         {
-            var loaded = _renderTargets[renderTarget];
+            var loaded = _pal._renderTargets[renderTarget];
 
             var original = GL.GetInteger(GetPName.ReadFramebufferBinding);
 

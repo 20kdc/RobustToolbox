@@ -65,7 +65,6 @@ namespace Robust.Client.Graphics.Clyde
         private bool _enableSoftShadows = true;
 
         private ISawmill _clydeSawmill = default!;
-        private ISawmill _sawmillOgl = default!;
 
         private IBindingsContext _glBindingsContext = default!;
         private bool _threadWindowApi;
@@ -80,7 +79,7 @@ namespace Robust.Client.Graphics.Clyde
         public bool InitializePreWindowing()
         {
             _clydeSawmill = _logManager.GetSawmill("clyde");
-            _sawmillOgl = _logManager.GetSawmill("clyde.ogl");
+            _pal._sawmillOgl = _logManager.GetSawmill("clyde.ogl");
 
             _cfg.OnValueChanged(CVars.DisplayVSync, VSyncChanged, true);
             _cfg.OnValueChanged(CVars.DisplayWindowMode, WindowModeChanged, true);
@@ -136,7 +135,6 @@ namespace Robust.Client.Graphics.Clyde
 
             _windowing?.FlushDispose();
             FlushShaderInstanceDispose();
-            FlushRenderTargetDispose();
             _pal.FlushDispose();
             FlushViewportDispose();
         }

@@ -28,13 +28,13 @@ internal partial class PAL
     private bool _isScissoring;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public PAL.GLRenderState CreateRenderState() => new(this);
+    public GLRenderState CreateRenderState() => new(this);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     IGPURenderState IGPUAbstraction.CreateRenderState() => new GLRenderState(this);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void SetScissorImmediate(Clyde.LoadedRenderTarget renderTarget, in UIBox2i? box)
+    private void SetScissorImmediate(LoadedRenderTarget renderTarget, in UIBox2i? box)
     {
         if (box != null)
         {
@@ -152,17 +152,17 @@ internal partial class PAL
     {
         private readonly PAL _pal = pal;
 
-        private Clyde.RenderTargetBase? _renderTarget = null;
+        private RenderTargetBase? _renderTarget = null;
         public IRenderTarget? RenderTarget
         {
             get => _renderTarget;
             set
             {
-                _renderTarget = (Clyde.RenderTargetBase?) value;
+                _renderTarget = (RenderTargetBase?) value;
                 if (_pal._currentRenderState == this && _renderTarget != null)
                 {
-                    var loaded = _pal._clyde.RtToLoaded(_renderTarget!);
-                    _pal._clyde.BindRenderTargetImmediate(loaded);
+                    var loaded = _pal.RtToLoaded(_renderTarget!);
+                    _pal.BindRenderTargetImmediate(loaded);
                     _pal.SetScissorImmediate(loaded, _scissor);
                 }
             }
@@ -217,7 +217,7 @@ internal partial class PAL
                 _scissor = value;
                 if (_renderTarget != null)
                 {
-                    var loaded = _pal._clyde.RtToLoaded(_renderTarget!);
+                    var loaded = _pal.RtToLoaded(_renderTarget!);
                     _pal.SetScissorImmediate(loaded, _scissor);
                 }
             }
@@ -285,8 +285,8 @@ internal partial class PAL
             {
                 if (_renderTarget != null)
                 {
-                    var loaded = _pal._clyde.RtToLoaded(_renderTarget!);
-                    _pal._clyde.BindRenderTargetImmediate(loaded);
+                    var loaded = _pal.RtToLoaded(_renderTarget!);
+                    _pal.BindRenderTargetImmediate(loaded);
                     _pal.SetScissorImmediate(loaded, _scissor);
                 }
                 _pal._currentRenderState = this;
