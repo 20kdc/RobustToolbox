@@ -111,21 +111,10 @@ namespace Robust.Client.Graphics.Clyde
 
         private unsafe void DoTexUpload<T>(int width, int height, bool srgb, T* ptr) where T : unmanaged, IPixel<T>
         {
-            if (sizeof(T) < 4)
-            {
-                GL.PixelStore(PixelStoreParameter.UnpackAlignment, 1);
-                CheckGlError();
-            }
-
             var (pif, pf, pt) = PixelEnums<T>(srgb);
+            // Unpack alignment is set by GLWrapper to 1.
             GL.TexImage2D(TextureTarget.Texture2D, 0, pif, width, height, 0, pf, pt, (IntPtr) ptr);
             CheckGlError();
-
-            if (sizeof(T) < 4)
-            {
-                GL.PixelStore(PixelStoreParameter.UnpackAlignment, 4);
-                CheckGlError();
-            }
         }
 
         private ClydeTexture CreateBaseTextureInternal<T>(

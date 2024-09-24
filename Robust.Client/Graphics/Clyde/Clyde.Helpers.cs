@@ -1,12 +1,8 @@
 using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using OpenToolkit.Graphics.OpenGL4;
-using Robust.Shared.Graphics;
 using Robust.Shared.Maths;
-using Robust.Shared.Utility;
-using ES20 = OpenToolkit.Graphics.ES20;
 
 namespace Robust.Client.Graphics.Clyde
 {
@@ -105,54 +101,6 @@ namespace Robust.Client.Graphics.Clyde
         private void CheckGlError([CallerFilePath] string? path = null, [CallerLineNumber] int line = default)
         {
             _pal._hasGL.CheckGlError(path, line);
-        }
-
-        // Both access and mask are specified because I like prematurely optimizing and this is the most performant.
-        // And easiest.
-        private unsafe void* MapFullBuffer(BufferTarget buffer, int length, BufferAccess access, BufferAccessMask mask)
-        {
-            DebugTools.Assert(_hasGL.AnyMapBuffer);
-
-            void* ptr;
-
-            if (_hasGL.MapBufferRange)
-            {
-                ptr = (void*) GL.MapBufferRange(buffer, IntPtr.Zero, length, mask);
-                CheckGlError();
-            }
-            else if (_hasGL.MapBuffer)
-            {
-                ptr = (void*) GL.MapBuffer(buffer, access);
-                CheckGlError();
-            }
-            else
-            {
-                DebugTools.Assert(_hasGL.MapBufferOes);
-
-                ptr = (void*) ES20.GL.Oes.MapBuffer((ES20.BufferTargetArb) buffer,
-                    (ES20.BufferAccessArb) BufferAccess.ReadOnly);
-                CheckGlError();
-            }
-
-            return ptr;
-        }
-
-        private void UnmapBuffer(BufferTarget buffer)
-        {
-            DebugTools.Assert(_hasGL.AnyMapBuffer);
-
-            if (_hasGL.MapBufferRange || _hasGL.MapBuffer)
-            {
-                GL.UnmapBuffer(buffer);
-                CheckGlError();
-            }
-            else
-            {
-                DebugTools.Assert(_hasGL.MapBufferOes);
-
-                ES20.GL.Oes.UnmapBuffer((ES20.BufferTarget) buffer);
-                CheckGlError();
-            }
         }
 
         private nint LoadGLProc(string name)

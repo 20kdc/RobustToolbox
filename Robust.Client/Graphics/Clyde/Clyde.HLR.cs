@@ -40,7 +40,7 @@ namespace Robust.Client.Graphics.Clyde
 
         public void Render()
         {
-            CheckTransferringScreenshots();
+            _pal.CheckTransferringScreenshots();
 
             var allMinimized = true;
             foreach (var windowReg in _windows)

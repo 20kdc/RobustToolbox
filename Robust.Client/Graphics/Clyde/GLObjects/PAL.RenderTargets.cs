@@ -218,7 +218,7 @@ namespace Robust.Client.Graphics.Clyde
 
             public void CopyPixelsToMemory<T>(CopyPixelsDelegate<T> callback, UIBox2i? subRegion = null) where T : unmanaged, IPixel<T>
             {
-                PAL._clyde.CopyRenderTargetPixels(this, subRegion, callback);
+                PAL.CopyRenderTargetPixels(this, subRegion, callback);
             }
 
             public void CopyPixelsToTexture(OwnedTexture target) {

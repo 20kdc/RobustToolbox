@@ -195,6 +195,11 @@ namespace Robust.Client.Graphics.Clyde
                 GL.Enable(EnableCap.FramebufferSrgb);
                 CheckGlError();
             }
+            // Messing with row alignment is rather pointless, so disable it globally.
+            GL.PixelStore(PixelStoreParameter.PackAlignment, 1);
+            CheckGlError();
+            GL.PixelStore(PixelStoreParameter.UnpackAlignment, 1);
+            CheckGlError();
 
             _sawmill.Debug($"  GLES: {GLES}");
 
@@ -430,6 +435,54 @@ namespace Robust.Client.Graphics.Clyde
                 DebugTools.Assert(VertexArrayObjectOes);
 
                 ES20.GL.Oes.DeleteVertexArray(vao);
+            }
+        }
+
+        // Both access and mask are specified because I like prematurely optimizing and this is the most performant.
+        // And easiest.
+        public unsafe void* MapFullBuffer(BufferTarget buffer, int length, BufferAccess access, BufferAccessMask mask)
+        {
+            DebugTools.Assert(AnyMapBuffer);
+
+            void* ptr;
+
+            if (MapBufferRange)
+            {
+                ptr = (void*) GL.MapBufferRange(buffer, IntPtr.Zero, length, mask);
+                CheckGlError();
+            }
+            else if (MapBuffer)
+            {
+                ptr = (void*) GL.MapBuffer(buffer, access);
+                CheckGlError();
+            }
+            else
+            {
+                DebugTools.Assert(MapBufferOes);
+
+                ptr = (void*) ES20.GL.Oes.MapBuffer((ES20.BufferTargetArb) buffer,
+                    (ES20.BufferAccessArb) BufferAccess.ReadOnly);
+                CheckGlError();
+            }
+
+            return ptr;
+        }
+
+        public void UnmapBuffer(BufferTarget buffer)
+        {
+            DebugTools.Assert(AnyMapBuffer);
+
+            if (MapBufferRange || MapBuffer)
+            {
+                GL.UnmapBuffer(buffer);
+                CheckGlError();
+            }
+            else
+            {
+                DebugTools.Assert(MapBufferOes);
+
+                ES20.GL.Oes.UnmapBuffer((ES20.BufferTarget) buffer);
+                CheckGlError();
             }
         }
 
