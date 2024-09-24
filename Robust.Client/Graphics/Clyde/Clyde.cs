@@ -20,6 +20,7 @@ using Robust.Shared.Map;
 using Robust.Shared.Maths;
 using Robust.Shared.Profiling;
 using Robust.Shared.Timing;
+using SixLabors.ImageSharp.PixelFormats;
 using TextureWrapMode = Robust.Shared.Graphics.TextureWrapMode;
 
 namespace Robust.Client.Graphics.Clyde
@@ -277,11 +278,10 @@ namespace Robust.Client.Graphics.Clyde
             ProjViewUBO = new GLUniformBuffer<ProjViewMatrices>(this, BindingIndexProjView, nameof(ProjViewUBO));
             UniformConstantsUBO = new GLUniformBuffer<UniformConstants>(this, BindingIndexUniformConstants, nameof(UniformConstantsUBO));
 
-            screenBufferHandle = new GLHandle(GL.GenTexture());
-            GL.BindTexture(TextureTarget.Texture2D, screenBufferHandle.Handle);
-            _pal.ApplySampleParameters(new TextureSampleParameters() { Filter = false, WrapMode = TextureWrapMode.MirroredRepeat});
-            // TODO: This is atrocious and broken and awful why did I merge this
-            ScreenBufferTexture = _pal.GenTexture(screenBufferHandle, (1920, 1080), true, null, TexturePixelType.Rgba32);
+            ScreenBufferTexture = (ClydeTexture) _pal.CreateBlankTexture<Rgba32>((1, 1), "SCREEN_TEXTURE", new TextureLoadParameters() {
+                Srgb = true,
+                SampleParameters = new TextureSampleParameters() { Filter = false, WrapMode = TextureWrapMode.MirroredRepeat}
+            });
         }
 
         [Conditional("DEBUG")]

@@ -18,26 +18,6 @@ namespace Robust.Client.Graphics.Clyde
             CheckGlError();
         }
 
-        private void CopyRenderTextureToTexture(PAL.RenderTexture source, ClydeTexture target) {
-            PAL.RenderTargetBase sourceLoaded = source;
-            bool pause = sourceLoaded != _currentBoundRenderTarget;
-            FullStoredRendererState? store = null;
-            if (pause) {
-                store = PushRenderStateFull();
-                BindRenderTargetFull(source);
-                CheckGlError();
-            }
-
-            GL.BindTexture(TextureTarget.Texture2D, target.OpenGLObject.Handle);
-            CheckGlError();
-            GL.CopyTexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, 0, 0, source.Size.X, source.Size.Y);
-            CheckGlError();
-
-            if (pause && store != null) {
-                PopRenderStateFull((FullStoredRendererState)store);
-            }
-        }
-
         // Sets up uniforms (It'd be nice to move this, or make some contextual stuff implicit, but things got complicated.)
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void SetupGlobalUniformsImmediate(GLShaderProgram program, ClydeTexture? tex)

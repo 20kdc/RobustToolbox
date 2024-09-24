@@ -15,5 +15,10 @@ namespace Robust.Client.Graphics
         Vector2i Size { get; }
 
         void CopyPixelsToMemory<T>(CopyPixelsDelegate<T> callback, UIBox2i? subRegion = null) where T : unmanaged, IPixel<T>;
+
+        /// <summary>
+        /// Copies this IRenderTarget's contents to a texture, assumed to be of the same size.
+        /// </summary>
+        void CopyPixelsToTexture(OwnedTexture target);
     }
 }

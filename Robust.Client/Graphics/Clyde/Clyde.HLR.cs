@@ -5,6 +5,7 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using OpenToolkit.Graphics.OpenGL4;
+using SixLabors.ImageSharp.PixelFormats;
 using Robust.Client.GameObjects;
 using Robust.Client.ResourceManagement;
 using Robust.Client.UserInterface.CustomControls;
@@ -223,32 +224,25 @@ namespace Robust.Client.Graphics.Clyde
             return _overlays;
         }
 
-        private ClydeTexture? ScreenBufferTexture;
-        private GLHandle screenBufferHandle;
-        private Vector2 lastFrameSize;
+        private ClydeTexture ScreenBufferTexture = default!;
 
         /// <summary>
         ///    Sends SCREEN_TEXTURE to all overlays in the given OverlaySpace that request it.
         /// </summary>
-        private Texture? CopyScreenTexture(PAL.RenderTexture texture)
+        private Texture? CopyScreenTexture(PAL.RenderTargetBase texture)
         {
-            //This currently does NOT consider viewports and just grabs the current screen framebuffer. This will need to be improved upon in the future.
-
-            if (ScreenBufferTexture == null)
-                return null;
-
-            if (lastFrameSize != texture.Size)
+            if (ScreenBufferTexture.Size != texture.Size)
             {
-                GL.BindTexture(TextureTarget.Texture2D, screenBufferHandle.Handle);
-
-                GL.TexImage2D(TextureTarget.Texture2D, 0,
-                    _hasGL.Srgb ? PixelInternalFormat.Srgb8Alpha8 : PixelInternalFormat.Rgba8, texture.Size.X,
-                    texture.Size.Y, 0,
-                    PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero);
+                // In an ideal world, these would be cached.
+                // But honestly I'm happy that the code isn't an atrocity anymore.
+                ScreenBufferTexture.Dispose();
+                ScreenBufferTexture = (ClydeTexture) _pal.CreateBlankTexture<Rgba32>(texture.Size, "SCREEN_TEXTURE", new TextureLoadParameters() {
+                    Srgb = true,
+                    SampleParameters = new TextureSampleParameters() { Filter = false, WrapMode = Robust.Shared.Graphics.TextureWrapMode.MirroredRepeat }
+                });
             }
 
-            lastFrameSize = texture.Size;
-            CopyRenderTextureToTexture(texture, ScreenBufferTexture);
+            texture.CopyPixelsToTexture(ScreenBufferTexture);
             return ScreenBufferTexture;
         }
 

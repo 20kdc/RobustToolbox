@@ -487,6 +487,10 @@ namespace Robust.Client.Graphics.Clyde
                 callback(new Image<T>(x, y));
             }
 
+            public void CopyPixelsToTexture(OwnedTexture texture)
+            {
+            }
+
             public Texture Texture { get; }
 
             public void Dispose()
@@ -509,6 +513,10 @@ namespace Robust.Client.Graphics.Clyde
             {
                 var (x, y) = ClydeBase.ClampSubRegion(Size, subRegion);
                 callback(new Image<T>(x, y));
+            }
+
+            public void CopyPixelsToTexture(OwnedTexture texture)
+            {
             }
 
             public void Dispose()

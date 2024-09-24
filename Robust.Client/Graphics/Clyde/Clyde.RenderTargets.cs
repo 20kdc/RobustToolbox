@@ -199,14 +199,14 @@ namespace Robust.Client.Graphics.Clyde
 
         internal abstract class RenderTargetBase : GPUResource, IRenderTarget
         {
-            protected readonly PAL Clyde;
+            protected readonly PAL PAL;
 
             public bool MakeGLFence;
             public nint LastGLSync;
 
             protected RenderTargetBase(PAL clyde, bool isSrgb)
             {
-                Clyde = clyde;
+                PAL = clyde;
                 IsSrgb = isSrgb;
             }
 
@@ -218,7 +218,34 @@ namespace Robust.Client.Graphics.Clyde
 
             public void CopyPixelsToMemory<T>(CopyPixelsDelegate<T> callback, UIBox2i? subRegion = null) where T : unmanaged, IPixel<T>
             {
-                Clyde._clyde.CopyRenderTargetPixels(this, subRegion, callback);
+                PAL._clyde.CopyRenderTargetPixels(this, subRegion, callback);
+            }
+
+            public void CopyPixelsToTexture(OwnedTexture target) {
+                ClydeTexture ct = (ClydeTexture) target;
+
+                RenderTargetBase sourceLoaded = PAL._clyde._currentBoundRenderTarget;
+
+                bool pause = this != PAL._clyde._currentBoundRenderTarget;
+
+                if (pause)
+                {
+                    PAL.BindRenderTargetImmediate(this);
+                }
+
+                var curTexture2D = GL.GetInteger(GetPName.TextureBinding2D);
+
+                GL.BindTexture(TextureTarget.Texture2D, ct.OpenGLObject.Handle);
+                PAL.CheckGlError();
+                GL.CopyTexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, 0, 0, Size.X, Size.Y);
+                PAL.CheckGlError();
+                GL.BindTexture(TextureTarget.Texture2D, curTexture2D);
+                PAL.CheckGlError();
+
+                if (pause)
+                {
+                    PAL.BindRenderTargetImmediate(sourceLoaded);
+                }
             }
         }
 
@@ -245,13 +272,13 @@ namespace Robust.Client.Graphics.Clyde
 
             protected override void DisposeImpl()
             {
-                if (Clyde.IsMainThread())
+                if (PAL.IsMainThread())
                 {
-                    Clyde.DeleteRenderTexture(this);
+                    PAL.DeleteRenderTexture(this);
                 }
                 else
                 {
-                    Clyde._renderTextureDisposeQueue.Enqueue(this);
+                    PAL._renderTextureDisposeQueue.Enqueue(this);
                 }
             }
         }
