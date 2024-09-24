@@ -6,6 +6,7 @@ using Robust.Shared.Maths;
 using Robust.Shared.Log;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using Robust.Shared.Configuration;
 
 namespace Robust.Client.Graphics.Clyde;
 
@@ -35,6 +36,14 @@ internal sealed partial class Clyde
     {
         return _pal.CreateRenderTarget(size, format, sampleParameters, name);
     }
+
+    void IWindowingHost.SetupDebugCallback()
+    {
+        SetupDebugCallback();
+    }
+
+    IConfigurationManager IWindowingHost.Cfg => _cfg;
+    ILogManager IWindowingHost.LogManager => _logManager;
 
     PAL.RenderTexture IWindowingHost.CreateWindowRenderTarget(Vector2i size)
     {

@@ -129,7 +129,7 @@ namespace Robust.Client.Graphics.Clyde
 
         private bool TryInitMainWindow(GLContextSpec? glSpec, [NotNullWhen(false)] out string? error)
         {
-            DebugTools.AssertNotNull(_glContext);
+            DebugTools.AssertNotNull(_pal._glContext);
 
             var width = _cfg.GetCVar(CVars.DisplayWidth);
             var height = _cfg.GetCVar(CVars.DisplayHeight);
@@ -178,16 +178,16 @@ namespace Robust.Client.Graphics.Clyde
         private unsafe bool InitMainWindowAndRenderer()
         {
             DebugTools.AssertNotNull(_windowing);
-            DebugTools.AssertNotNull(_glContext);
+            DebugTools.AssertNotNull(_pal._glContext);
 
             _chosenRenderer = Renderer.OpenGL;
 
             var succeeded = false;
             string? lastError = null;
 
-            if (_glContext!.RequireWindowGL)
+            if (_pal._glContext!.RequireWindowGL)
             {
-                var specs = _glContext!.SpecsToTry;
+                var specs = _pal._glContext!.SpecsToTry;
 
                 foreach (var glSpec in specs)
                 {
@@ -241,12 +241,12 @@ namespace Robust.Client.Graphics.Clyde
             DebugTools.AssertNotNull(_mainWindow);
 
             // GLFeatures must be set by _glContext.
-            var glFeatures = _glContext.GLWrapper;
+            var glFeatures = _pal._glContext.GLWrapper;
             DebugTools.AssertNotNull(glFeatures);
 
             // We're ready, copy over information...
             _pal._hasGL = glFeatures!;
-            _glBindingsContext = _glContext.BindingsContext;
+            _glBindingsContext = _pal._glContext.BindingsContext;
 
             InitOpenGL();
 
@@ -312,12 +312,12 @@ namespace Robust.Client.Graphics.Clyde
         public IClydeWindow CreateWindow(WindowCreateParameters parameters)
         {
             DebugTools.AssertNotNull(_windowing);
-            DebugTools.AssertNotNull(_glContext);
+            DebugTools.AssertNotNull(_pal._glContext);
             DebugTools.AssertNotNull(_mainWindow);
 
-            var glSpec = _glContext!.SpecToCreateWindowsWith;
+            var glSpec = _pal._glContext!.SpecToCreateWindowsWith;
 
-            _glContext.BeforeSharedWindowCreateUnbind();
+            _pal._glContext.BeforeSharedWindowCreateUnbind();
 
             var (reg, error) = SharedWindowCreate(
                 glSpec,
@@ -357,8 +357,8 @@ namespace Robust.Client.Graphics.Clyde
 
                 reg.RenderTarget = new PAL.RenderWindow(_pal, reg.Id, true, reg.FramebufferSize);
 
-                _glContext!.WindowCreated(glSpec, reg);
-                _glContext!.UpdateVSync(_vSync);
+                _pal._glContext!.WindowCreated(glSpec, reg);
+                _pal._glContext!.UpdateVSync(_vSync);
             }
 
             // Pass through result whether successful or not, caller handles it.
@@ -372,7 +372,7 @@ namespace Robust.Client.Graphics.Clyde
 
         void IWindowingHost.UpdateVSync()
         {
-            _glContext?.UpdateVSync(_vSync);
+            _pal._glContext?.UpdateVSync(_vSync);
         }
 
         void IWindowingHost.DoDestroyWindow(WindowReg reg)
@@ -390,7 +390,7 @@ namespace Robust.Client.Graphics.Clyde
 
             reg.IsDisposed = true;
 
-            _glContext!.WindowDestroyed(reg);
+            _pal._glContext!.WindowDestroyed(reg);
             _windowing!.WindowDestroy(reg);
 
             _windows.Remove(reg);
@@ -409,13 +409,13 @@ namespace Robust.Client.Graphics.Clyde
 
         private void SwapAllBuffers()
         {
-            _glContext?.SwapAllBuffers();
+            _pal._glContext?.SwapAllBuffers();
         }
 
         private void VSyncChanged(bool newValue)
         {
             _vSync = newValue;
-            _glContext?.UpdateVSync(newValue);
+            _pal._glContext?.UpdateVSync(newValue);
         }
 
         private void WindowModeChanged(int mode)

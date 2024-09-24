@@ -59,7 +59,11 @@ internal partial class PAL
             if (value != null)
             {
                 var info = value!.Value;
-                ((PAL.GLBuffer) info.Buffer).Use(BufferTarget.ArrayBuffer);
+                var buffer = (GLBuffer) info.Buffer;
+                // Same basic premise as the render state EBO check.
+                if (buffer.ObjectHandle == 0)
+                    throw new Exception("Attempting to bind vertex attrib to buffer 0");
+                buffer.Use(BufferTarget.ArrayBuffer);
                 GL.VertexAttribPointer(index, info.Size, (VertexAttribPointerType) info.Component, info.Normalized, info.Stride, (nint) info.Offset);
                 _pal.CheckGlError();
                 GL.EnableVertexAttribArray(index);

@@ -5,14 +5,11 @@ using Robust.Shared.Log;
 
 namespace Robust.Client.Graphics.Clyde
 {
-    internal sealed partial class Clyde
+    internal sealed partial class PAL
     {
         internal PAL.GLContextBase? _glContext;
 
-        IConfigurationManager IWindowingHost.Cfg => _cfg;
-        ILogManager IWindowingHost.LogManager => _logManager;
-
-        private void InitGLContextManager()
+        internal void InitGLContextManager()
         {
             // Advanced GL contexts currently disabled due to lack of testing etc.
             if (OperatingSystem.IsWindows() && _cfg.GetCVar(CVars.DisplayAngle))
@@ -20,7 +17,7 @@ namespace Robust.Client.Graphics.Clyde
                 if (_cfg.GetCVar(CVars.DisplayAngleCustomSwapChain))
                 {
                     _sawmillOgl.Debug("Trying custom swap chain ANGLE.");
-                    var ctxAngle = new PAL.GLContextAngle(this);
+                    var ctxAngle = new PAL.GLContextAngle(_clyde);
 
                     if (ctxAngle.TryInitialize())
                     {
@@ -33,7 +30,7 @@ namespace Robust.Client.Graphics.Clyde
                 if (_cfg.GetCVar(CVars.DisplayEgl))
                 {
                     _sawmillOgl.Debug("Trying EGL");
-                    var ctxEgl = new PAL.GLContextEgl(this);
+                    var ctxEgl = new PAL.GLContextEgl(_clyde);
                     ctxEgl.InitializePublic();
                     _glContext = ctxEgl;
                     return;
@@ -44,19 +41,14 @@ namespace Robust.Client.Graphics.Clyde
             if (OperatingSystem.IsLinux() && _cfg.GetCVar(CVars.DisplayEgl))
             {
                 _sawmillOgl.Debug("Trying EGL");
-                var ctxEgl = new PAL.GLContextEgl(this);
+                var ctxEgl = new PAL.GLContextEgl(_clyde);
                 ctxEgl.InitializePublic();
                 _glContext = ctxEgl;
                 return;
             }
             */
 
-            _glContext = new PAL.GLContextWindow(this);
-        }
-
-        void IWindowingHost.SetupDebugCallback()
-        {
-            SetupDebugCallback();
+            _glContext = new PAL.GLContextWindow(_clyde);
         }
     }
 }

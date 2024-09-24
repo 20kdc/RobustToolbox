@@ -112,7 +112,7 @@ namespace Robust.Client.Graphics.Clyde
             var loaded = reg.RenderTarget;
             loaded.SizeActual = reg.FramebufferSize;
 
-            _glContext!.WindowResized(reg, oldSize);
+            _pal._glContext!.WindowResized(reg, oldSize);
 
             var eventArgs = new WindowResizedEventArgs(
                 oldSize,

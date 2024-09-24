@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using System.Threading;
+using Robust.Shared.Configuration;
 using Robust.Shared.Log;
 
 namespace Robust.Client.Graphics.Clyde;

@@ -107,7 +107,7 @@ namespace Robust.Client.Graphics.Clyde
         {
             _pal._gameThread = Thread.CurrentThread;
 
-            InitGLContextManager();
+            _pal.InitGLContextManager();
             if (!InitMainWindowAndRenderer())
                 return false;
 
@@ -390,7 +390,7 @@ namespace Robust.Client.Graphics.Clyde
 
         public void Shutdown()
         {
-            _glContext?.Shutdown();
+            _pal._glContext?.Shutdown();
             ShutdownWindowing();
         }
 

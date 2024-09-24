@@ -24,7 +24,7 @@ namespace Robust.Client.Graphics.Clyde
     ///     Hey look, it's Clyde's evil twin brother!
     /// </summary>
     [UsedImplicitly]
-    internal sealed class ClydeHeadless : IClydeInternal
+    internal sealed class ClydeHeadless : IClydeInternal, IGPUAbstraction
     {
         // Would it make sense to report a fake resolution like 720p here so code doesn't break? idk.
         public IClydeWindow MainWindow { get; }
@@ -238,7 +238,7 @@ namespace Robust.Client.Graphics.Clyde
 
         public IClydeWindow CreateWindow(WindowCreateParameters parameters)
         {
-            var window = new DummyWindow(CreateRenderTarget((123, 123), default))
+            var window = new DummyWindow(new DummyRenderWindow(this))
             {
                 Id = new WindowId(_nextWindowId++)
             };

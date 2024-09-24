@@ -73,4 +73,7 @@ public interface IGPUAbstraction
 
     /// <summary>Creates a new render state. This is similar to render passes in WebGPU, but you can do all sorts of fun stuff.</summary>
     IGPURenderState CreateRenderState();
+
+    IRenderTexture CreateRenderTarget(Vector2i size, RenderTargetFormatParameters format,
+        TextureSampleParameters? sampleParameters = null, string? name = null);
 }

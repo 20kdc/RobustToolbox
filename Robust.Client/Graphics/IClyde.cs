@@ -13,7 +13,7 @@ namespace Robust.Client.Graphics
 {
     public delegate void CopyPixelsDelegate<T>(Image<T> pixels) where T : unmanaged, IPixel<T>;
 
-    public interface IClyde : IGPUAbstraction
+    public interface IClyde
     {
         IClydeWindow MainWindow { get; }
         IRenderTarget MainWindowRenderTarget => MainWindow.RenderTarget;
@@ -42,9 +42,6 @@ namespace Robust.Client.Graphics
         event Action<WindowFocusedEventArgs> OnWindowFocused;
 
         event Action<WindowContentScaleEventArgs> OnWindowScaleChanged;
-
-        IRenderTexture CreateRenderTarget(Vector2i size, RenderTargetFormatParameters format,
-            TextureSampleParameters? sampleParameters = null, string? name = null);
 
         // Cursor API.
         /// <summary>
@@ -129,5 +126,32 @@ namespace Robust.Client.Graphics
         /// </summary>
         /// <seealso cref="TextInputStart"/>
         void TextInputStop();
+
+        // -- Moved to IGPUAbstraction --
+
+        [Obsolete("Moved to IGPUAbstraction")]
+        OwnedTexture LoadTextureFromPNGStream(Stream stream, string? name = null,
+            TextureLoadParameters? loadParams = null)
+        {
+            // Load using Rgba32.
+            using var image = Image.Load<Rgba32>(stream);
+
+            return LoadTextureFromImage(image, name, loadParams);
+        }
+
+        [Obsolete("Moved to IGPUAbstraction")]
+        OwnedTexture LoadTextureFromImage<T>(Image<T> image, string? name = null,
+            TextureLoadParameters? loadParams = null) where T : unmanaged, IPixel<T>;
+
+        [Obsolete("Moved to IGPUAbstraction")]
+        OwnedTexture CreateBlankTexture<T>(
+            Vector2i size,
+            string? name = null,
+            in TextureLoadParameters? loadParams = null)
+            where T : unmanaged, IPixel<T>;
+
+        [Obsolete("Moved to IGPUAbstraction")]
+        IRenderTexture CreateRenderTarget(Vector2i size, RenderTargetFormatParameters format,
+            TextureSampleParameters? sampleParameters = null, string? name = null);
     }
 }

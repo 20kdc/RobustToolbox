@@ -19,6 +19,13 @@ namespace Robust.Client.Graphics.Clyde
 {
     internal partial class PAL
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        IRenderTexture IGPUAbstraction.CreateRenderTarget(Vector2i size, RenderTargetFormatParameters format,
+            TextureSampleParameters? sampleParameters, string? name)
+        {
+            return CreateRenderTarget(size, format, sampleParameters, name);
+        }
+
         internal RenderTexture CreateRenderTarget(Vector2i size, RenderTargetFormatParameters format,
             TextureSampleParameters? sampleParameters = null, string? name = null)
         {
@@ -188,7 +195,7 @@ namespace Robust.Client.Graphics.Clyde
             // NOTE: It's critically important that this be the "focal point" of all framebuffer bindings.
             if (rt is RenderWindow window)
             {
-                _clyde._glContext!.BindWindowRenderTarget(window.WindowId);
+                _glContext!.BindWindowRenderTarget(window.WindowId);
             }
             else if (rt is RenderTexture texture)
             {
