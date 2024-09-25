@@ -3,6 +3,10 @@ using TKStencilOp = OpenToolkit.Graphics.OpenGL4.StencilOp;
 
 namespace Robust.Client.Graphics
 {
+    /// <summary>
+    /// Stencil test function.
+    /// For performance reasons, this maps to OpenGL enums. Don't abuse this.
+    /// </summary>
     public enum StencilFunc
     {
         Always = StencilFunction.Always,
@@ -61,4 +65,21 @@ namespace Robust.Client.Graphics
         Subtract = BlendEquationMode.FuncSubtract,
         ReverseSubtract = BlendEquationMode.FuncReverseSubtract
     }
+
+    /// <summary>
+    /// Depth test function.
+    /// For performance reasons, this maps to OpenGL enums. Don't abuse this.
+    /// </summary>
+    public enum DepthFunc
+    {
+        Always = DepthFunction.Always,
+        Never = DepthFunction.Never,
+        Less = DepthFunction.Less,
+        LessOrEqual = DepthFunction.Lequal,
+        Greater = DepthFunction.Greater,
+        GreaterOrEqual = DepthFunction.Gequal,
+        NotEqual = DepthFunction.Notequal,
+        Equal = DepthFunction.Equal,
+    }
+
 }

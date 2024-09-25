@@ -24,6 +24,9 @@ public interface IGPURenderState
     /// <summary>Blend parameters.</summary>
     BlendParameters Blend { get; set; }
 
+    /// <summary>Depth parameters.</summary>
+    DepthParameters Depth { get; set; }
+
     /// <summary>Scissor box.</summary>
     UIBox2i? Scissor { get; set; }
 
@@ -32,6 +35,9 @@ public interface IGPURenderState
 
     /// <summary>Colour/Depth mask.</summary>
     ColourDepthMask ColourDepthMask { get; set; }
+
+    /// <summary>Face culling mode.</summary>
+    CullFace CullFace { get; set; }
 
     /// <summary>Sets viewport by X/Y/Width/Height</summary>
     void SetViewport(int x, int y, int width, int height)
@@ -78,9 +84,11 @@ public interface IGPURenderState
         VAO = null;
         Stencil = new StencilParameters();
         Blend = BlendParameters.Mix;
+        Depth = new();
         Scissor = null;
         Viewport = new();
         ColourDepthMask = ColourDepthMask.RGBAMask;
+        CullFace = CullFace.None;
         ClearTextures();
         ClearUBOs();
     }
@@ -103,4 +111,22 @@ public enum ColourDepthMask
     DepthMask = 16,
     AllMask = 31,
     RGBAMask = 15
+}
+
+/// <summary>
+/// Face to cull.
+/// Note that you can't control FrontFace in PAL (gotta cut a corner somewhere...)
+/// For performance reasons, this maps to OpenGL enums. Don't abuse this.
+/// </summary>
+[PublicAPI]
+public enum CullFace
+{
+    /// <summary>Don't cull.</summary>
+    None = 0,
+
+    /// <summary>Back / counter-clockwise.</summary>
+    CounterClockwise = OpenToolkit.Graphics.OpenGL4.CullFaceMode.Back,
+
+    /// <summary>Front / clockwise.</summary>
+    Clockwise = OpenToolkit.Graphics.OpenGL4.CullFaceMode.Front
 }

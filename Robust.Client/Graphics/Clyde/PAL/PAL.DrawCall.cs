@@ -84,6 +84,23 @@ internal partial class PAL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void SetCullFaceImmediate(CullFace cf)
+    {
+        if (cf != CullFace.None)
+        {
+            GL.Enable(EnableCap.CullFace);
+            CheckGlError();
+            GL.CullFace((CullFaceMode) cf);
+            CheckGlError();
+        }
+        else
+        {
+            GL.Disable(EnableCap.CullFace);
+            CheckGlError();
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void SetViewportImmediate(Box2i box)
     {
         GL.Viewport(box.Left, box.Bottom, box.Width, box.Height);
@@ -129,10 +146,29 @@ internal partial class PAL
             CheckGlError();
             GL.BlendEquationSeparate((BlendEquationMode) sp.EquationRGB, (BlendEquationMode) sp.EquationAlpha);
             CheckGlError();
+            GL.BlendColor(sp.Constant.R, sp.Constant.G, sp.Constant.B, sp.Constant.A);
+            CheckGlError();
         }
         else
         {
             GL.Disable(EnableCap.Blend);
+            CheckGlError();
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void SetDepthImmediate(in DepthParameters sp)
+    {
+        if (sp.Enabled)
+        {
+            GL.Enable(EnableCap.DepthTest);
+            CheckGlError();
+            GL.DepthFunc((DepthFunction) sp.Func);
+            CheckGlError();
+        }
+        else
+        {
+            GL.Disable(EnableCap.DepthTest);
             CheckGlError();
         }
     }
@@ -208,6 +244,18 @@ internal partial class PAL
             }
         }
 
+        private DepthParameters _depth = new();
+        public DepthParameters Depth
+        {
+            get => _depth;
+            set
+            {
+                _depth = value;
+                if (_pal._currentRenderState == this)
+                    _pal.SetDepthImmediate(value);
+            }
+        }
+
         private UIBox2i? _scissor = null;
         public UIBox2i? Scissor
         {
@@ -246,6 +294,20 @@ internal partial class PAL
                 if (_pal._currentRenderState == this)
                 {
                     _pal.SetCDMaskImmediate(value);
+                }
+            }
+        }
+
+        private CullFace _cullFace = CullFace.None;
+        public CullFace CullFace
+        {
+            get => _cullFace;
+            set
+            {
+                _cullFace = value;
+                if (_pal._currentRenderState == this)
+                {
+                    _pal.SetCullFaceImmediate(value);
                 }
             }
         }
@@ -321,8 +383,10 @@ internal partial class PAL
                     _pal.DCBindVAO(_vao.ObjectHandle);
                 _pal.SetStencilImmediate(_stencil);
                 _pal.SetBlendImmediate(_blend);
+                _pal.SetDepthImmediate(_depth);
                 _pal.SetViewportImmediate(_viewport);
                 _pal.SetCDMaskImmediate(_colourDepthMask);
+                _pal.SetCullFaceImmediate(_cullFace);
                 foreach (var entry in _textures)
                 {
                     GL.ActiveTexture(entry.Key);
@@ -408,9 +472,11 @@ internal partial class PAL
             _vao = grs._vao;
             _stencil = grs._stencil;
             _blend = grs._blend;
+            _depth = grs._depth;
             _scissor = grs._scissor;
             _viewport = grs._viewport;
-            _colourDepthMask = grs.ColourDepthMask;
+            _colourDepthMask = grs._colourDepthMask;
+            _cullFace = grs._cullFace;
             _textures.Clear();
             foreach (var kvp in grs._textures)
             {

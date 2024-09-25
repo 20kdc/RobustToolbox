@@ -193,8 +193,6 @@ namespace Robust.Client.Graphics.Clyde
 
             _renderState.Blend = BlendParameters.Mix;
 
-            CheckGlError();
-
             // Primitive Restart's presence or lack thereof changes the amount of required memory.
             InitRenderingBatchBuffers();
 

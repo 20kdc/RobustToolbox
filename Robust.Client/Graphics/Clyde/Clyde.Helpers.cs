@@ -81,11 +81,5 @@ namespace Robust.Client.Graphics.Clyde
                 nIdx += 6;
             }
         }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void CheckGlError([CallerFilePath] string? path = null, [CallerLineNumber] int line = default)
-        {
-            _pal._hasGL.CheckGlError(path, line);
-        }
     }
 }

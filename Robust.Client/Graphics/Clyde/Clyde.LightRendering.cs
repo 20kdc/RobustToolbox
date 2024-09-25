@@ -7,13 +7,10 @@ using Robust.Client.GameObjects;
 using Robust.Client.ResourceManagement;
 using Robust.Shared;
 using Robust.Shared.GameObjects;
-using Robust.Shared.IoC;
 using Robust.Shared.Log;
 using Robust.Shared.Map;
 using Robust.Shared.Map.Components;
 using Robust.Shared.Maths;
-using OGLTextureWrapMode = OpenToolkit.Graphics.OpenGL.TextureWrapMode;
-using TKStencilOp = OpenToolkit.Graphics.OpenGL4.StencilOp;
 using Robust.Shared.Physics;
 using Robust.Client.ComponentTrees;
 using Robust.Shared.Graphics;
@@ -120,8 +117,6 @@ namespace Robust.Client.Graphics.Clyde
                 _occlusionVao.SetVertexAttrib(0, new GPUVertexAttrib(_occlusionVbo, 4, GPUVertexAttrib.Type.Float, false, sizeof(Vector4), 0));
                 _occlusionVao.SetVertexAttrib(1, new GPUVertexAttrib(_occlusionVIVbo, 2, GPUVertexAttrib.Type.UnsignedByte, true, sizeof(byte) * 2, 0));
                 _occlusionVao.IndexBuffer = _occlusionEbo;
-
-                CheckGlError();
             }
 
             {
@@ -135,8 +130,6 @@ namespace Robust.Client.Graphics.Clyde
                 _occlusionMaskVao = _pal.CreateVAO(nameof(_occlusionMaskVao));
                 _occlusionMaskVao.SetVertexAttrib(0, new GPUVertexAttrib(_occlusionMaskVbo, 2, GPUVertexAttrib.Type.Float, false, sizeof(Vector2), 0));
                 _occlusionMaskVao.IndexBuffer = _occlusionMaskEbo;
-
-                CheckGlError();
             }
 
             // FOV FBO.
@@ -205,13 +198,11 @@ namespace Robust.Client.Graphics.Clyde
                 // FOV is rendered twice.
                 // Once with back face culling like regular lighting.
                 // Then once with front face culling for the final FOV pass (so you see "into" walls).
-                GL.CullFace(CullFaceMode.Back);
-                CheckGlError();
+                _renderState.CullFace = CullFace.CounterClockwise;
 
                 DrawOcclusionDepth(eye.Position.Position, _fovRenderTarget.Size.X, maxDist, 0);
 
-                GL.CullFace(CullFaceMode.Front);
-                CheckGlError();
+                _renderState.CullFace = CullFace.Clockwise;
 
                 DrawOcclusionDepth(eye.Position.Position, _fovRenderTarget.Size.X, maxDist, 1);
             }
@@ -249,14 +240,8 @@ namespace Robust.Client.Graphics.Clyde
 
             _renderState.Blend = BlendParameters.None;
 
-            GL.Enable(EnableCap.DepthTest);
-            CheckGlError();
-            GL.DepthFunc(DepthFunction.Lequal);
-            CheckGlError();
+            _renderState.Depth = new DepthParameters { Enabled = true, Func = DepthFunc.LessOrEqual };
             _renderState.ColourDepthMask = ColourDepthMask.AllMask;
-
-            GL.Enable(EnableCap.CullFace);
-            CheckGlError();
 
             _renderState.RenderTarget = target;
             if (_pal.HasFloatFramebuffers)
@@ -277,11 +262,10 @@ namespace Robust.Client.Graphics.Clyde
 
         private void FinalizeDepthDraw()
         {
-            GL.Disable(EnableCap.CullFace);
-            CheckGlError();
+            _renderState.CullFace = CullFace.None;
 
-            GL.Disable(EnableCap.DepthTest);
-            CheckGlError();
+            _renderState.Depth = new DepthParameters();
+
             _renderState.ColourDepthMask = ColourDepthMask.RGBAMask;
 
             _renderState.Blend = BlendParameters.Mix;
@@ -330,8 +314,7 @@ namespace Robust.Client.Graphics.Clyde
             using (_prof.Group("Draw shadow depth"))
             {
                 PrepareDepthDraw(_shadowRenderTarget);
-                GL.CullFace(CullFaceMode.Back);
-                CheckGlError();
+                _renderState.CullFace = CullFace.CounterClockwise;
 
                 if (_lightManager.DrawShadows)
                 {
@@ -467,8 +450,6 @@ namespace Robust.Client.Graphics.Clyde
 
             _renderState.Blend = BlendParameters.Mix;
             _renderState.Stencil = new();
-
-            CheckGlError();
 
             if (_cfg.GetCVar(CVars.LightBlur))
                 BlurLights(viewport, eye);

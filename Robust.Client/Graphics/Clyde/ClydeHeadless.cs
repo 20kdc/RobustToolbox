@@ -459,11 +459,15 @@ namespace Robust.Client.Graphics.Clyde
 
             public BlendParameters Blend { get; set; }
 
+            public DepthParameters Depth { get; set; }
+
             public UIBox2i? Scissor { get; set; }
 
             public Box2i Viewport { get; set; } = new();
 
             public ColourDepthMask ColourDepthMask { get; set; } = ColourDepthMask.RGBAMask;
+
+            public CullFace CullFace { get; set; } = CullFace.None;
 
             public void SetTexture(int unit, WholeTexture? value)
             {
@@ -500,9 +504,11 @@ namespace Robust.Client.Graphics.Clyde
                 VAO = other.VAO;
                 Stencil = other.Stencil;
                 Blend = other.Blend;
+                Depth = other.Depth;
                 Scissor = other.Scissor;
                 Viewport = other.Viewport;
                 ColourDepthMask = other.ColourDepthMask;
+                CullFace = other.CullFace;
             }
         }
 

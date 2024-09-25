@@ -719,7 +719,6 @@ namespace Robust.Client.Graphics.Clyde
 
             var (width, height) = state.RenderTarget.Size;
             ((IGPURenderState) _renderState).SetViewport(0, 0, width, height);
-            CheckGlError();
         }
 
         private void ClearRenderState()

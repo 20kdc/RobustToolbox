@@ -296,4 +296,17 @@ namespace Robust.Client.Graphics
         [DataField("equationAlpha")] public BlendEquation EquationAlpha = BlendEquation.Add;
         [DataField("color")] public Color Constant = Color.White;
     }
+
+    [DataDefinition]
+    public partial struct DepthParameters
+    {
+        public static readonly DepthParameters None = new();
+        public DepthParameters()
+        {
+        }
+
+        [ViewVariables] public bool Enabled = false;
+        // In theory, near/far value would be here, but it's a little, uh, broken.
+        [DataField("func")] public DepthFunc Func = DepthFunc.Always;
+    }
 }
