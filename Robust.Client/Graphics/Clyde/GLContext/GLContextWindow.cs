@@ -275,16 +275,16 @@ namespace Robust.Client.Graphics.Clyde
                 var shaderVtx = GL.CreateShader(ShaderType.VertexShader);
                 var header = reg.GLWrapper.ShaderHeader;
                 if (reg.GLWrapper.HasVaryingAttribute) {
-                    GL.ShaderSource((int) shaderVtx, header + "attribute vec2 aPos; attribute vec2 tCoord; varying vec2 UV; void main() { UV = tCoord; gl_Position = vec4(aPos, 0.0, 1.0); }");
+                    GL.ShaderSource(shaderVtx, header + "attribute vec2 aPos; attribute vec2 tCoord; varying vec2 UV; void main() { UV = tCoord; gl_Position = vec4(aPos, 0.0, 1.0); }");
                 } else {
-                    GL.ShaderSource((int) shaderVtx, header + "in vec2 aPos; in vec2 tCoord; out vec2 UV; void main() { UV = tCoord; gl_Position = vec4(aPos, 0.0, 1.0); }");
+                    GL.ShaderSource(shaderVtx, header + "in vec2 aPos; in vec2 tCoord; out vec2 UV; void main() { UV = tCoord; gl_Position = vec4(aPos, 0.0, 1.0); }");
                 }
                 GL.CompileShader(shaderVtx);
                 var shaderFrg = GL.CreateShader(ShaderType.FragmentShader);
                 if (reg.GLWrapper.HasVaryingAttribute) {
-                    GL.ShaderSource((int) shaderFrg, header + "varying highp vec2 UV; uniform sampler2D tex; void main() { gl_FragColor = texture2D(tex, UV); }");
+                    GL.ShaderSource(shaderFrg, header + "varying highp vec2 UV; uniform sampler2D tex; void main() { gl_FragColor = texture2D(tex, UV); }");
                 } else {
-                    GL.ShaderSource((int) shaderFrg, header + "out highp vec4 colourOutput; in highp vec2 UV; uniform sampler2D tex; void main() { colourOutput = texture(tex, UV); }");
+                    GL.ShaderSource(shaderFrg, header + "out highp vec4 colourOutput; in highp vec2 UV; uniform sampler2D tex; void main() { colourOutput = texture(tex, UV); }");
                 }
                 GL.CompileShader(shaderFrg);
 

@@ -217,6 +217,15 @@ namespace Robust.Client.Graphics.Clyde
 
             public bool IsSrgb { get; } = isSrgb;
 
+            /// <summary>
+            /// This exists for the windowing's sync mechanism.
+            /// To be honest, it's not entirely coherent.
+            /// If the blit thread takes too long, the next frame will be being drawn!
+            /// Luckily, this isn't a critical issue, so I'm just going to pretend it doesn't exist.
+            /// The hypothetical "good solution" would be 'read' and 'write' fences.
+            /// Ah, but, we can't get those before the blit thread gets there...
+            /// Point is, it's a complicated problem with a lot of nuance.
+            /// </summary>
             public void Fence()
             {
                 if (!PAL._hasGL.FenceSync || !MakeGLFence)
