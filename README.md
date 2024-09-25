@@ -4,6 +4,12 @@
 
 _the point of this branch is to basically just throw commits at the wall and see if it can be done with no intention of being PRable anywhere_
 
+Current features:
+
+* New rendering abstraction, PAL; Clyde refactored to be based on it
+* Content is now, in theory at least, able to do highly complex performant custom rendering
+* Basically all the content benefits of the WebGPU branch but it's actually vaguely finished and it should work on GLES2 platforms as good as the base version
+
 (Upstream info follows)
 
 ---
