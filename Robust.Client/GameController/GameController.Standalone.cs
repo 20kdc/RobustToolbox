@@ -129,6 +129,7 @@ namespace Robust.Client
             }
             else
             {
+                Thread.CurrentThread.Name = "Game thread";
                 ContinueStartupAndLoop(mode);
             }
 
