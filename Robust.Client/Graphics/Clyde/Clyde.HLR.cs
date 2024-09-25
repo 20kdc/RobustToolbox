@@ -114,6 +114,7 @@ namespace Robust.Client.Graphics.Clyde
             using (_prof.Group("Stats"))
             {
                 _prof.WriteValue("GL Draw Calls", ProfData.Int32(_debugStats.LastGLDrawCalls));
+                _prof.WriteValue("PAL RenderState Resets", ProfData.Int32(_debugStats.LastRenderStateResets));
                 _prof.WriteValue("Clyde Draw Calls", ProfData.Int32(_debugStats.LastClydeDrawCalls));
                 _prof.WriteValue("Batches", ProfData.Int32(_debugStats.LastBatches));
                 _prof.WriteValue("Max Batch Verts", ProfData.Int32(_debugStats.LargestBatchVertices));
@@ -458,7 +459,7 @@ namespace Robust.Client.Graphics.Clyde
                 FlushRenderQueue();
             }
 
-            FenceRenderTarget(rt);
+            rt.Fence();
 
             PopRenderStateFull(state);
             _updateUniformConstants(_currentRenderTarget.Size);

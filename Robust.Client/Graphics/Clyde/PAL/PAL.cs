@@ -14,6 +14,9 @@ internal sealed partial class PAL : IGPUAbstraction
     internal ISawmill _sawmillOgl = default!;
 
     public bool HasPrimitiveRestart => _hasGL.PrimitiveRestart;
+    public bool HasSrgb => _hasGL.Srgb;
+    public bool HasFloatFramebuffers => _hasGL.FloatFramebuffers;
+    public bool HasUniformBuffers => _hasGL.UniformBuffers;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal bool IsMainThread()

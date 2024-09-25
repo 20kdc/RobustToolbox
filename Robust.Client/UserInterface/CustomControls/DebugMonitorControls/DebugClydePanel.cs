@@ -52,7 +52,7 @@ Version: {info.VersionString}");
 
             _textBuilder.Append($"Windowing: {info.WindowingApi}\n");
 
-            _textBuilder.Append($@"Draw Calls: Cly: {stats.LastClydeDrawCalls} GL: {stats.LastGLDrawCalls}
+            _textBuilder.Append($@"PALRSS: {stats.LastRenderStateResets} Draw Calls: Cly: {stats.LastClydeDrawCalls} GL: {stats.LastGLDrawCalls}
 Batches: {stats.LastBatches} Max size: ({stats.LargestBatchSize.vertices} vtx, {stats.LargestBatchSize.vertices} idx)
 Lights: {stats.TotalLights}, Shadowcasting: {stats.ShadowLights}, Occluders: {stats.Occluders}, Entities: { stats.Entities}");
 

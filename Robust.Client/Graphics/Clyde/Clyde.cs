@@ -175,26 +175,21 @@ namespace Robust.Client.Graphics.Clyde
         {
             _renderState = _pal.CreateRenderState();
 
-            var vendor = _hasGL.Vendor;
-            var renderer = _hasGL.Renderer;
-            var version = _hasGL.Version;
+            var vendor = _pal._hasGL.Vendor;
+            var renderer = _pal._hasGL.Renderer;
+            var version = _pal._hasGL.Version;
 
             _sawmillOgl.Debug("OpenGL Vendor: {0}", vendor);
             _sawmillOgl.Debug("OpenGL Renderer: {0}", renderer);
             _sawmillOgl.Debug("OpenGL Version: {0}", version);
 
             DebugInfo = new ClydeDebugInfo(
-                _hasGL.GLVersion,
+                _pal._hasGL.GLVersion,
                 renderer,
                 vendor,
                 version,
-                _hasGL.Overriding,
+                _pal._hasGL.Overriding,
                 _windowing!.GetDescription());
-
-            if (!_hasGL.AnyVertexArrayObjects)
-            {
-                _sawmillOgl.Warning("NO VERTEX ARRAY OBJECTS! Things will probably go terribly, terribly wrong (no fallback path yet)");
-            }
 
             _renderState.Blend = BlendParameters.Mix;
 

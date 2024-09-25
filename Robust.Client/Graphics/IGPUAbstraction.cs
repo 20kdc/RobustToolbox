@@ -17,6 +17,15 @@ public interface IGPUAbstraction
     // <summary>If the GPU has primitive restart (index 65535 resets primitive state machine)</summary>
     bool HasPrimitiveRestart { get; }
 
+    // <summary>If the GPU has sRGB conversion.</summary>
+    bool HasSrgb { get; }
+
+    // <summary>If the GPU has floating-point framebuffers.</summary>
+    bool HasFloatFramebuffers { get; }
+
+    // <summary>If the GPU has uniform buffers.</summary>
+    bool HasUniformBuffers { get; }
+
     OwnedTexture LoadTextureFromPNGStream(Stream stream, string? name = null,
         TextureLoadParameters? loadParams = null)
     {

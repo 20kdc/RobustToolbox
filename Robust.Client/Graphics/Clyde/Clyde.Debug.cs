@@ -18,6 +18,7 @@ namespace Robust.Client.Graphics.Clyde
             private readonly PAL _pal = pal;
 
             public int LastGLDrawCalls => _pal.LastGLDrawCalls;
+            public int LastRenderStateResets => _pal.LastRenderStateResets;
             public int LastClydeDrawCalls { get; set; }
             public int LastBatches { get; set; }
             public (int vertices, int indices) LargestBatchSize => (LargestBatchVertices, LargestBatchIndices);
@@ -31,6 +32,7 @@ namespace Robust.Client.Graphics.Clyde
             public void Reset()
             {
                 _pal.LastGLDrawCalls = 0;
+                _pal.LastRenderStateResets = 0;
                 LastClydeDrawCalls = 0;
                 LastBatches = 0;
                 LargestBatchVertices = 0;

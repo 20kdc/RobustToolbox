@@ -20,7 +20,7 @@ namespace Robust.Client.Graphics.Clyde
         {
             ProjViewUBO.Apply(program);
             UniformConstantsUBO.Apply(program);
-            if (!_hasGL.Srgb)
+            if (!_pal.HasSrgb)
             {
                 program.SetUniformMaybe("SRGB_EMU_CONFIG",
                     new Vector2(texIsSrgb ? 1 : 0, ((PAL.RenderTargetBase) _renderState.RenderTarget!).IsSrgb ? 1 : 0));
@@ -31,14 +31,7 @@ namespace Robust.Client.Graphics.Clyde
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private DrawPrimitiveTopology GetQuadBatchPrimitiveType()
         {
-            return _hasGL.PrimitiveRestart ? DrawPrimitiveTopology.TriangleFan : DrawPrimitiveTopology.TriangleList;
-        }
-
-        // Gets the PrimitiveType version of GetQuadBatchPrimitiveType
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private PrimitiveType GetQuadGLPrimitiveType()
-        {
-            return _hasGL.PrimitiveRestart ? PrimitiveType.TriangleFan : PrimitiveType.Triangles;
+            return _pal.HasPrimitiveRestart ? DrawPrimitiveTopology.TriangleFan : DrawPrimitiveTopology.TriangleList;
         }
 
         // Gets the amount of indices required by QuadBatchIndexWrite.
@@ -47,7 +40,7 @@ namespace Robust.Client.Graphics.Clyde
         {
             // PR: Need 5 indices per quad: 4 to draw the quad with triangle strips and another one as primitive restart.
             // no PR: Need 6 indices per quad: 2 triangles
-            return _hasGL.PrimitiveRestart ? 5 : 6;
+            return _pal.HasPrimitiveRestart ? 5 : 6;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -68,7 +61,7 @@ namespace Robust.Client.Graphics.Clyde
             ushort tIdx3)
         {
             var nIdxl = nIdx;
-            if (_hasGL.PrimitiveRestart)
+            if (_pal.HasPrimitiveRestart)
             {
                 // PJB's fancy triangle fan isolated to a quad with primitive restart
                 indexData[nIdxl + 4] = PrimitiveRestartIndex;

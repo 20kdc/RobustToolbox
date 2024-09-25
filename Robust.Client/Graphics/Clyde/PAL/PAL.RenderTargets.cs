@@ -217,6 +217,17 @@ namespace Robust.Client.Graphics.Clyde
 
             public bool IsSrgb { get; } = isSrgb;
 
+            public void Fence()
+            {
+                if (!PAL._hasGL.FenceSync || !MakeGLFence)
+                    return;
+
+                if (LastGLSync != 0)
+                    GL.DeleteSync(LastGLSync);
+
+                LastGLSync = GL.FenceSync(SyncCondition.SyncGpuCommandsComplete, WaitSyncFlags.None);
+            }
+
             public void Clear(float? r = null, float? g = null, float? b = null, float? a = null, int stencilValue = 0, int stencilMask = 0, float? depth = null, UIBox2i? scissor = null)
             {
                 // 'Push'

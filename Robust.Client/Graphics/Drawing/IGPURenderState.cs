@@ -39,11 +39,14 @@ public interface IGPURenderState
         Viewport = Box2i.FromDimensions(x, y, width, height);
     }
 
-    /// <summary>Gets a texture from the render state.</summary>
-    WholeTexture? GetTexture(int unit);
-
     /// <summary>Sets a texture in the render state.</summary>
     void SetTexture(int unit, WholeTexture? value);
+
+    /// <summary>
+    /// Clears the texture unit memory of the render state.
+    /// Strictly speaking, the units are left in an undefined state.
+    /// </summary>
+    void ClearTextures();
 
     /// <summary>
     /// Deliberately disconnects the OpenGL state from the IGPURenderState.
@@ -65,10 +68,19 @@ public interface IGPURenderState
         Program = null;
         VAO = null;
         Stencil = new StencilParameters();
+        Blend = BlendParameters.Mix;
         Scissor = null;
         Viewport = new();
         ColourDepthMask = ColourDepthMask.RGBAMask;
+        ClearTextures();
     }
+
+    /// <summary>
+    /// Copies from another IRenderState.
+    /// This is also an optimization hint to switch the bound state from the other state to this one.
+    /// This switch is zero-cost, since the contents are equivalent.
+    /// </summary>
+    void CopyFrom(IGPURenderState other);
 }
 
 [PublicAPI]

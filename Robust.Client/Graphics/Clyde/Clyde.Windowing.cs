@@ -248,6 +248,11 @@ namespace Robust.Client.Graphics.Clyde
             _pal._hasGL = glFeatures!;
             _pal.SetupDebugCallback();
 
+            if (!_pal._hasGL.AnyVertexArrayObjects)
+            {
+                _sawmillOgl.Warning("NO VERTEX ARRAY OBJECTS! Things will probably go terribly, terribly wrong (no fallback path yet)");
+            }
+
             InitOpenGL();
 
             _sawmillOgl.Debug("Setting viewport and rendering splash...");

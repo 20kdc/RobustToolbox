@@ -11,6 +11,11 @@ namespace Robust.Client.Graphics
         int LastGLDrawCalls { get; }
 
         /// <summary>
+        ///     The amount of render state resets last frame.
+        /// </summary>
+        int LastRenderStateResets { get; }
+
+        /// <summary>
         ///     The amount of Clyde draw calls done last frame.
         /// </summary>
         /// <remarks>

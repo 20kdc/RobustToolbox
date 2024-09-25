@@ -20,6 +20,9 @@ namespace Robust.Client.Graphics.Clyde;
 internal partial class PAL
 {
     public int LastGLDrawCalls { get; set; }
+    // Amount of render state resets.
+    // This is the "main" PAL overhead, so we want to keep a close eye on these.
+    public int LastRenderStateResets { get; set; }
 
     private GLRenderState? _currentRenderState = null;
 
@@ -88,7 +91,7 @@ internal partial class PAL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void ApplyStencilParameters(in StencilParameters sp)
+    private void SetStencilImmediate(in StencilParameters sp)
     {
         // Handle stencil parameters.
         if (sp.Enabled)
@@ -116,9 +119,8 @@ internal partial class PAL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void ApplyBlendParameters(in BlendParameters sp)
+    private void SetBlendImmediate(in BlendParameters sp)
     {
-        // Handle stencil parameters.
         if (sp.Enabled)
         {
             GL.Enable(EnableCap.Blend);
@@ -128,7 +130,7 @@ internal partial class PAL
             GL.BlendEquationSeparate((BlendEquationMode) sp.EquationRGB, (BlendEquationMode) sp.EquationAlpha);
             CheckGlError();
         }
-        else if (_isStencilling)
+        else
         {
             GL.Disable(EnableCap.Blend);
             CheckGlError();
@@ -190,7 +192,7 @@ internal partial class PAL
             {
                 _stencil = value;
                 if (_pal._currentRenderState == this)
-                    _pal.ApplyStencilParameters(value);
+                    _pal.SetStencilImmediate(value);
             }
         }
 
@@ -202,7 +204,7 @@ internal partial class PAL
             {
                 _blend = value;
                 if (_pal._currentRenderState == this)
-                    _pal.ApplyBlendParameters(value);
+                    _pal.SetBlendImmediate(value);
             }
         }
 
@@ -251,16 +253,6 @@ internal partial class PAL
         private Dictionary<TextureUnit, WholeTexture> _textures = new();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public WholeTexture? GetTexture(int unit)
-        {
-            if (_textures.TryGetValue(TextureUnit.Texture0 + unit, out var res))
-            {
-                return res;
-            }
-            return null;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetTexture(int unit, WholeTexture? value)
         {
             var tu = TextureUnit.Texture0 + unit;
@@ -293,10 +285,14 @@ internal partial class PAL
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void ClearTextures() => _textures.Clear();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void Bind()
         {
             if (_pal._currentRenderState != this)
             {
+                _pal.LastRenderStateResets += 1;
                 if (GPUResource.IsValid(_renderTarget))
                 {
                     _pal.DCBindRenderTarget(_renderTarget);
@@ -307,8 +303,8 @@ internal partial class PAL
                     _pal.DCUseProgram(_program.Handle);
                 if (_vao != null)
                     _pal.DCBindVAO(_vao.ObjectHandle);
-                _pal.ApplyStencilParameters(_stencil);
-                _pal.ApplyBlendParameters(_blend);
+                _pal.SetStencilImmediate(_stencil);
+                _pal.SetBlendImmediate(_blend);
                 _pal.SetViewportImmediate(_viewport);
                 _pal.SetCDMaskImmediate(_colourDepthMask);
                 foreach (var entry in _textures)
@@ -356,6 +352,33 @@ internal partial class PAL
             GL.DrawElements((PrimitiveType) topology, count, DrawElementsType.UnsignedShort, offset);
             _pal.CheckGlError();
             _pal.LastGLDrawCalls += 1;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void CopyFrom(IGPURenderState other)
+        {
+            GLRenderState grs = (GLRenderState) other;
+            _renderTarget = grs._renderTarget;
+            _program = grs._program;
+            _vao = grs._vao;
+            _stencil = grs._stencil;
+            _blend = grs._blend;
+            _scissor = grs._scissor;
+            _viewport = grs._viewport;
+            _colourDepthMask = grs.ColourDepthMask;
+            _textures.Clear();
+            foreach (var kvp in grs._textures)
+            {
+                _textures[kvp.Key] = kvp.Value;
+            }
+            if (_pal._currentRenderState == other)
+            {
+                _pal._currentRenderState = this;
+            }
+            else if (_pal._currentRenderState == this)
+            {
+                _pal._currentRenderState = null;
+            }
         }
     }
 }

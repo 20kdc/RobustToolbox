@@ -334,7 +334,7 @@ namespace Robust.Client.Graphics.Clyde
 
         private Color ConvertClearFromSrgb(Color color)
         {
-            if (!_hasGL.Srgb)
+            if (!_pal.HasSrgb)
                 return color;
 
             return Color.FromSrgb(color);
@@ -738,17 +738,6 @@ namespace Robust.Client.Graphics.Clyde
             _queuedShaderInstance = _defaultShader;
 
             ((IGPURenderState) _renderState).SetViewport(0, 0, _mainWindow!.FramebufferSize.X, _mainWindow!.FramebufferSize.Y);
-        }
-
-        private void FenceRenderTarget(PAL.RenderTargetBase rt)
-        {
-            if (!_hasGL.FenceSync || !rt.MakeGLFence)
-                return;
-
-            if (rt.LastGLSync != 0)
-                GL.DeleteSync(rt.LastGLSync);
-
-            rt.LastGLSync = GL.FenceSync(SyncCondition.SyncGpuCommandsComplete, WaitSyncFlags.None);
         }
 
         [StructLayout(LayoutKind.Explicit)]

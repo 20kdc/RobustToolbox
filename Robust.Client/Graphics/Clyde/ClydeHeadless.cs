@@ -165,6 +165,9 @@ namespace Robust.Client.Graphics.Clyde
         }
 
         public bool HasPrimitiveRestart => true;
+        public bool HasSrgb => true;
+        public bool HasFloatFramebuffers => true;
+        public bool HasUniformBuffers => true;
 
         public OwnedTexture LoadTextureFromPNGStream(Stream stream, string? name = null,
             TextureLoadParameters? loadParams = null)
@@ -456,12 +459,11 @@ namespace Robust.Client.Graphics.Clyde
 
             public ColourDepthMask ColourDepthMask { get; set; } = ColourDepthMask.RGBAMask;
 
-            public WholeTexture? GetTexture(int unit)
+            public void SetTexture(int unit, WholeTexture? value)
             {
-                return null;
             }
 
-            public void SetTexture(int unit, WholeTexture? value)
+            public void ClearTextures()
             {
             }
 
@@ -475,6 +477,18 @@ namespace Robust.Client.Graphics.Clyde
 
             public void DrawElements(DrawPrimitiveTopology topology, int offset, int count)
             {
+            }
+
+            public void CopyFrom(IGPURenderState other)
+            {
+                RenderTarget = other.RenderTarget;
+                Program = other.Program;
+                VAO = other.VAO;
+                Stencil = other.Stencil;
+                Blend = other.Blend;
+                Scissor = other.Scissor;
+                Viewport = other.Viewport;
+                ColourDepthMask = other.ColourDepthMask;
             }
         }
 
@@ -612,6 +626,7 @@ namespace Robust.Client.Graphics.Clyde
         private sealed class DummyDebugStats : IClydeDebugStats
         {
             public int LastGLDrawCalls => 0;
+            public int LastRenderStateResets => 0;
             public int LastClydeDrawCalls => 0;
             public int LastBatches => 0;
             public (int vertices, int indices) LargestBatchSize => (0, 0);

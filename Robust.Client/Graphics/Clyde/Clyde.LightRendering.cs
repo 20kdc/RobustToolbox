@@ -142,7 +142,7 @@ namespace Robust.Client.Graphics.Clyde
             // FOV FBO.
             _fovRenderTarget = _pal.CreateRenderTarget((FovMapSize, 2),
                 new RenderTargetFormatParameters(
-                    _hasGL.FloatFramebuffers ? RenderTargetColorFormat.RG32F : RenderTargetColorFormat.Rgba8, true),
+                    _pal.HasFloatFramebuffers ? RenderTargetColorFormat.RG32F : RenderTargetColorFormat.Rgba8, true),
                 new TextureSampleParameters { WrapMode = TextureWrapMode.Repeat },
                 nameof(_fovRenderTarget));
 
@@ -259,7 +259,7 @@ namespace Robust.Client.Graphics.Clyde
             CheckGlError();
 
             _renderState.RenderTarget = target;
-            if (_hasGL.FloatFramebuffers)
+            if (_pal.HasFloatFramebuffers)
             {
                 target.Clear(arbitraryDistanceMax, arbitraryDistanceMax * arbitraryDistanceMax, 0, 1, depth: 1);
             }
@@ -1051,7 +1051,7 @@ namespace Robust.Client.Graphics.Clyde
 
             var lightMapSize = GetLightMapSize(viewport.Size);
             var lightMapSizeQuart = GetLightMapSize(viewport.Size, true);
-            var lightMapColorFormat = _hasGL.FloatFramebuffers
+            var lightMapColorFormat = _pal.HasFloatFramebuffers
                 ? RenderTargetColorFormat.R11FG11FB10F
                 : RenderTargetColorFormat.Rgba8;
             var lightMapSampleParameters = new TextureSampleParameters { Filter = true };
@@ -1127,7 +1127,7 @@ namespace Robust.Client.Graphics.Clyde
             // Shadow FBO.
             _shadowRenderTarget = _pal.CreateRenderTarget((ShadowMapSize, _maxShadowcastingLights),
                 new RenderTargetFormatParameters(
-                    _hasGL.FloatFramebuffers ? RenderTargetColorFormat.RG32F : RenderTargetColorFormat.Rgba8, true),
+                    _pal.HasFloatFramebuffers ? RenderTargetColorFormat.RG32F : RenderTargetColorFormat.Rgba8, true),
                 new TextureSampleParameters { WrapMode = TextureWrapMode.Repeat, Filter = true },
                 nameof(_shadowRenderTarget));
         }
