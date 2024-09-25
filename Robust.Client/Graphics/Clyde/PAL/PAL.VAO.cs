@@ -63,7 +63,9 @@ internal partial class PAL
                 // Same basic premise as the render state EBO check.
                 if (buffer.ObjectHandle == 0)
                     throw new Exception("Attempting to bind vertex attrib to buffer 0");
-                buffer.Use(BufferTarget.ArrayBuffer);
+
+                GL.BindBuffer(BufferTarget.ArrayBuffer, buffer.ObjectHandle);
+                _pal.CheckGlError();
                 GL.VertexAttribPointer(index, info.Size, (VertexAttribPointerType) info.Component, info.Normalized, info.Stride, (nint) info.Offset);
                 _pal.CheckGlError();
                 GL.EnableVertexAttribArray(index);

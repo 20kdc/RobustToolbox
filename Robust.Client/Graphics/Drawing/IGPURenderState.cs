@@ -42,7 +42,10 @@ public interface IGPURenderState
     /// <summary>Sets a texture in the render state.</summary>
     void SetTexture(int unit, WholeTexture? value);
 
-    /// <summary>Deliberately disconnects the OpenGL state from the IGPURenderState.</summary>
+    /// <summary>
+    /// Deliberately disconnects the OpenGL state from the IGPURenderState.
+    /// If you expect to "thrash" the state without doing anything, this can optimize performance.
+    /// </summary>
     void Unbind();
 
     /// <summary>Executes a draw call.</summary>

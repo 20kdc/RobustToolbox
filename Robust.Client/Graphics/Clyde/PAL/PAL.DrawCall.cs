@@ -308,7 +308,7 @@ internal partial class PAL
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Bind()
+        private void Bind()
         {
             if (_pal._currentRenderState != this)
             {

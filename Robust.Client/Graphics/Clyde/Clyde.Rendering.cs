@@ -739,7 +739,6 @@ namespace Robust.Client.Graphics.Clyde
         private void ClearRenderState()
         {
             ((IGPURenderState) _renderState).Reset();
-            _renderState.Bind();
 
             BatchVertexIndex = 0;
             BatchIndexIndex = 0;

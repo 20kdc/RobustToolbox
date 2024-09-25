@@ -246,8 +246,6 @@ namespace Robust.Client.Graphics.Clyde
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-
-            CheckGlError();
         }
 
         private (PIF pif, PF pf, PT pt) PixelEnums<T>(bool srgb)
@@ -379,14 +377,10 @@ namespace Robust.Client.Graphics.Clyde
             if (loaded.Width < dstTl.X + size.X || loaded.Height < dstTl.Y + size.Y)
                 throw new ArgumentOutOfRangeException(nameof(size), "Destination rectangle out of bounds.");
 
-            if (sizeof(T) != 4)
-            {
-                GL.PixelStore(PixelStoreParameter.UnpackAlignment, 1);
-                CheckGlError();
-            }
-
             // sRGB doesn't matter since that only changes the internalFormat, which we don't need here.
             var (_, pf, pt) = PixelEnums<T>(srgb: false);
+
+            var curTexture2D = GL.GetInteger(GetPName.TextureBinding2D);
 
             GL.BindTexture(TextureTarget.Texture2D, loaded.OpenGLObject.Handle);
             CheckGlError();
@@ -394,6 +388,7 @@ namespace Robust.Client.Graphics.Clyde
             fixed (T* aPtr = buf)
             {
                 var dstY = loaded.Height - dstTl.Y - size.Y;
+                // Unpack alignment is set by GLWrapper to 1.
                 GL.TexSubImage2D(
                     TextureTarget.Texture2D,
                     0,
@@ -404,11 +399,9 @@ namespace Robust.Client.Graphics.Clyde
                 CheckGlError();
             }
 
-            if (sizeof(T) != 4)
-            {
-                GL.PixelStore(PixelStoreParameter.UnpackAlignment, 4);
-                CheckGlError();
-            }
+            GL.BindTexture(TextureTarget.Texture2D, curTexture2D);
+            CheckGlError();
+
         }
 
         private static TexturePixelType GetTexturePixelType<T>() where T : unmanaged, IPixel<T>
@@ -542,6 +535,19 @@ namespace Robust.Client.Graphics.Clyde
         public override void SetSubImage<T>(Vector2i topLeft, Vector2i size, ReadOnlySpan<T> buffer)
         {
             _pal.SetSubImage(this, topLeft, size, buffer);
+        }
+
+        public override void SetSampleParameters(in TextureSampleParameters sample)
+        {
+            var curTexture2D = GL.GetInteger(GetPName.TextureBinding2D);
+
+            GL.BindTexture(TextureTarget.Texture2D, OpenGLObject.Handle);
+            _pal.CheckGlError();
+
+            _pal.ApplySampleParameters(sample);
+
+            GL.BindTexture(TextureTarget.Texture2D, curTexture2D);
+            _pal.CheckGlError();
         }
 
         protected override void DisposeImpl()

@@ -175,7 +175,6 @@ namespace Robust.Client.Graphics.Clyde
         private void InitOpenGL()
         {
             _renderState = _pal.CreateRenderState();
-            _renderState.Bind();
 
             SetupDebugCallback();
 

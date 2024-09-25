@@ -58,15 +58,6 @@ internal partial class PAL
             Reallocate(initialize);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Use(BufferTarget type)
-        {
-            DebugTools.Assert(ObjectHandle != 0);
-
-            GL.BindBuffer(type, ObjectHandle);
-            _pal.CheckGlError();
-        }
-
         protected override void DisposeImpl()
         {
             if (_pal.IsMainThread())
@@ -89,7 +80,10 @@ internal partial class PAL
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void WriteSubData(int start, ReadOnlySpan<byte> data)
         {
-            Use(BufferTarget.ArrayBuffer);
+            DebugTools.Assert(ObjectHandle != 0);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, ObjectHandle);
+            _pal.CheckGlError();
 
             unsafe
             {
@@ -105,7 +99,10 @@ internal partial class PAL
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void Reallocate(ReadOnlySpan<byte> data)
         {
-            Use(BufferTarget.ArrayBuffer);
+            DebugTools.Assert(ObjectHandle != 0);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, ObjectHandle);
+            _pal.CheckGlError();
 
             unsafe
             {
@@ -124,7 +121,11 @@ internal partial class PAL
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Reallocate(int size)
         {
-            Use(BufferTarget.ArrayBuffer);
+            DebugTools.Assert(ObjectHandle != 0);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, ObjectHandle);
+            _pal.CheckGlError();
+
             GL.BufferData(BufferTarget.ArrayBuffer, size, IntPtr.Zero, UsageHint);
             _pal.CheckGlError();
         }

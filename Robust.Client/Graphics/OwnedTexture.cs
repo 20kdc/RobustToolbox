@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using Robust.Shared.Graphics;
 using Robust.Shared.Maths;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -20,6 +21,7 @@ namespace Robust.Client.Graphics
 
         /// <summary>
         ///     Modifies a sub area of the texture with new data.
+        ///     Beware: Drawing done using DrawingHandle before this call may use the version from after this call. See DrawingHandleBase.Flush.
         /// </summary>
         /// <param name="topLeft">The top left corner of the area to modify.</param>
         /// <param name="sourceImage">The image from which to copy pixel data.</param>
@@ -33,6 +35,7 @@ namespace Robust.Client.Graphics
 
         /// <summary>
         ///     Modifies a sub area of the texture with new data.
+        ///     Beware: Drawing done using DrawingHandle before this call may use the version from after this call. See DrawingHandleBase.Flush.
         /// </summary>
         /// <param name="topLeft">The top left corner of the area to modify.</param>
         /// <param name="sourceImage">The image to paste onto the texture.</param>
@@ -48,6 +51,12 @@ namespace Robust.Client.Graphics
 
         public abstract void SetSubImage<T>(Vector2i topLeft, Vector2i size, ReadOnlySpan<T> buffer)
             where T : unmanaged, IPixel<T>;
+
+        /// <summary>
+        ///     Changes the texture's sample parameters.
+        ///     Beware: Drawing done using DrawingHandle before this call may use the version from after this call. See DrawingHandleBase.Flush.
+        /// </summary>
+        public abstract void SetSampleParameters(in TextureSampleParameters sample);
 
         public void Dispose()
         {

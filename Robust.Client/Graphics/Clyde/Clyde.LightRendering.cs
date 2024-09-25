@@ -789,11 +789,7 @@ namespace Robust.Client.Graphics.Clyde
 
             // Have to swap to linear filtering on the shadow map here.
             // VSM wants it.
-            _renderState.Bind();
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)All.Linear);
-            CheckGlError();
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)All.Linear);
-            CheckGlError();
+            FovTexture.SetSampleParameters(new TextureSampleParameters { Filter = true, WrapMode = TextureWrapMode.Repeat });
 
             _renderState.Stencil = new StencilParameters
             {
@@ -807,11 +803,7 @@ namespace Robust.Client.Graphics.Clyde
             FovSetTransformAndBlit(viewport, eye.Position.Position, fovShader);
 
             // Restore original filtering.
-            _renderState.Bind();
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)All.Nearest);
-            CheckGlError();
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)All.Nearest);
-            CheckGlError();
+            FovTexture.SetSampleParameters(new TextureSampleParameters { Filter = false, WrapMode = TextureWrapMode.Repeat });
         }
 
         private void FovSetTransformAndBlit(Viewport vp, Vector2 fovCentre, GLShaderProgram fovShader)

@@ -286,6 +286,8 @@ namespace Robust.Client.Graphics.Clyde
                 _clyde.DrawPrimitives(primitiveTopology, clydeTexture, indices, castSpan);
             }
 
+            public void Flush() => _clyde.FlushBatchQueue();
+
             // ---- (end) ----
 
             private sealed class DrawingHandleScreenImpl : DrawingHandleScreen
@@ -391,6 +393,8 @@ namespace Robust.Client.Graphics.Clyde
                 {
                     _renderHandle.DrawEntity(entity, position, scale, worldRot, eyeRot, overrideDirection, sprite, xform, xformSystem);
                 }
+
+                public override void Flush() => _renderHandle.Flush();
             }
 
             private sealed class DrawingHandleWorldImpl : DrawingHandleWorld
@@ -545,6 +549,8 @@ namespace Robust.Client.Graphics.Clyde
                 {
                     _renderHandle.DrawPrimitives(primitiveTopology, texture, indices, vertices);
                 }
+
+                public override void Flush() => _renderHandle.Flush();
             }
         }
     }

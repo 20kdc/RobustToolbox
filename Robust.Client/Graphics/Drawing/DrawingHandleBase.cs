@@ -211,6 +211,9 @@ namespace Robust.Client.Graphics
         public abstract void DrawLine(Vector2 from, Vector2 to, Color color);
 
         public abstract void RenderInRenderTarget(IRenderTarget target, Action a, Color? clearColor);
+
+        /// <summary>Acts as a fence for when mixed with direct operations on textures or render textures.</summary>
+        public abstract void Flush();
     }
 
     /// <summary>

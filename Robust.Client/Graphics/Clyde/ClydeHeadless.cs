@@ -427,6 +427,11 @@ namespace Robust.Client.Graphics.Clyde
                 // Just do nothing on mutate.
             }
 
+            public override void SetSampleParameters(in TextureSampleParameters sample)
+            {
+                // Just do nothing on mutate.
+            }
+
             public override Color GetPixel(int x, int y)
             {
                 return Color.Black;
