@@ -92,12 +92,6 @@ namespace Robust.Client.Graphics.Clyde
 
             var program = _compileProgram(vertBody, fragBody, BaseShaderAttribLocations, textureUniforms, name, defines: defines);
 
-            if (_hasGL.UniformBuffers)
-            {
-                program.BindBlock(UniProjViewMatrices, BindingIndexProjView);
-                program.BindBlock(UniUniformConstants, BindingIndexUniformConstants);
-            }
-
             var loaded = new LoadedShader
             {
                 Program = program,
@@ -119,12 +113,6 @@ namespace Robust.Client.Graphics.Clyde
             loaded.Program.Dispose();
 
             loaded.Program = program;
-
-            if (_hasGL.UniformBuffers)
-            {
-                program.BindBlock(UniProjViewMatrices, BindingIndexProjView);
-                program.BindBlock(UniUniformConstants, BindingIndexUniformConstants);
-            }
         }
 
         public ShaderInstance InstanceShader(ShaderSourceResource source, bool? lighting = null, ShaderBlendMode? mode = null)
@@ -169,7 +157,7 @@ namespace Robust.Client.Graphics.Clyde
         }
 
         private GLShaderProgram _compileProgram(string vertexSource, string fragmentSource,
-            (string, uint)[] attribLocations, string[] textureUniforms, string? name = null, bool includeLib=true, Dictionary<string,string>? defines=null)
+            (string, uint)[] attribLocations, string[] textureUniforms, string? name = null, bool includeLib=true, Dictionary<string,string>? defines=null, bool includeUniformBlocks=true)
         {
             // Version header and basic language fixes are handled internally.
 
@@ -184,7 +172,25 @@ namespace Robust.Client.Graphics.Clyde
             vertexSource = lib + vertexSource;
             fragmentSource = lib + fragmentSource;
 
-            return new GLShaderProgram(_pal, vertexSource, fragmentSource, attribLocations, textureUniforms, name);
+            var source = new GPUShaderProgram.Source(vertexSource, fragmentSource);
+
+            if (includeUniformBlocks)
+            {
+                source.UniformBlockBindings[UniProjViewMatrices] = BindingIndexProjView;
+                source.UniformBlockBindings[UniUniformConstants] = BindingIndexUniformConstants;
+            }
+
+            foreach (var v in attribLocations)
+            {
+                source.AttribLocations[v.Item1] = v.Item2;
+            }
+
+            for (var i = 0; i < textureUniforms.Length; i++)
+            {
+                source.SamplerUnits[textureUniforms[i]] = i;
+            }
+
+            return new GLShaderProgram(_pal, source, name);
         }
 
         private (string vertBody, string fragBody, string[] textureUniforms) GetShaderCode(ParsedShader shader)

@@ -202,6 +202,9 @@ namespace Robust.Client.Graphics.Clyde
 
         public IGPURenderState CreateRenderState() => new DummyRenderState();
 
+        /// <summary>Compiles a shader program. Throws ShaderCompilationException on error.</summary>
+        public GPUShaderProgram Compile(GPUShaderProgram.Source source, string? name = null) => new DummyGPUShaderProgram();
+
         public ICursor GetStandardCursor(StandardCursorShape shape)
         {
             return new DummyCursor();
@@ -297,6 +300,67 @@ namespace Robust.Client.Graphics.Clyde
             public void Dispose()
             {
                 // Nada.
+            }
+        }
+
+        private sealed class DummyGPUShaderProgram : GPUShaderProgram
+        {
+            public override void SetUniformDirect(int uniformId, int value)
+            {
+            }
+
+            public override void SetUniformDirect(int uniformId, float value)
+            {
+            }
+
+            public override void SetUniformDirect(int uniformId, float[] value)
+            {
+            }
+
+            public override void SetUniformDirect(int uniformId, in Vector2 value)
+            {
+            }
+
+            public override void SetUniformDirect(int uniformId, Vector2[] value)
+            {
+            }
+
+            public override void SetUniformDirect(int uniformId, in Vector3 value)
+            {
+            }
+
+            public override void SetUniformDirect(int uniformId, in Vector4 value)
+            {
+            }
+
+            public override void SetUniformDirect(int uniformId, in Matrix3x2 value)
+            {
+            }
+
+            public override void SetUniformDirect(int uniformId, in Matrix4 value, bool transpose = true)
+            {
+            }
+
+            public override void SetUniformDirect(int uniformId, in Color value, bool convertToLinear = true)
+            {
+            }
+
+            public override bool TryGetTextureUnit(string name, out int index)
+            {
+                // It can cause errors to fail to find these.
+                index = 0;
+                return true;
+            }
+
+            public override bool TryGetUniform(string name, out int index)
+            {
+                // It can cause errors to fail to find these.
+                index = 0;
+                return true;
+            }
+
+            protected override void DisposeImpl()
+            {
             }
         }
 

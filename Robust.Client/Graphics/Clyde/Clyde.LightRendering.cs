@@ -164,7 +164,7 @@ namespace Robust.Client.Graphics.Clyde
 
             string[] textureUniforms = {};
 
-            _fovCalculationProgram = _compileProgram(depthVert, depthFrag, attribLocations, textureUniforms, "Shadow Depth Program");
+            _fovCalculationProgram = _compileProgram(depthVert, depthFrag, attribLocations, textureUniforms, "Shadow Depth Program", includeUniformBlocks: false);
 
             var debugShader = _resourceCache.GetResource<ShaderSourceResource>("/Shaders/Internal/depth-debug.swsl");
             _fovDebugShaderInstance = (ClydeShaderInstance)InstanceShader(debugShader);

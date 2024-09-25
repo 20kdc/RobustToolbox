@@ -7,7 +7,7 @@ namespace Robust.Client.Graphics.Clyde
     [Serializable]
     [PublicAPI]
     [Virtual]
-    internal class ShaderCompilationException : Exception
+    public class ShaderCompilationException : Exception
     {
         public ShaderCompilationException()
         {

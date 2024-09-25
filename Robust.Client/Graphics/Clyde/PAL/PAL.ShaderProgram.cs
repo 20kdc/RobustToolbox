@@ -11,6 +11,11 @@ using Vector4 = Robust.Shared.Maths.Vector4;
 
 namespace Robust.Client.Graphics.Clyde;
 
+internal partial class PAL
+{
+    GPUShaderProgram IGPUAbstraction.Compile(GPUShaderProgram.Source source, string? name) => new GLShaderProgram(this, source, name);
+}
+
 /// <summary>
 ///     This is an utility class. It does not check whether the OpenGL state machine is set up correctly.
 ///     You've been warned:
@@ -25,7 +30,7 @@ internal sealed class GLShaderProgram : GPUShaderProgram
     public string? Name { get; }
     private readonly PAL _pal;
 
-    public GLShaderProgram(PAL clyde, string vertexSource, string fragmentSource, (string, uint)[] attribLocations, string[] textureUniforms, string? name = null)
+    public GLShaderProgram(PAL clyde, Source source, string? name = null)
     {
         _pal = clyde;
         Name = name;
@@ -52,10 +57,10 @@ internal sealed class GLShaderProgram : GPUShaderProgram
             fragmentHeader += "out highp vec4 palGLFragColor;\n";
         }
 
-        uint vertexShader = CompileShader(ShaderType.VertexShader, vertexHeader + vertexSource);
+        uint vertexShader = CompileShader(ShaderType.VertexShader, vertexHeader + source.VertexSource);
         try
         {
-            uint fragmentShader = CompileShader(ShaderType.FragmentShader, fragmentHeader + fragmentSource);
+            uint fragmentShader = CompileShader(ShaderType.FragmentShader, fragmentHeader + source.FragmentSource);
             try
             {
                 Handle = (uint) GL.CreateProgram();
@@ -71,14 +76,14 @@ internal sealed class GLShaderProgram : GPUShaderProgram
                 GL.AttachShader(Handle, fragmentShader);
                 clyde.CheckGlError();
 
-                foreach (var (varName, loc) in attribLocations)
+                foreach (var pair in source.AttribLocations)
                 {
                     // OpenGL 3.1 is ass and doesn't allow you to specify layout(location = X) in shaders.
                     // So we have to manually do it here.
                     // Ugh.
 
                     // Reply (since KERB moves this block around): Oh no, the footgun's missing. Anyway...
-                    GL.BindAttribLocation(Handle, loc, varName);
+                    GL.BindAttribLocation(Handle, pair.Value, pair.Key);
                     clyde.CheckGlError();
                 }
 
@@ -94,6 +99,17 @@ internal sealed class GLShaderProgram : GPUShaderProgram
                     throw new ShaderCompilationException(log);
                 }
 
+                if (clyde._hasGL.UniformBuffers)
+                {
+                    foreach (var pair in source.UniformBlockBindings)
+                    {
+                        var index = GL.GetUniformBlockIndex(Handle, pair.Key);
+                        _pal.CheckGlError();
+                        GL.UniformBlockBinding((int) Handle, index, pair.Value);
+                        _pal.CheckGlError();
+                    }
+                }
+
                 // -- After this point, everything is mostly initialized, except... --
 
                 // Below code uses this since uniforms are being set.
@@ -104,20 +120,13 @@ internal sealed class GLShaderProgram : GPUShaderProgram
                 {
                     // Bind texture uniforms to units.
                     // By doing this we skip having to go fetch them later.
-                    // By placing uniforms at preallocated spots (including dummies you don't have),
+                    // By placing uniforms at preallocated spots,
                     //  you can do stuff like Clyde's Main/Light units, without needing to intern uniforms.
-                    var currentTextureUnit = 0;
-                    foreach (var uniform in textureUniforms)
+                    foreach (var pair in source.SamplerUnits)
                     {
-                        // We have to still allocate the unit even if there's no uniform.
-                        // The texture uniforms array is a 1:1 mapping to texture units.
-                        if (uniform != "")
-                        {
-                            // The use of Add here is intentional, to catch doubly-added uniforms.
-                            _textureUnits.Add(uniform, currentTextureUnit);
-                            SetUniformMaybe(uniform, currentTextureUnit);
-                        }
-                        currentTextureUnit += 1;
+                        // The use of Add here is intentional, to catch doubly-added uniforms.
+                        _textureUnits.Add(pair.Key, pair.Value);
+                        SetUniformMaybe(pair.Key, pair.Value);
                     }
                 }
                 finally
@@ -175,16 +184,6 @@ internal sealed class GLShaderProgram : GPUShaderProgram
         Handle = 0;
     }
 
-    public int GetUniform(string name)
-    {
-        if (!TryGetUniform(name, out var result))
-        {
-            ThrowCouldNotGetUniform(name);
-        }
-
-        return result;
-    }
-
     public int GetUniform(InternedUniform id)
     {
         if (!TryGetUniform(id, out var result))
@@ -195,7 +194,7 @@ internal sealed class GLShaderProgram : GPUShaderProgram
         return result;
     }
 
-    public bool TryGetUniform(string name, out int index)
+    public override bool TryGetUniform(string name, out int index)
     {
         DebugTools.Assert(Handle != 0);
 
@@ -211,16 +210,7 @@ internal sealed class GLShaderProgram : GPUShaderProgram
     }
 
     /// <summary>Gets the texture unit assigned to a sampler uniform.</summary>
-    public int GetTextureUnit(string name)
-    {
-        if (!_textureUnits.TryGetValue(name, out var result))
-            throw new ArgumentException($"Uniform \"{name}\" not assigned a texture unit!");
-
-        return result;
-    }
-
-    /// <summary>Gets the texture unit assigned to a sampler uniform.</summary>
-    public bool TryGetTextureUnit(string name, out int index) => _textureUnits.TryGetValue(name, out index);
+    public override bool TryGetTextureUnit(string name, out int index) => _textureUnits.TryGetValue(name, out index);
 
     public bool TryGetUniform(InternedUniform id, out int index)
     {
@@ -249,123 +239,279 @@ internal sealed class GLShaderProgram : GPUShaderProgram
     public bool HasUniform(string name) => TryGetUniform(name, out _);
     public bool HasUniform(InternedUniform id) => TryGetUniform(id, out _);
 
-    public void BindBlock(string blockName, uint blockBinding)
-    {
-        var index = (uint) GL.GetUniformBlockIndex(Handle, blockName);
-        _pal.CheckGlError();
-        GL.UniformBlockBinding(Handle, index, blockBinding);
-        _pal.CheckGlError();
-    }
+    // -- SetUniformMaybe --
 
-    public void SetUniform(string uniformName, int integer)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void SetUniformMaybe(InternedUniform uniformName, int value)
     {
-        var uniformId = GetUniform(uniformName);
-        if (_pal._backupProgram != Handle)
+        if (TryGetUniform(uniformName, out var slot))
         {
-            GL.UseProgram(Handle);
-            _pal.CheckGlError();
-            GL.Uniform1(uniformId, integer);
-            _pal.CheckGlError();
-            GL.UseProgram(_pal._backupProgram);
-            _pal.CheckGlError();
+            SetUniformDirect(slot, value);
         }
-        else
-        {
-            GL.Uniform1(uniformId, integer);
-            _pal.CheckGlError();
-        }
-    }
-
-    public void SetUniform(string uniformName, float single)
-    {
-        var uniformId = GetUniform(uniformName);
-        if (_pal._backupProgram != Handle)
-        {
-            GL.UseProgram(Handle);
-            _pal.CheckGlError();
-            GL.Uniform1(uniformId, single);
-            _pal.CheckGlError();
-            GL.UseProgram(_pal._backupProgram);
-            _pal.CheckGlError();
-        }
-        else
-        {
-            GL.Uniform1(uniformId, single);
-            _pal.CheckGlError();
-        }
-    }
-
-    public void SetUniform(InternedUniform uniformName, float single)
-    {
-        var uniformId = GetUniform(uniformName);
-        if (_pal._backupProgram != Handle)
-        {
-            GL.UseProgram(Handle);
-            _pal.CheckGlError();
-            GL.Uniform1(uniformId, single);
-            _pal.CheckGlError();
-            GL.UseProgram(_pal._backupProgram);
-            _pal.CheckGlError();
-        }
-        else
-        {
-            GL.Uniform1(uniformId, single);
-            _pal.CheckGlError();
-        }
-    }
-
-    public void SetUniform(string uniformName, float[] singles)
-    {
-        var uniformId = GetUniform(uniformName);
-        if (_pal._backupProgram != Handle)
-        {
-            GL.UseProgram(Handle);
-            _pal.CheckGlError();
-            GL.Uniform1(uniformId, singles.Length, singles);
-            _pal.CheckGlError();
-            GL.UseProgram(_pal._backupProgram);
-            _pal.CheckGlError();
-        }
-        else
-        {
-            GL.Uniform1(uniformId, singles.Length, singles);
-            _pal.CheckGlError();
-        }
-    }
-
-    public void SetUniform(InternedUniform uniformName, float[] singles)
-    {
-        var uniformId = GetUniform(uniformName);
-        if (_pal._backupProgram != Handle)
-        {
-            GL.UseProgram(Handle);
-            _pal.CheckGlError();
-            GL.Uniform1(uniformId, singles.Length, singles);
-            _pal.CheckGlError();
-            GL.UseProgram(_pal._backupProgram);
-            _pal.CheckGlError();
-        }
-        else
-        {
-            GL.Uniform1(uniformId, singles.Length, singles);
-            _pal.CheckGlError();
-        }
-    }
-
-    public void SetUniform(string uniformName, in Matrix3x2 matrix)
-    {
-        var uniformId = GetUniform(uniformName);
-        SetUniformDirect(uniformId, matrix);
-    }
-
-    public void SetUniform(InternedUniform uniformName, in Matrix3x2 matrix)
-    {
-        var uniformId = GetUniform(uniformName);
-        SetUniformDirect(uniformId, matrix);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private unsafe void SetUniformDirect(int slot, in Matrix3x2 value)
+    public void SetUniformMaybe(InternedUniform uniformName, float value)
+    {
+        if (TryGetUniform(uniformName, out var slot))
+        {
+            SetUniformDirect(slot, value);
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void SetUniformMaybe(InternedUniform uniformName, float[] value)
+    {
+        if (TryGetUniform(uniformName, out var slot))
+        {
+            SetUniformDirect(slot, value);
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void SetUniformMaybe(InternedUniform uniformName, in Vector2 value)
+    {
+        if (TryGetUniform(uniformName, out var slot))
+        {
+            SetUniformDirect(slot, value);
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void SetUniformMaybe(InternedUniform uniformName, in Vector2i value) => SetUniformMaybe(uniformName, (Vector2) value);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void SetUniformMaybe(InternedUniform uniformName, Vector2[] value)
+    {
+        if (TryGetUniform(uniformName, out var slot))
+        {
+            SetUniformDirect(slot, value);
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void SetUniformMaybe(InternedUniform uniformName, in Vector3 value)
+    {
+        if (TryGetUniform(uniformName, out var slot))
+        {
+            SetUniformDirect(slot, value);
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void SetUniformMaybe(InternedUniform uniformName, in Vector4 value)
+    {
+        if (TryGetUniform(uniformName, out var slot))
+        {
+            SetUniformDirect(slot, value);
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void SetUniformMaybe(InternedUniform uniformName, in Matrix3x2 value)
+    {
+        if (TryGetUniform(uniformName, out var slot))
+        {
+            SetUniformDirect(slot, value);
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void SetUniformMaybe(InternedUniform uniformName, in Matrix4 value, bool transpose = true)
+    {
+        if (TryGetUniform(uniformName, out var slot))
+        {
+            SetUniformDirect(slot, value, transpose);
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void SetUniformMaybe(InternedUniform uniformName, in Color value, bool convertToLinear = true)
+    {
+        if (TryGetUniform(uniformName, out var slot))
+        {
+            SetUniformDirect(slot, value, convertToLinear);
+        }
+    }
+
+    // -- SetUniform --
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void SetUniform(InternedUniform uniformName, int value) => SetUniformDirect(GetUniform(uniformName), value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void SetUniform(InternedUniform uniformName, float value) => SetUniformDirect(GetUniform(uniformName), value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void SetUniform(InternedUniform uniformName, float[] value) => SetUniformDirect(GetUniform(uniformName), value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void SetUniform(InternedUniform uniformName, in Vector2 value) => SetUniformDirect(GetUniform(uniformName), value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void SetUniform(InternedUniform uniformName, in Vector2i value) => SetUniformDirect(GetUniform(uniformName), value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void SetUniform(InternedUniform uniformName, Vector2[] value) => SetUniformDirect(GetUniform(uniformName), value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void SetUniform(InternedUniform uniformName, Vector3 value) => SetUniformDirect(GetUniform(uniformName), value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void SetUniform(InternedUniform uniformName, Vector4 value) => SetUniformDirect(GetUniform(uniformName), value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void SetUniform(InternedUniform uniformName, Matrix3x2 value) => SetUniformDirect(GetUniform(uniformName), value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void SetUniform(InternedUniform uniformName, Matrix4 value) => SetUniformDirect(GetUniform(uniformName), value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void SetUniform(InternedUniform uniformName, Color value) => SetUniformDirect(GetUniform(uniformName), value);
+
+    // -- SetUniformDirect --
+
+    public override void SetUniformDirect(int uniformId, int integer)
+    {
+        if (_pal._backupProgram != Handle)
+        {
+            GL.UseProgram(Handle);
+            _pal.CheckGlError();
+            GL.Uniform1(uniformId, integer);
+            _pal.CheckGlError();
+            GL.UseProgram(_pal._backupProgram);
+            _pal.CheckGlError();
+        }
+        else
+        {
+            GL.Uniform1(uniformId, integer);
+            _pal.CheckGlError();
+        }
+    }
+
+    public override void SetUniformDirect(int uniformId, float single)
+    {
+        if (_pal._backupProgram != Handle)
+        {
+            GL.UseProgram(Handle);
+            _pal.CheckGlError();
+            GL.Uniform1(uniformId, single);
+            _pal.CheckGlError();
+            GL.UseProgram(_pal._backupProgram);
+            _pal.CheckGlError();
+        }
+        else
+        {
+            GL.Uniform1(uniformId, single);
+            _pal.CheckGlError();
+        }
+    }
+
+    public override void SetUniformDirect(int uniformId, float[] singles)
+    {
+        if (_pal._backupProgram != Handle)
+        {
+            GL.UseProgram(Handle);
+            _pal.CheckGlError();
+            GL.Uniform1(uniformId, singles.Length, singles);
+            _pal.CheckGlError();
+            GL.UseProgram(_pal._backupProgram);
+            _pal.CheckGlError();
+        }
+        else
+        {
+            GL.Uniform1(uniformId, singles.Length, singles);
+            _pal.CheckGlError();
+        }
+    }
+
+    public override void SetUniformDirect(int slot, in Vector2 vector)
+    {
+        unsafe
+        {
+            fixed (Vector2* ptr = &vector)
+            {
+                if (_pal._backupProgram != Handle)
+                {
+                    GL.UseProgram(Handle);
+                    _pal.CheckGlError();
+                    GL.Uniform2(slot, 1, (float*)ptr);
+                    _pal.CheckGlError();
+                    GL.UseProgram(_pal._backupProgram);
+                    _pal.CheckGlError();
+                }
+                else
+                {
+                    GL.Uniform2(slot, 1, (float*)ptr);
+                    _pal.CheckGlError();
+                }
+            }
+        }
+    }
+
+    public override void SetUniformDirect(int slot, Vector2[] vectors)
+    {
+        unsafe
+        {
+            fixed (Vector2* ptr = &vectors[0])
+            {
+                if (_pal._backupProgram != Handle)
+                {
+                    GL.UseProgram(Handle);
+                    _pal.CheckGlError();
+                    GL.Uniform2(slot, vectors.Length, (float*)ptr);
+                    _pal.CheckGlError();
+                    GL.UseProgram(_pal._backupProgram);
+                    _pal.CheckGlError();
+                }
+                else
+                {
+                    GL.Uniform2(slot, vectors.Length, (float*)ptr);
+                    _pal.CheckGlError();
+                }
+            }
+        }
+    }
+
+    public override void SetUniformDirect(int slot, in Vector3 vector)
+    {
+        unsafe
+        {
+            fixed (Vector3* ptr = &vector)
+            {
+                if (_pal._backupProgram != Handle)
+                {
+                    GL.UseProgram(Handle);
+                    _pal.CheckGlError();
+                    GL.Uniform3(slot, 1, (float*)ptr);
+                    _pal.CheckGlError();
+                    GL.UseProgram(_pal._backupProgram);
+                    _pal.CheckGlError();
+                }
+                else
+                {
+                    GL.Uniform3(slot, 1, (float*)ptr);
+                    _pal.CheckGlError();
+                }
+            }
+        }
+    }
+
+    public override void SetUniformDirect(int slot, in Vector4 vector)
+    {
+        unsafe
+        {
+            fixed (Vector4* ptr = &vector)
+            {
+                if (_pal._backupProgram != Handle)
+                {
+                    GL.UseProgram(Handle);
+                    _pal.CheckGlError();
+                    GL.Uniform4(slot, 1, (float*)ptr);
+                    _pal.CheckGlError();
+                    GL.UseProgram(_pal._backupProgram);
+                    _pal.CheckGlError();
+                }
+                else
+                {
+                    GL.Uniform4(slot, 1, (float*)ptr);
+                    _pal.CheckGlError();
+                }
+            }
+        }
+    }
+
+    public override unsafe void SetUniformDirect(int slot, in Matrix3x2 value)
     {
         // We put the rows of the input matrix into the columns of our GPU matrices
         // this transpose is required, as in C#, we premultiply vectors with matrices
@@ -394,14 +540,7 @@ internal sealed class GLShaderProgram : GPUShaderProgram
         }
     }
 
-    public void SetUniform(string uniformName, in Matrix4 matrix, bool transpose=true)
-    {
-        var uniformId = GetUniform(uniformName);
-        SetUniformDirect(uniformId, matrix, transpose);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private unsafe void SetUniformDirect(int uniformId, in Matrix4 value, bool transpose=true)
+    public override unsafe void SetUniformDirect(int uniformId, in Matrix4 value, bool transpose=true)
     {
         Matrix4 tmpTranspose = value;
         if (transpose)
@@ -426,57 +565,7 @@ internal sealed class GLShaderProgram : GPUShaderProgram
         _pal.CheckGlError();
     }
 
-    public void SetUniform(string uniformName, in Vector4 vector)
-    {
-        var uniformId = GetUniform(uniformName);
-        SetUniformDirect(uniformId, vector);
-    }
-
-    public void SetUniform(InternedUniform uniformName, in Vector4 vector)
-    {
-        var uniformId = GetUniform(uniformName);
-        SetUniformDirect(uniformId, vector);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void SetUniformDirect(int slot, in Vector4 vector)
-    {
-        unsafe
-        {
-            fixed (Vector4* ptr = &vector)
-            {
-                if (_pal._backupProgram != Handle)
-                {
-                    GL.UseProgram(Handle);
-                    _pal.CheckGlError();
-                    GL.Uniform4(slot, 1, (float*)ptr);
-                    _pal.CheckGlError();
-                    GL.UseProgram(_pal._backupProgram);
-                    _pal.CheckGlError();
-                }
-                else
-                {
-                    GL.Uniform4(slot, 1, (float*)ptr);
-                    _pal.CheckGlError();
-                }
-            }
-        }
-    }
-
-    public void SetUniform(string uniformName, in Color color, bool convertToLinear = true)
-    {
-        var uniformId = GetUniform(uniformName);
-        SetUniformDirect(uniformId, color, convertToLinear);
-    }
-
-    public void SetUniform(InternedUniform uniformName, in Color color, bool convertToLinear = true)
-    {
-        var uniformId = GetUniform(uniformName);
-        SetUniformDirect(uniformId, color, convertToLinear);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void SetUniformDirect(int slot, in Color color, bool convertToLinear=true)
+    public override void SetUniformDirect(int slot, in Color color, bool convertToLinear=true)
     {
         var converted = color;
         if (convertToLinear)
@@ -501,213 +590,5 @@ internal sealed class GLShaderProgram : GPUShaderProgram
                 _pal.CheckGlError();
             }
         }
-    }
-
-    public void SetUniform(string uniformName, in Vector3 vector)
-    {
-        var uniformId = GetUniform(uniformName);
-        SetUniformDirect(uniformId, vector);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void SetUniformDirect(int slot, in Vector3 vector)
-    {
-        unsafe
-        {
-            fixed (Vector3* ptr = &vector)
-            {
-                if (_pal._backupProgram != Handle)
-                {
-                    GL.UseProgram(Handle);
-                    _pal.CheckGlError();
-                    GL.Uniform3(slot, 1, (float*)ptr);
-                    _pal.CheckGlError();
-                    GL.UseProgram(_pal._backupProgram);
-                    _pal.CheckGlError();
-                }
-                else
-                {
-                    GL.Uniform3(slot, 1, (float*)ptr);
-                    _pal.CheckGlError();
-                }
-            }
-        }
-    }
-
-    public void SetUniform(string uniformName, in Vector2 vector)
-    {
-        var uniformId = GetUniform(uniformName);
-        SetUniformDirect(uniformId, vector);
-    }
-
-    public void SetUniform(InternedUniform uniformName, in Vector2 vector)
-    {
-        var uniformId = GetUniform(uniformName);
-        SetUniformDirect(uniformId, vector);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void SetUniformDirect(int slot, in Vector2 vector)
-    {
-        unsafe
-        {
-            fixed (Vector2* ptr = &vector)
-            {
-                if (_pal._backupProgram != Handle)
-                {
-                    GL.UseProgram(Handle);
-                    _pal.CheckGlError();
-                    GL.Uniform2(slot, 1, (float*)ptr);
-                    _pal.CheckGlError();
-                    GL.UseProgram(_pal._backupProgram);
-                    _pal.CheckGlError();
-                }
-                else
-                {
-                    GL.Uniform2(slot, 1, (float*)ptr);
-                    _pal.CheckGlError();
-                }
-            }
-        }
-    }
-
-    public void SetUniform(string uniformName, Vector2[] vector)
-    {
-        var uniformId = GetUniform(uniformName);
-        SetUniformDirect(uniformId, vector);
-    }
-
-    public void SetUniform(InternedUniform uniformName, Vector2[] vector)
-    {
-        var uniformId = GetUniform(uniformName);
-        SetUniformDirect(uniformId, vector);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void SetUniformDirect(int slot, Vector2[] vectors)
-    {
-        unsafe
-        {
-            fixed (Vector2* ptr = &vectors[0])
-            {
-                if (_pal._backupProgram != Handle)
-                {
-                    GL.UseProgram(Handle);
-                    _pal.CheckGlError();
-                    GL.Uniform2(slot, vectors.Length, (float*)ptr);
-                    _pal.CheckGlError();
-                    GL.UseProgram(_pal._backupProgram);
-                    _pal.CheckGlError();
-                }
-                else
-                {
-                    GL.Uniform2(slot, vectors.Length, (float*)ptr);
-                    _pal.CheckGlError();
-                }
-            }
-        }
-    }
-
-    public void SetUniformMaybe(string uniformName, in Vector4 value)
-    {
-        if (TryGetUniform(uniformName, out var slot))
-        {
-            SetUniformDirect(slot, value);
-        }
-    }
-
-    public void SetUniformMaybe(InternedUniform uniformName, in Vector4 value)
-    {
-        if (TryGetUniform(uniformName, out var slot))
-        {
-            SetUniformDirect(slot, value);
-        }
-    }
-
-    public void SetUniformMaybe(string uniformName, in Color value)
-    {
-        if (TryGetUniform(uniformName, out var slot))
-        {
-            SetUniformDirect(slot, value);
-        }
-    }
-
-    public void SetUniformMaybe(InternedUniform uniformName, in Color value)
-    {
-        if (TryGetUniform(uniformName, out var slot))
-        {
-            SetUniformDirect(slot, value);
-        }
-    }
-
-    public void SetUniformMaybe(string uniformName, in Matrix3x2 value)
-    {
-        if (TryGetUniform(uniformName, out var slot))
-        {
-            SetUniformDirect(slot, value);
-        }
-    }
-
-    public void SetUniformMaybe(string uniformName, in Matrix4 value, bool transpose=true)
-    {
-        if (TryGetUniform(uniformName, out var slot))
-        {
-            SetUniformDirect(slot, value, transpose);
-        }
-    }
-
-    public void SetUniformMaybe(InternedUniform uniformName, in Matrix3x2 value)
-    {
-        if (TryGetUniform(uniformName, out var slot))
-        {
-            SetUniformDirect(slot, value);
-        }
-    }
-
-    public void SetUniformMaybe(string uniformName, in Vector2 value)
-    {
-        if (TryGetUniform(uniformName, out var slot))
-        {
-            SetUniformDirect(slot, value);
-        }
-    }
-
-    public void SetUniformMaybe(string uniformName, in Vector2i value)
-    {
-        if (TryGetUniform(uniformName, out var slot))
-        {
-            SetUniformDirect(slot, value);
-        }
-    }
-
-    public void SetUniformMaybe(InternedUniform uniformName, in Vector2 value)
-    {
-        if (TryGetUniform(uniformName, out var slot))
-        {
-            SetUniformDirect(slot, value);
-        }
-    }
-
-    public void SetUniformMaybe(string uniformName, int value)
-    {
-        if (TryGetUniform(uniformName, out var slot))
-        {
-            GL.Uniform1(slot, value);
-            _pal.CheckGlError();
-        }
-    }
-
-    public void SetUniformMaybe(string uniformName, float value)
-    {
-        if (TryGetUniform(uniformName, out var slot))
-        {
-            GL.Uniform1(slot, value);
-            _pal.CheckGlError();
-        }
-    }
-
-    private static void ThrowCouldNotGetUniform(string name)
-    {
-        throw new ArgumentException($"Could not get uniform \"{name}\"!");
     }
 }
