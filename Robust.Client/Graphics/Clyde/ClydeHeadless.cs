@@ -35,7 +35,7 @@ namespace Robust.Client.Graphics.Clyde
         private readonly List<IClydeWindow> _windows = new();
         private int _nextWindowId = 2;
 
-        public ShaderInstance InstanceShader(ShaderSourceResource handle, bool? light = null, ShaderBlendMode? blend = null)
+        public ShaderInstance InstanceShader(ShaderSourceResource handle, bool? light = null, BlendParameters? blend = null)
         {
             return new DummyShaderInstance();
         }
@@ -447,6 +447,8 @@ namespace Robust.Client.Graphics.Clyde
             public GPUVertexArrayObject? VAO { get; set; }
 
             public StencilParameters Stencil { get; set; }
+
+            public BlendParameters Blend { get; set; }
 
             public UIBox2i? Scissor { get; set; }
 

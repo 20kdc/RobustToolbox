@@ -18,8 +18,11 @@ public interface IGPURenderState
     /// <summary>Vertex array object.</summary>
     GPUVertexArrayObject? VAO { get; set; }
 
-    /// <summary>Stencil parameters. Be aware that the stencil mask is still used.</summary>
+    /// <summary>Stencil parameters.</summary>
     StencilParameters Stencil { get; set; }
+
+    /// <summary>Blend parameters.</summary>
+    BlendParameters Blend { get; set; }
 
     /// <summary>Scissor box.</summary>
     UIBox2i? Scissor { get; set; }

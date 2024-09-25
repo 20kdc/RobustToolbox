@@ -59,7 +59,10 @@ public abstract class GPUBuffer : GPUResource
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void WriteSubData<T>(Span<T> data) where T : unmanaged => WriteSubData(0, MemoryMarshal.AsBytes((ReadOnlySpan<T>) data));
 
-    /// <summary>Represents the intended usage mode of the buffer.</summary>
+    /// <summary>
+    /// Represents the intended usage mode of the buffer.
+    /// For performance reasons, we cheat and use the GL values here.
+    /// </summary>
     public enum Usage
     {
         /// <summary>Optimize for reallocation.</summary>

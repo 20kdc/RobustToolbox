@@ -100,9 +100,11 @@ internal partial class PAL
                 _isStencilling = true;
             }
 
-            GL.StencilFunc(ToGLStencilFunc(sp.Func), sp.Ref, sp.ReadMask);
+            GL.StencilFunc((StencilFunction) sp.Func, sp.Ref, sp.ReadMask);
             CheckGlError();
-            GL.StencilOp(TKStencilOp.Keep, TKStencilOp.Keep, ToGLStencilOp(sp.Op));
+            GL.StencilOp(TKStencilOp.Keep, TKStencilOp.Keep, (TKStencilOp) sp.Op);
+            CheckGlError();
+            GL.StencilMask(sp.WriteMask);
             CheckGlError();
         }
         else if (_isStencilling)
@@ -111,55 +113,26 @@ internal partial class PAL
             CheckGlError();
             _isStencilling = false;
         }
-        GL.StencilMask(sp.WriteMask);
-        CheckGlError();
     }
 
-    private static TKStencilOp ToGLStencilOp(StencilOp op)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void ApplyBlendParameters(in BlendParameters sp)
     {
-        return op switch
+        // Handle stencil parameters.
+        if (sp.Enabled)
         {
-            StencilOp.Keep => TKStencilOp.Keep,
-            StencilOp.Zero => TKStencilOp.Zero,
-            StencilOp.Replace => TKStencilOp.Replace,
-            StencilOp.IncrementClamp => TKStencilOp.Incr,
-            StencilOp.IncrementWrap => TKStencilOp.IncrWrap,
-            StencilOp.DecrementClamp => TKStencilOp.Decr,
-            StencilOp.DecrementWrap => TKStencilOp.DecrWrap,
-            StencilOp.Invert => TKStencilOp.Invert,
-            _ => throw new NotSupportedException()
-        };
-    }
-
-    private static StencilFunction ToGLStencilFunc(StencilFunc op)
-    {
-        return op switch
+            GL.Enable(EnableCap.Blend);
+            CheckGlError();
+            GL.BlendFuncSeparate((BlendingFactorSrc) sp.SrcRGB, (BlendingFactorDest) sp.DstRGB, (BlendingFactorSrc) sp.SrcAlpha, (BlendingFactorDest) sp.DstAlpha);
+            CheckGlError();
+            GL.BlendEquationSeparate((BlendEquationMode) sp.EquationRGB, (BlendEquationMode) sp.EquationAlpha);
+            CheckGlError();
+        }
+        else if (_isStencilling)
         {
-            StencilFunc.Never => StencilFunction.Never,
-            StencilFunc.Always => StencilFunction.Always,
-            StencilFunc.Less => StencilFunction.Less,
-            StencilFunc.LessOrEqual => StencilFunction.Lequal,
-            StencilFunc.Greater => StencilFunction.Greater,
-            StencilFunc.GreaterOrEqual => StencilFunction.Gequal,
-            StencilFunc.NotEqual => StencilFunction.Notequal,
-            StencilFunc.Equal => StencilFunction.Equal,
-            _ => throw new NotSupportedException()
-        };
-    }
-
-    internal static PrimitiveType MapPrimitiveType(DrawPrimitiveTopology type)
-    {
-        return type switch
-        {
-            DrawPrimitiveTopology.TriangleList => PrimitiveType.Triangles,
-            DrawPrimitiveTopology.TriangleFan => PrimitiveType.TriangleFan,
-            DrawPrimitiveTopology.TriangleStrip => PrimitiveType.TriangleStrip,
-            DrawPrimitiveTopology.LineList => PrimitiveType.Lines,
-            DrawPrimitiveTopology.LineStrip => PrimitiveType.LineStrip,
-            DrawPrimitiveTopology.LineLoop => PrimitiveType.LineLoop,
-            DrawPrimitiveTopology.PointList => PrimitiveType.Points,
-            _ => PrimitiveType.Triangles
-        };
+            GL.Disable(EnableCap.Blend);
+            CheckGlError();
+        }
     }
 
     internal sealed class GLRenderState(PAL pal) : IGPURenderState
@@ -218,6 +191,18 @@ internal partial class PAL
                 _stencil = value;
                 if (_pal._currentRenderState == this)
                     _pal.ApplyStencilParameters(value);
+            }
+        }
+
+        private BlendParameters _blend = new();
+        public BlendParameters Blend
+        {
+            get => _blend;
+            set
+            {
+                _blend = value;
+                if (_pal._currentRenderState == this)
+                    _pal.ApplyBlendParameters(value);
             }
         }
 
@@ -323,6 +308,7 @@ internal partial class PAL
                 if (_vao != null)
                     _pal.DCBindVAO(_vao.ObjectHandle);
                 _pal.ApplyStencilParameters(_stencil);
+                _pal.ApplyBlendParameters(_blend);
                 _pal.SetViewportImmediate(_viewport);
                 _pal.SetCDMaskImmediate(_colourDepthMask);
                 foreach (var entry in _textures)
@@ -350,7 +336,7 @@ internal partial class PAL
         {
             Bind();
             DebugTools.AssertNotNull(_vao);
-            GL.DrawArrays(MapPrimitiveType(topology), offset, count);
+            GL.DrawArrays((PrimitiveType) topology, offset, count);
             _pal.CheckGlError();
             _pal.LastGLDrawCalls += 1;
         }
@@ -367,7 +353,7 @@ internal partial class PAL
             // Just to be clear, that's bad.
             if (GL.GetInteger(GetPName.ElementArrayBufferBinding) == 0)
                 throw new Exception("Somehow, ElementArrayBufferBinding == 0");
-            GL.DrawElements(MapPrimitiveType(topology), count, DrawElementsType.UnsignedShort, offset);
+            GL.DrawElements((PrimitiveType) topology, count, DrawElementsType.UnsignedShort, offset);
             _pal.CheckGlError();
             _pal.LastGLDrawCalls += 1;
         }

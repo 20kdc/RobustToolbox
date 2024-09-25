@@ -55,8 +55,6 @@ namespace Robust.Client.Graphics.Clyde
             var size = ScreenSize;
             if (size.X == 0 || size.Y == 0 || allMinimized)
             {
-                ClearFramebuffer(Color.Black);
-
                 // Sleep to avoid turning the computer into a heater.
                 Thread.Sleep(16);
                 return;
@@ -95,7 +93,8 @@ namespace Robust.Client.Graphics.Clyde
             }
 
             // Clear screen to correct color.
-            ClearFramebuffer(ConvertClearFromSrgb(_userInterfaceManager.GetMainClearColor()));
+            var clearValue = ConvertClearFromSrgb(_userInterfaceManager.GetMainClearColor());
+            MainWindow.RenderTarget.Clear(clearValue.R, clearValue.G, clearValue.B, clearValue.A, stencilMask: -1, stencilValue: 0);
 
             using (_pal.DebugGroup("UI"))
             using (_prof.Group("UI"))
@@ -141,7 +140,9 @@ namespace Robust.Client.Graphics.Clyde
             }
 
             if (overlay.OverwriteTargetFrameBuffer)
-                ClearFramebuffer(default);
+            {
+                MainWindow.RenderTarget.Clear(0, 0, 0, 0, stencilMask: -1, stencilValue: 0);
+            }
 
             try
             {
@@ -196,7 +197,9 @@ namespace Robust.Client.Graphics.Clyde
                     }
 
                     if (overlay.OverwriteTargetFrameBuffer)
-                        ClearFramebuffer(default);
+                    {
+                        vp.RenderTarget!.Clear(0, 0, 0, 0, stencilMask: -1, stencilValue: 0);
+                    }
 
                     overlay.Draw(args);
                 }
@@ -406,7 +409,7 @@ namespace Robust.Client.Graphics.Clyde
         private void DrawSplash(IRenderHandle handle)
         {
             // Clear screen to black for splash.
-            ClearFramebuffer(Color.Black);
+            _renderState.RenderTarget!.Clear(0, 0, 0, 1, stencilMask: -1, stencilValue: 0);
 
             var splashTex = _cfg.GetCVar(CVars.DisplaySplashLogo);
             if (string.IsNullOrEmpty(splashTex))
@@ -439,7 +442,10 @@ namespace Robust.Client.Graphics.Clyde
             {
                 BindRenderTargetFull(rt);
                 if (clearColor is not null)
-                    ClearFramebuffer(ConvertClearFromSrgb(clearColor.Value));
+                {
+                    var clearValue = ConvertClearFromSrgb(clearColor.Value);
+                    rt.Clear(clearValue.R, clearValue.G, clearValue.B, clearValue.A, stencilMask: -1, stencilValue: 0);
+                }
 
                 _renderState.Viewport = Box2i.FromDimensions(Vector2i.Zero, rt.Size);
                 _updateUniformConstants(rt.Size);

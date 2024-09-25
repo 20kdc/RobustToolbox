@@ -191,13 +191,12 @@ namespace Robust.Client.Graphics.Clyde
                 _hasGL.Overriding,
                 _windowing!.GetDescription());
 
-            GL.Enable(EnableCap.Blend);
             if (!_hasGL.AnyVertexArrayObjects)
             {
                 _sawmillOgl.Warning("NO VERTEX ARRAY OBJECTS! Things will probably go terribly, terribly wrong (no fallback path yet)");
             }
 
-            ResetBlendFunc();
+            _renderState.Blend = BlendParameters.Mix;
 
             CheckGlError();
 

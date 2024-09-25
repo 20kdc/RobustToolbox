@@ -12,7 +12,7 @@ namespace Robust.Client.Graphics
         public ParsedShader(IReadOnlyDictionary<string, ShaderUniformDefinition> uniforms,
             IReadOnlyDictionary<string, ShaderVaryingDefinition> varyings,
             IReadOnlyDictionary<string, ShaderConstantDefinition> constants, IList<ShaderFunctionDefinition> functions,
-            ShaderLightMode lightMode, ShaderBlendMode blendMode, ShaderPreset preset, ICollection<ResPath> includes)
+            ShaderLightMode lightMode, BlendParameters blendMode, ShaderPreset preset, ICollection<ResPath> includes)
         {
             Uniforms = uniforms;
             Varyings = varyings;
@@ -29,7 +29,7 @@ namespace Robust.Client.Graphics
         [ViewVariables] public IReadOnlyDictionary<string, ShaderConstantDefinition> Constants { get; }
         [ViewVariables] public IList<ShaderFunctionDefinition> Functions { get; }
         [ViewVariables] public ShaderLightMode LightMode { get; }
-        [ViewVariables] public ShaderBlendMode BlendMode { get; }
+        [ViewVariables] public BlendParameters BlendMode { get; }
         [ViewVariables] public ShaderPreset Preset { get; }
         [ViewVariables] public ICollection<ResPath> Includes { get; }
 
@@ -262,16 +262,6 @@ namespace Robust.Client.Graphics
     {
         Default = 0,
         Unshaded = 1,
-    }
-
-    internal enum ShaderBlendMode : byte
-    {
-        None,
-        Normal,
-        Mix,
-        Add,
-        Subtract,
-        Multiply
     }
 
     internal enum ShaderPreset : byte

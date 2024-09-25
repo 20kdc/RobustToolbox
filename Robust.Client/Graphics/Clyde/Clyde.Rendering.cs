@@ -254,7 +254,7 @@ namespace Robust.Client.Graphics.Clyde
 
             program.SetUniformMaybe(InternedUniform.UniITexturePixelSize, Vector2.One / loadedTexture.Size);
 
-            SetBlendFunc(loaded.BlendMode);
+            _renderState.Blend = loaded.BlendMode;
 
             if (command.Indexed)
             {
@@ -265,8 +265,7 @@ namespace Robust.Client.Graphics.Clyde
                 _renderState.DrawArrays(command.PrimitiveType, command.StartIndex, command.Count);
             }
 
-            ResetBlendFunc();
-            GL.BlendEquation(BlendEquationMode.FuncAdd);
+            _renderState.Blend = BlendParameters.Mix;
         }
 
         private void _drawQuad(Vector2 a, Vector2 b, in Matrix3x2 modelMatrix, GLShaderProgram program)
@@ -331,17 +330,6 @@ namespace Robust.Client.Graphics.Clyde
             _renderState.Scissor = state;
 
             _currentScissorState = state;
-        }
-
-        // NOTE: sRGB IS IN LINEAR IF FRAMEBUFFER_SRGB IS ACTIVE.
-        private void ClearFramebuffer(Color color, int stencil = 0, ClearBufferMask mask = ClearBufferMask.ColorBufferBit | ClearBufferMask.StencilBufferBit)
-        {
-            GL.ClearColor(color.ConvertOpenTK());
-            CheckGlError();
-            GL.ClearStencil(stencil);
-            CheckGlError();
-            GL.Clear(mask);
-            CheckGlError();
         }
 
         private Color ConvertClearFromSrgb(Color color)
@@ -750,38 +738,6 @@ namespace Robust.Client.Graphics.Clyde
             _queuedShaderInstance = _defaultShader;
 
             ((IGPURenderState) _renderState).SetViewport(0, 0, _mainWindow!.FramebufferSize.X, _mainWindow!.FramebufferSize.Y);
-        }
-
-        private void SetBlendFunc(ShaderBlendMode blend)
-        {
-            switch (blend)
-                {
-                    case ShaderBlendMode.Add:
-                        GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.DstAlpha);
-                        break;
-                    case ShaderBlendMode.Subtract:
-                        GL.BlendFuncSeparate(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.DstAlpha, BlendingFactorSrc.Zero, BlendingFactorDest.DstAlpha);
-                        GL.BlendEquation(BlendEquationMode.FuncReverseSubtract);
-                        break;
-                    case ShaderBlendMode.Multiply:
-                        GL.BlendFunc(BlendingFactor.DstColor, BlendingFactor.OneMinusSrcAlpha);
-                        break;
-                    case ShaderBlendMode.None:
-                        GL.BlendFunc(BlendingFactor.One, BlendingFactor.Zero);
-                        break;
-                    case ShaderBlendMode.Normal:
-                        GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-                        break;
-                }
-        }
-
-        private void ResetBlendFunc()
-        {
-            GL.BlendFuncSeparate(
-                BlendingFactorSrc.SrcAlpha,
-                BlendingFactorDest.OneMinusSrcAlpha,
-                BlendingFactorSrc.One,
-                BlendingFactorDest.OneMinusSrcAlpha);
         }
 
         private void FenceRenderTarget(PAL.RenderTargetBase rt)

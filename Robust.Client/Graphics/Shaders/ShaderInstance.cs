@@ -239,4 +239,61 @@ namespace Robust.Client.Graphics
         [DataField("op")] public StencilOp Op = StencilOp.Keep;
         [DataField("func")] public StencilFunc Func  = StencilFunc.Always;
     }
+
+    [DataDefinition]
+    public partial struct BlendParameters
+    {
+        public static readonly BlendParameters None = new();
+
+        public static readonly BlendParameters Normal = new BlendParameters {
+            Enabled = true,
+            SrcRGB = BlendFactor.SrcAlpha,
+            DstRGB = BlendFactor.OneMinusSrcAlpha,
+            SrcAlpha = BlendFactor.SrcAlpha,
+            DstAlpha = BlendFactor.OneMinusSrcAlpha,
+        };
+        public static readonly BlendParameters Add = new BlendParameters {
+            Enabled = true,
+            SrcRGB = BlendFactor.SrcAlpha,
+            DstRGB = BlendFactor.DstAlpha,
+            SrcAlpha = BlendFactor.SrcAlpha,
+            DstAlpha = BlendFactor.DstAlpha,
+        };
+        public static readonly BlendParameters Subtract = new BlendParameters {
+            Enabled = true,
+            SrcRGB = BlendFactor.SrcAlpha,
+            DstRGB = BlendFactor.DstAlpha,
+            SrcAlpha = BlendFactor.Zero,
+            DstAlpha = BlendFactor.DstAlpha,
+            EquationRGB = BlendEquation.ReverseSubtract,
+            EquationAlpha = BlendEquation.ReverseSubtract
+        };
+        public static readonly BlendParameters Multiply = new BlendParameters {
+            Enabled = true,
+            SrcRGB = BlendFactor.DstColor,
+            DstRGB = BlendFactor.OneMinusSrcAlpha,
+            SrcAlpha = BlendFactor.DstColor,
+            DstAlpha = BlendFactor.OneMinusSrcAlpha,
+        };
+        public static readonly BlendParameters Mix = new BlendParameters {
+            Enabled = true,
+            SrcRGB = BlendFactor.SrcAlpha,
+            DstRGB = BlendFactor.OneMinusSrcAlpha,
+            SrcAlpha = BlendFactor.One,
+            DstAlpha = BlendFactor.OneMinusSrcAlpha,
+        };
+
+        public BlendParameters()
+        {
+        }
+
+        [ViewVariables] public bool Enabled = false;
+        [DataField("srcRGB")] public BlendFactor SrcRGB = BlendFactor.SrcAlpha;
+        [DataField("dstRGB")] public BlendFactor DstRGB = BlendFactor.OneMinusSrcAlpha;
+        [DataField("srcAlpha")] public BlendFactor SrcAlpha = BlendFactor.SrcAlpha;
+        [DataField("dstAlpha")] public BlendFactor DstAlpha = BlendFactor.OneMinusSrcAlpha;
+        [DataField("equationRGB")] public BlendEquation EquationRGB = BlendEquation.Add;
+        [DataField("equationAlpha")] public BlendEquation EquationAlpha = BlendEquation.Add;
+        [DataField("color")] public Color Constant = Color.White;
+    }
 }

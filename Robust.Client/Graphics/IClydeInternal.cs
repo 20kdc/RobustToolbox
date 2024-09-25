@@ -42,7 +42,7 @@ namespace Robust.Client.Graphics
         /// <summary>
         ///     Creates a new instance of a shader.
         /// </summary>
-        ShaderInstance InstanceShader(ShaderSourceResource handle, bool? light = null, ShaderBlendMode? blend = null);
+        ShaderInstance InstanceShader(ShaderSourceResource handle, bool? light = null, BlendParameters? blend = null);
 
         /// <summary>
         ///     This is purely a hook for <see cref="IInputManager"/>, use that instead.

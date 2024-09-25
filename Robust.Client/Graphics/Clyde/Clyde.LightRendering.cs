@@ -247,8 +247,7 @@ namespace Robust.Client.Graphics.Clyde
         {
             const float arbitraryDistanceMax = 1234;
 
-            GL.Disable(EnableCap.Blend);
-            CheckGlError();
+            _renderState.Blend = BlendParameters.None;
 
             GL.Enable(EnableCap.DepthTest);
             CheckGlError();
@@ -285,8 +284,7 @@ namespace Robust.Client.Graphics.Clyde
             CheckGlError();
             _renderState.ColourDepthMask = ColourDepthMask.RGBAMask;
 
-            GL.Enable(EnableCap.Blend);
-            CheckGlError();
+            _renderState.Blend = BlendParameters.Mix;
         }
 
         private void DrawLightsAndFov(Viewport viewport, Box2Rotated worldBounds, Box2 worldAABB, IEye eye)
@@ -368,8 +366,14 @@ namespace Robust.Client.Graphics.Clyde
 
             _renderState.SetTexture(lightShader.GetTextureUnit("shadowMap"), ShadowTexture);
 
-            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.One);
-            CheckGlError();
+            _renderState.Blend = new BlendParameters
+            {
+                Enabled = true,
+                SrcRGB = BlendFactor.SrcAlpha,
+                SrcAlpha = BlendFactor.SrcAlpha,
+                DstRGB = BlendFactor.One,
+                DstAlpha = BlendFactor.One
+            };
 
             _renderState.Stencil = new StencilParameters
             {
@@ -461,7 +465,7 @@ namespace Robust.Client.Graphics.Clyde
                 }
             }
 
-            ResetBlendFunc();
+            _renderState.Blend = BlendParameters.Mix;
             _renderState.Stencil = new();
 
             CheckGlError();
@@ -602,8 +606,7 @@ namespace Robust.Client.Graphics.Clyde
         {
             using var _ = _pal.DebugGroup(nameof(BlurLights));
 
-            GL.Disable(EnableCap.Blend);
-            CheckGlError();
+            _renderState.Blend = BlendParameters.None;
             CalcScreenMatrices(viewport.Size, out var proj, out var view);
             SetProjViewBuffer(proj, view);
 
@@ -653,8 +656,8 @@ namespace Robust.Client.Graphics.Clyde
                 _renderState.SetTexture(InternedUniform.MainTextureUnit, viewport.LightRenderTarget.Texture);
             }
 
-            GL.Enable(EnableCap.Blend);
-            CheckGlError();
+            _renderState.Blend = BlendParameters.Mix;
+
             // We didn't trample over the old _currentMatrices so just roll it back.
             SetProjViewBuffer(_currentMatrixProj, _currentMatrixView);
         }
@@ -663,8 +666,7 @@ namespace Robust.Client.Graphics.Clyde
         {
             using var _ = _pal.DebugGroup(nameof(BlurOntoWalls));
 
-            GL.Disable(EnableCap.Blend);
-            CheckGlError();
+            _renderState.Blend = BlendParameters.None;
             CalcScreenMatrices(viewport.Size, out var proj, out var view);
             SetProjViewBuffer(proj, view);
 
@@ -712,8 +714,7 @@ namespace Robust.Client.Graphics.Clyde
                 _renderState.SetTexture(InternedUniform.MainTextureUnit, viewport.WallBleedIntermediateRenderTarget2.Texture);
             }
 
-            GL.Enable(EnableCap.Blend);
-            CheckGlError();
+            _renderState.Blend = BlendParameters.Mix;
             // We didn't trample over the old _currentMatrices so just roll it back.
             SetProjViewBuffer(_currentMatrixProj, _currentMatrixView);
         }
@@ -725,8 +726,7 @@ namespace Robust.Client.Graphics.Clyde
             BindRenderTargetFull(viewport.LightRenderTarget);
 
             ((IGPURenderState) _renderState).SetViewport(0, 0, viewport.LightRenderTarget.Size.X, viewport.LightRenderTarget.Size.Y);
-            GL.Disable(EnableCap.Blend);
-            CheckGlError();
+            _renderState.Blend = BlendParameters.None;
 
             var shader = _loadedShaders[_mergeWallLayerShaderHandle].Program;
             _renderState.Program = shader;
@@ -739,12 +739,9 @@ namespace Robust.Client.Graphics.Clyde
 
             _renderState.VAO = _occlusionMaskVao;
 
-            GL.DrawElements(GetQuadGLPrimitiveType(), _occlusionMaskDataLength, DrawElementsType.UnsignedShort,
-                IntPtr.Zero);
-            CheckGlError();
+            _renderState.DrawElements(GetQuadBatchPrimitiveType(), 0, _occlusionMaskDataLength);
 
-            GL.Enable(EnableCap.Blend);
-            CheckGlError();
+            _renderState.Blend = BlendParameters.Mix;
         }
 
         private void ApplyFovToBuffer(Viewport viewport, IEye eye)

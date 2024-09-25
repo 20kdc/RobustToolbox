@@ -66,13 +66,23 @@ namespace Robust.Client.Graphics
                 case ShaderKind.Canvas:
 
                     var hasLight = _rawMode != "unshaded";
-                    ShaderBlendMode? blend = null;
+                    BlendParameters? blend = null;
                     if (_rawBlendMode != null)
                     {
-                        if (!Enum.TryParse<ShaderBlendMode>(_rawBlendMode, true, out var parsed))
-                            Logger.Error($"invalid mode: {_rawBlendMode}");
+                        if (_rawBlendMode == "None")
+                            blend = BlendParameters.None;
+                        else if (_rawBlendMode == "Normal")
+                            blend = BlendParameters.Normal;
+                        else if (_rawBlendMode == "Add")
+                            blend = BlendParameters.Add;
+                        else if (_rawBlendMode == "Subtract")
+                            blend = BlendParameters.Subtract;
+                        else if (_rawBlendMode == "Multiply")
+                            blend = BlendParameters.Multiply;
+                        if (_rawBlendMode == "Mix")
+                            blend = BlendParameters.Mix;
                         else
-                            blend = parsed;
+                            Logger.Error($"invalid mode: {_rawBlendMode}");
                     }
 
                     instance = IoCManager.Resolve<IClydeInternal>().InstanceShader(_source!, hasLight, blend);

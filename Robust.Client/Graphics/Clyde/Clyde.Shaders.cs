@@ -60,7 +60,7 @@ namespace Robust.Client.Graphics.Clyde
             public bool HasLighting;
 
             [ViewVariables]
-            public ShaderBlendMode BlendMode;
+            public BlendParameters BlendMode;
 
             [ViewVariables]
             public bool ParametersDirty = true;
@@ -115,7 +115,7 @@ namespace Robust.Client.Graphics.Clyde
             loaded.Program = program;
         }
 
-        public ShaderInstance InstanceShader(ShaderSourceResource source, bool? lighting = null, ShaderBlendMode? mode = null)
+        public ShaderInstance InstanceShader(ShaderSourceResource source, bool? lighting = null, BlendParameters? mode = null)
         {
             var newHandle = AllocRid();
             var loaded = new LoadedShaderInstance

@@ -45,7 +45,7 @@ namespace Robust.Client.Graphics
         private ParsedShader _parse()
         {
             ShaderLightMode? lightMode = null;
-            ShaderBlendMode? blendMode = null;
+            BlendParameters? blendMode = null;
             ShaderPreset? preset = null;
 
             Token? token;
@@ -101,12 +101,12 @@ namespace Robust.Client.Graphics
 
                     blendMode = token switch
                     {
-                        TokenWord t when t.Word == "mix" => ShaderBlendMode.Mix,
-                        TokenWord t when t.Word == "add" => ShaderBlendMode.Add,
-                        TokenWord t when t.Word == "subtract" => ShaderBlendMode.Subtract,
-                        TokenWord t when t.Word == "multiply" => ShaderBlendMode.Multiply,
-                        TokenWord t when t.Word == "none" => ShaderBlendMode.None,
-                        TokenWord t when t.Word == "normal" => ShaderBlendMode.Normal,
+                        TokenWord t when t.Word == "mix" => BlendParameters.Mix,
+                        TokenWord t when t.Word == "add" => BlendParameters.Add,
+                        TokenWord t when t.Word == "subtract" => BlendParameters.Subtract,
+                        TokenWord t when t.Word == "multiply" => BlendParameters.Multiply,
+                        TokenWord t when t.Word == "none" => BlendParameters.None,
+                        TokenWord t when t.Word == "normal" => BlendParameters.Normal,
                         _ => throw new ShaderParseException("Expected 'mix', 'add', 'subtract', 'normal', 'none' or 'multiply'.")
                     };
 
@@ -191,7 +191,7 @@ namespace Robust.Client.Graphics
                 _constantsParsing.ToDictionary(p => p.Name, p => p),
                 _functionsParsing,
                 lightMode ?? ShaderLightMode.Default,
-                blendMode ?? ShaderBlendMode.Mix,
+                blendMode ?? BlendParameters.Mix,
                 preset ?? ShaderPreset.Default,
                 _includes);
         }

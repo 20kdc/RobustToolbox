@@ -1,25 +1,7 @@
 using System;
-using System.Buffers;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
-using System.Runtime.InteropServices;
-using System.Threading;
-using OpenToolkit.Graphics.OpenGL4;
-using Robust.Client.Utility;
 using Robust.Shared.Graphics;
-using Robust.Shared.IoC;
-using Robust.Shared.Maths;
-using Robust.Shared.Utility;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
-using Color = Robust.Shared.Maths.Color;
-using OGLTextureWrapMode = OpenToolkit.Graphics.OpenGL.TextureWrapMode;
-using PIF = OpenToolkit.Graphics.OpenGL4.PixelInternalFormat;
-using PF = OpenToolkit.Graphics.OpenGL4.PixelFormat;
-using PT = OpenToolkit.Graphics.OpenGL4.PixelType;
-using TextureWrapMode = Robust.Shared.Graphics.TextureWrapMode;
 
 namespace Robust.Client.Graphics.Clyde;
 
