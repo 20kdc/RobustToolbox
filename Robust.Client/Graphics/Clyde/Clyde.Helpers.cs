@@ -96,16 +96,5 @@ namespace Robust.Client.Graphics.Clyde
         {
             _pal._hasGL.CheckGlError(path, line);
         }
-
-        private nint LoadGLProc(string name)
-        {
-            var proc = _glBindingsContext.GetProcAddress(name);
-            if (proc == IntPtr.Zero || proc == new IntPtr(1) || proc == new IntPtr(2))
-            {
-                throw new InvalidOperationException($"Unable to load GL function '{name}'!");
-            }
-
-            return proc;
-        }
     }
 }

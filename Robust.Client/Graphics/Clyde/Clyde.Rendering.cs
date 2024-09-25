@@ -870,21 +870,6 @@ namespace Robust.Client.Graphics.Clyde
             Clear
         }
 
-        private struct PopDebugGroup : IDisposable
-        {
-            private readonly Clyde _clyde;
-
-            public PopDebugGroup(Clyde clyde)
-            {
-                _clyde = clyde;
-            }
-
-            public void Dispose()
-            {
-                _clyde.PopDebugGroupMaybe();
-            }
-        }
-
         private readonly struct BatchMetaData
         {
             public readonly ClydeTexture Texture;

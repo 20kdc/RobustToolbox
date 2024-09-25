@@ -97,7 +97,7 @@ namespace Robust.Client.Graphics.Clyde
             // Clear screen to correct color.
             ClearFramebuffer(ConvertClearFromSrgb(_userInterfaceManager.GetMainClearColor()));
 
-            using (DebugGroup("UI"))
+            using (_pal.DebugGroup("UI"))
             using (_prof.Group("UI"))
             {
                 _userInterfaceManager.Render(_renderHandle);
@@ -155,7 +155,7 @@ namespace Robust.Client.Graphics.Clyde
 
         private void RenderOverlays(Viewport vp, OverlaySpace space, in Box2 worldBox, in Box2Rotated worldBounds)
         {
-            using (DebugGroup($"Overlays: {space}"))
+            using (_pal.DebugGroup($"Overlays: {space}"))
             {
                 foreach (var overlay in GetOverlaysForSpace(space))
                 {
@@ -469,7 +469,7 @@ namespace Robust.Client.Graphics.Clyde
 
             RenderInRenderTarget(viewport.RenderTarget, () =>
             {
-                using var _ = DebugGroup($"Viewport: {viewport.Name}");
+                using var _ = _pal.DebugGroup($"Viewport: {viewport.Name}");
 
                 var oldVp = _currentViewport;
 
@@ -487,7 +487,7 @@ namespace Robust.Client.Graphics.Clyde
 
                 if (eye.Position.MapId != MapId.Nullspace)
                 {
-                    using (DebugGroup("Lights"))
+                    using (_pal.DebugGroup("Lights"))
                     using (_prof.Group("Lights"))
                     {
                         DrawLightsAndFov(viewport, worldBounds, worldAABB, eye);
@@ -498,14 +498,14 @@ namespace Robust.Client.Graphics.Clyde
                         RenderOverlays(viewport, OverlaySpace.WorldSpaceBelowWorld, worldAABB, worldBounds);
                     }
 
-                    using (DebugGroup("Grids"))
+                    using (_pal.DebugGroup("Grids"))
                     using (_prof.Group("Grids"))
                     {
                         _drawGrids(viewport, worldAABB, worldBounds, eye);
                     }
 
                     // We will also render worldspace overlays here so we can do them under / above entities as necessary
-                    using (DebugGroup("Entities"))
+                    using (_pal.DebugGroup("Entities"))
                     using (_prof.Group("Entities"))
                     {
                         DrawEntities(viewport, worldBounds, worldAABB, eye);

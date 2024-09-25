@@ -191,7 +191,7 @@ namespace Robust.Client.Graphics.Clyde
 
         private void DrawFov(Viewport viewport, IEye eye)
         {
-            using var _ = DebugGroup(nameof(DrawFov));
+            using var _ = _pal.DebugGroup(nameof(DrawFov));
             using var _p = _prof.Group("DrawFov");
 
             PrepareDepthDraw(_fovRenderTarget);
@@ -328,7 +328,7 @@ namespace Robust.Client.Graphics.Clyde
                 return;
             }
 
-            using (DebugGroup("Draw shadow depth"))
+            using (_pal.DebugGroup("Draw shadow depth"))
             using (_prof.Group("Draw shadow depth"))
             {
                 PrepareDepthDraw(_shadowRenderTarget);
@@ -600,7 +600,7 @@ namespace Robust.Client.Graphics.Clyde
 
         private void BlurLights(Viewport viewport, IEye eye)
         {
-            using var _ = DebugGroup(nameof(BlurLights));
+            using var _ = _pal.DebugGroup(nameof(BlurLights));
 
             GL.Disable(EnableCap.Blend);
             CheckGlError();
@@ -661,7 +661,7 @@ namespace Robust.Client.Graphics.Clyde
 
         private void BlurOntoWalls(Viewport viewport, IEye eye)
         {
-            using var _ = DebugGroup(nameof(BlurOntoWalls));
+            using var _ = _pal.DebugGroup(nameof(BlurOntoWalls));
 
             GL.Disable(EnableCap.Blend);
             CheckGlError();
@@ -720,7 +720,7 @@ namespace Robust.Client.Graphics.Clyde
 
         private void MergeWallLayer(Viewport viewport)
         {
-            using var _ = DebugGroup(nameof(MergeWallLayer));
+            using var _ = _pal.DebugGroup(nameof(MergeWallLayer));
 
             BindRenderTargetFull(viewport.LightRenderTarget);
 
@@ -835,7 +835,7 @@ namespace Robust.Client.Graphics.Clyde
         private void UpdateOcclusionGeometry(MapId map, Box2 expandedBounds, Matrix3x2 eyeTransform)
         {
             using var _ = _prof.Group("UpdateOcclusionGeometry");
-            using var _p = DebugGroup(nameof(UpdateOcclusionGeometry));
+            using var _p = _pal.DebugGroup(nameof(UpdateOcclusionGeometry));
 
             // This method generates two sets of occlusion geometry:
             // 3D geometry used during depth projection.

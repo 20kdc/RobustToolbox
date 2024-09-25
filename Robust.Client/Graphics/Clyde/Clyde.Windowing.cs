@@ -246,7 +246,7 @@ namespace Robust.Client.Graphics.Clyde
 
             // We're ready, copy over information...
             _pal._hasGL = glFeatures!;
-            _glBindingsContext = _pal._glContext.BindingsContext;
+            _pal.SetupDebugCallback();
 
             InitOpenGL();
 

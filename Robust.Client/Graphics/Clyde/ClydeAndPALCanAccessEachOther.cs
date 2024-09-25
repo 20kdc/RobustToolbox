@@ -39,7 +39,7 @@ internal sealed partial class Clyde
 
     void IWindowingHost.SetupDebugCallback()
     {
-        SetupDebugCallback();
+        _pal.SetupDebugCallback();
     }
 
     IConfigurationManager IWindowingHost.Cfg => _cfg;
