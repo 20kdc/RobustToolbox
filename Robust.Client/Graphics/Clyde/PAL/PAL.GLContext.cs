@@ -7,7 +7,8 @@ namespace Robust.Client.Graphics.Clyde
 {
     internal sealed partial class PAL
     {
-        internal PAL.GLContextBase? _glContext;
+        internal GLWrapper _hasGL = default!;
+        internal GLContextBase? _glContext;
 
         internal void InitGLContextManager()
         {

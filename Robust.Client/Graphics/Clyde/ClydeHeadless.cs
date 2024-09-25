@@ -35,6 +35,8 @@ namespace Robust.Client.Graphics.Clyde
         private readonly List<IClydeWindow> _windows = new();
         private int _nextWindowId = 2;
 
+        private ulong _uniformBufferVersion = 1;
+
         public ShaderInstance InstanceShader(ShaderSourceResource handle, bool? light = null, BlendParameters? blend = null)
         {
             return new DummyShaderInstance();
@@ -205,8 +207,12 @@ namespace Robust.Client.Graphics.Clyde
 
         public IGPURenderState CreateRenderState() => new DummyRenderState();
 
-        /// <summary>Compiles a shader program. Throws ShaderCompilationException on error.</summary>
         public GPUShaderProgram Compile(GPUShaderProgram.Source source, string? name = null) => new DummyGPUShaderProgram();
+
+        public ulong AllocateUniformBufferVersion()
+        {
+            return _uniformBufferVersion++;
+        }
 
         public ICursor GetStandardCursor(StandardCursorShape shape)
         {
@@ -464,6 +470,14 @@ namespace Robust.Client.Graphics.Clyde
             }
 
             public void ClearTextures()
+            {
+            }
+
+            public void SetUBO(int index, GPUUniformBufferBase buf)
+            {
+            }
+
+            public void ClearUBOs()
             {
             }
 

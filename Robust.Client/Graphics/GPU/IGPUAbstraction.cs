@@ -88,4 +88,7 @@ public interface IGPUAbstraction
 
     IRenderTexture CreateRenderTarget(Vector2i size, RenderTargetFormatParameters format,
         TextureSampleParameters? sampleParameters = null, string? name = null);
+
+    /// <summary>Allocates a uniform buffer version number.</summary>
+    ulong AllocateUniformBufferVersion();
 }

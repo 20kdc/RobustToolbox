@@ -18,8 +18,6 @@ namespace Robust.Client.Graphics.Clyde
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void SetupGlobalUniformsImmediate(GLShaderProgram program, bool texIsSrgb)
         {
-            ProjViewUBO.Apply(program);
-            UniformConstantsUBO.Apply(program);
             if (!_pal.HasSrgb)
             {
                 program.SetUniformMaybe("SRGB_EMU_CONFIG",

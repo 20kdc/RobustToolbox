@@ -252,6 +252,8 @@ internal partial class PAL
 
         private Dictionary<TextureUnit, WholeTexture> _textures = new();
 
+        private Dictionary<int, GPUUniformBufferBase> _uniformBuffers = new();
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetTexture(int unit, WholeTexture? value)
         {
@@ -288,6 +290,20 @@ internal partial class PAL
         public void ClearTextures() => _textures.Clear();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetUBO(int index, GPUUniformBufferBase buf)
+        {
+            _uniformBuffers[index] = buf;
+            if (_pal._hasGL.UniformBuffers && _pal._currentRenderState == this)
+            {
+                GL.BindBufferBase(BufferRangeTarget.UniformBuffer, index, (int) ((GLBuffer) buf.Buffer!).ObjectHandle);
+                _pal.CheckGlError();
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void ClearUBOs() => _uniformBuffers.Clear();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void Bind()
         {
             if (_pal._currentRenderState != this)
@@ -317,6 +333,35 @@ internal partial class PAL
                 }
                 GL.ActiveTexture(TextureUnit.Texture0);
                 // pretty much guaranteed to succeed.
+
+                if (_pal._hasGL.UniformBuffers)
+                {
+                    foreach (var entry in _uniformBuffers)
+                    {
+                        GL.BindBufferBase(BufferRangeTarget.UniformBuffer, entry.Key, (int) ((GLBuffer) entry.Value.Buffer!).ObjectHandle);
+                        _pal.CheckGlError();
+                    }
+                }
+            }
+            // Bind() is always called before draw commands (and at pretty much no other time)
+            // So do this here.
+            if (!_pal._hasGL.UniformBuffers && _program != null)
+            {
+                // UBOs not supported.
+                // The UBO emulator uses a versioning scheme to try and keep deduplication.
+                foreach (var entry in _uniformBuffers)
+                {
+                    if (_program.UniformBufferVersions.TryGetValue(entry.Key, out var version))
+                    {
+                        // The program does support this uniform buffer
+                        if (version != entry.Value.Version)
+                        {
+                            // Incorrect version; update
+                            entry.Value.ApplyIntoShader(_program);
+                            _program.UniformBufferVersions[entry.Key] = version;
+                        }
+                    }
+                }
             }
         }
 
@@ -370,6 +415,11 @@ internal partial class PAL
             foreach (var kvp in grs._textures)
             {
                 _textures[kvp.Key] = kvp.Value;
+            }
+            _uniformBuffers.Clear();
+            foreach (var kvp in grs._uniformBuffers)
+            {
+                _uniformBuffers[kvp.Key] = kvp.Value;
             }
             if (_pal._currentRenderState == other)
             {

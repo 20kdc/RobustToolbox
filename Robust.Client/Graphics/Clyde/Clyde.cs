@@ -47,8 +47,8 @@ namespace Robust.Client.Graphics.Clyde
         [Dependency] private readonly ILocalizationManager _loc = default!;
         [Dependency] private readonly IInputManager _inputManager = default!;
 
-        private GLUniformBuffer<ProjViewMatrices> ProjViewUBO = default!;
-        private GLUniformBuffer<UniformConstants> UniformConstantsUBO = default!;
+        private GPUUniformBuffer<ProjViewMatrices> ProjViewUBO = default!;
+        private GPUUniformBuffer<UniformConstants> UniformConstantsUBO = default!;
 
         private GPUBuffer BatchVBO = default!;
         private GPUBuffer BatchEBO = default!;
@@ -247,8 +247,12 @@ namespace Robust.Client.Graphics.Clyde
                 BatchVAO.IndexBuffer = BatchEBO;
             }
 
-            ProjViewUBO = new GLUniformBuffer<ProjViewMatrices>(this, BindingIndexProjView, nameof(ProjViewUBO));
-            UniformConstantsUBO = new GLUniformBuffer<UniformConstants>(this, BindingIndexUniformConstants, nameof(UniformConstantsUBO));
+            ProjViewUBO = new GPUUniformBuffer<ProjViewMatrices>(_pal, new(), GPUBuffer.Usage.StreamDraw, nameof(ProjViewUBO));
+            UniformConstantsUBO = new GPUUniformBuffer<UniformConstants>(_pal, new(), GPUBuffer.Usage.StreamDraw, nameof(UniformConstantsUBO));
+
+            // Also must be done in ClearRenderState
+            _renderState.SetUBO(BindingIndexProjView, ProjViewUBO);
+            _renderState.SetUBO(BindingIndexUniformConstants, UniformConstantsUBO);
 
             ScreenBufferTexture = (ClydeTexture) _pal.CreateBlankTexture<Rgba32>((1, 1), "SCREEN_TEXTURE", new TextureLoadParameters() {
                 Srgb = true,

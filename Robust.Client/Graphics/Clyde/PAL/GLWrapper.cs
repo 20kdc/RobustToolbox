@@ -123,11 +123,11 @@ namespace Robust.Client.Graphics.Clyde
                 CheckGLCap(ref PixelBufferObjects, "pixel_buffer_object", (2, 1));
                 CheckGLCap(ref StandardDerivatives, "standard_derivatives", (2, 1));
 
-                Srgb = true;
-                ReadFramebuffer = true;
-                PrimitiveRestart = true;
-                UniformBuffers = true;
-                FloatFramebuffers = true;
+                Srgb = CapFinalize("srgb", true);
+                ReadFramebuffer = CapFinalize("read_framebuffer", true);
+                PrimitiveRestart = CapFinalize("primitive_restart", true);
+                UniformBuffers = CapFinalize("uniform_buffers", true);
+                FloatFramebuffers = CapFinalize("float_framebuffers", true);
 
                 GL.Enable(EnableCap.PrimitiveRestart);
                 CheckGlError();
@@ -171,23 +171,14 @@ namespace Robust.Client.Graphics.Clyde
                     CheckGlError();
                 }
 
-                if (Major >= 3)
+                if (hasBrokenWindowSrgb)
                 {
-                    if (hasBrokenWindowSrgb)
-                    {
-                        Srgb = false;
-                        _sawmill.Debug("  sRGB: false (window broken sRGB)");
-                    }
-                    else
-                    {
-                        Srgb = true;
-                        _sawmill.Debug("  sRGB: true");
-                    }
+                    Srgb = false;
+                    _sawmill.Debug("  sRGB: false (window broken sRGB)");
                 }
                 else
                 {
-                    Srgb = false;
-                    _sawmill.Debug("  sRGB: false");
+                    Srgb = CapFinalize("srgb", Major >= 3);
                 }
             }
 
@@ -213,7 +204,12 @@ namespace Robust.Client.Graphics.Clyde
                 // Check if feature is available from the GL context.
                 cap = CompareVersion(majorMin, minorMin, Major, Minor) || extensions.Overlaps(exts);
 
-                var prev = cap;
+                cap = CapFinalize(capName, cap);
+            }
+
+            bool CapFinalize(string capName, bool prev)
+            {
+                bool cap = prev;
                 var cVarName = $"display.ogl_block_{capName}";
                 var block = cfg.GetCVar<bool>(cVarName);
 
@@ -224,6 +220,7 @@ namespace Robust.Client.Graphics.Clyde
                 }
 
                 _sawmill.Debug($"  {capName}: {cap}");
+                return cap;
             }
 
             (int major, int minor)? ParseGLOverrideVersion()
@@ -282,6 +279,7 @@ namespace Robust.Client.Graphics.Clyde
         {
             string[] cvars =
             {
+                "srgb",
                 "khr_debug",
                 "sampler_objects",
                 "texture_swizzle",

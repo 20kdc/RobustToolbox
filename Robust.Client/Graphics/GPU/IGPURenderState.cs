@@ -48,6 +48,15 @@ public interface IGPURenderState
     /// </summary>
     void ClearTextures();
 
+    /// <summary>Sets a uniform buffer in the render state.</summary>
+    void SetUBO(int index, GPUUniformBufferBase value);
+
+    /// <summary>
+    /// Clears the uniform buffer memory of the render state.
+    /// Strictly speaking, the units are left in an undefined state.
+    /// </summary>
+    void ClearUBOs();
+
     /// <summary>
     /// Deliberately disconnects the OpenGL state from the IGPURenderState.
     /// If you expect to "thrash" the state without doing anything, this can optimize performance.
@@ -73,6 +82,7 @@ public interface IGPURenderState
         Viewport = new();
         ColourDepthMask = ColourDepthMask.RGBAMask;
         ClearTextures();
+        ClearUBOs();
     }
 
     /// <summary>

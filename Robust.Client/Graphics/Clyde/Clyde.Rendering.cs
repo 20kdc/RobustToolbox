@@ -102,7 +102,7 @@ namespace Robust.Client.Graphics.Clyde
         private void _updateUniformConstants(in Vector2i screenSize)
         {
             var constants = new UniformConstants(Vector2.One / screenSize, (float) _gameTiming.RealTime.TotalSeconds);
-            UniformConstantsUBO.Reallocate(constants);
+            UniformConstantsUBO.Value = constants;
         }
 
         private void CalcScreenMatrices(in Vector2i screenSize, out Matrix3x2 proj, out Matrix3x2 view)
@@ -152,7 +152,7 @@ namespace Robust.Client.Graphics.Clyde
             // Because this is an UBO, these matrices should be batched as well
             // and switched out during command buffer submit by just modifying the bind points.
             var combined = new ProjViewMatrices(proj, view);
-            ProjViewUBO.Reallocate(combined);
+            ProjViewUBO.Value = combined;
         }
 
         private void SetProjViewFull(in Matrix3x2 proj, in Matrix3x2 view)
@@ -725,6 +725,8 @@ namespace Robust.Client.Graphics.Clyde
         private void ClearRenderState()
         {
             ((IGPURenderState) _renderState).Reset();
+            _renderState.SetUBO(BindingIndexProjView, ProjViewUBO);
+            _renderState.SetUBO(BindingIndexUniformConstants, UniformConstantsUBO);
 
             BatchVertexIndex = 0;
             BatchIndexIndex = 0;

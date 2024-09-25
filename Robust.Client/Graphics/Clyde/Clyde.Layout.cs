@@ -111,7 +111,7 @@ namespace Robust.Client.Graphics.Clyde
                 ViewMatrixC2 = new Vector3(viewMatrix.M31, viewMatrix.M32, 1);
             }
 
-            public void Apply(Clyde clyde, GLShaderProgram program)
+            public void Apply(GPUShaderProgram program)
             {
                 program.SetUniformMaybe("projectionMatrix", new Matrix3x2(
                     ProjMatrixC0.X, ProjMatrixC0.Y, // Implicit 0
@@ -139,7 +139,7 @@ namespace Robust.Client.Graphics.Clyde
                 Time = time;
             }
 
-            public void Apply(Clyde clyde, GLShaderProgram program)
+            public void Apply(GPUShaderProgram program)
             {
                 program.SetUniformMaybe("SCREEN_PIXEL_SIZE", ScreenPixelSize);
                 program.SetUniformMaybe("TIME", Time);

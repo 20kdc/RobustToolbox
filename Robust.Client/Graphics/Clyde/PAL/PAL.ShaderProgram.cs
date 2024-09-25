@@ -13,6 +13,13 @@ namespace Robust.Client.Graphics.Clyde;
 
 internal partial class PAL
 {
+    private ulong _uniformBufferVersion = 1;
+
+    public ulong AllocateUniformBufferVersion()
+    {
+        return _uniformBufferVersion++;
+    }
+
     GPUShaderProgram IGPUAbstraction.Compile(GPUShaderProgram.Source source, string? name) => new GLShaderProgram(this, source, name);
 }
 
@@ -26,6 +33,8 @@ internal sealed class GLShaderProgram : GPUShaderProgram
     private readonly sbyte?[] _uniformIntCache = new sbyte?[InternedUniform.UniCount];
     private readonly Dictionary<string, int> _uniformCache = new();
     private readonly Dictionary<string, int> _textureUnits = new();
+    /// <summary>When uniform buffers are not supported, there is a key here for each UBO, containing the buffer version (defaults to 0)</summary>
+    internal Dictionary<int, ulong> UniformBufferVersions { get; } = new();
     public uint Handle = 0;
     public string? Name { get; }
     private readonly PAL _pal;
@@ -107,6 +116,13 @@ internal sealed class GLShaderProgram : GPUShaderProgram
                         _pal.CheckGlError();
                         GL.UniformBlockBinding((int) Handle, index, pair.Value);
                         _pal.CheckGlError();
+                    }
+                }
+                else
+                {
+                    foreach (var pair in source.UniformBlockBindings)
+                    {
+                        UniformBufferVersions[pair.Value] = 0;
                     }
                 }
 
