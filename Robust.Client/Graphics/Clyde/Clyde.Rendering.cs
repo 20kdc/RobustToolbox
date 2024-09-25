@@ -251,8 +251,6 @@ namespace Robust.Client.Graphics.Clyde
 
             // Model matrix becomes identity since it's built into the batch mesh.
             program.SetUniformMaybe(InternedUniform.UniIModelMatrix, command.ModelMatrix);
-            // Reset ModUV to ensure it's identity and doesn't touch anything.
-            program.SetUniformMaybe(InternedUniform.UniIModUV, new Vector4(0, 0, 1, 1));
 
             program.SetUniformMaybe(InternedUniform.UniITexturePixelSize, Vector2.One / loadedTexture.Size);
 

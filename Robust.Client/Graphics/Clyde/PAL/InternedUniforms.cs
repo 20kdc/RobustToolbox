@@ -11,12 +11,11 @@ internal sealed class InternedUniform
     /// <summary>In Clyde-prepared shaders, this texture unit is reserved for lightMap.</summary>
     public const int LightTextureUnit = 1;
 
-    public static readonly InternedUniform UniIModUV = new(0, "modifyUV");
-    public static readonly InternedUniform UniIModelMatrix = new(1, "modelMatrix");
-    public static readonly InternedUniform UniITexturePixelSize = new(2, "TEXTURE_PIXEL_SIZE");
-    public static readonly InternedUniform UniIMainTexture = new(3, "TEXTURE");
-    public static readonly InternedUniform UniILightTexture = new(4, "lightMap");
-    public const int UniCount = 5;
+    public static readonly InternedUniform UniIModelMatrix = new(0, "modelMatrix");
+    public static readonly InternedUniform UniITexturePixelSize = new(1, "TEXTURE_PIXEL_SIZE");
+    public static readonly InternedUniform UniIMainTexture = new(2, "TEXTURE");
+    public static readonly InternedUniform UniILightTexture = new(3, "lightMap");
+    public const int UniCount = 4;
 
     public int Index { get; private set; }
     public string Name { get; private set; }

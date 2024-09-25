@@ -13,10 +13,6 @@ varying vec2 UV2;
 // idk yet.
 uniform mat3 modelMatrix;
 
-// Allows us to do texture atlassing with texture coordinates 0->1
-// Input texture coordinates get mapped to this range.
-uniform vec4 modifyUV;
-
 vec2 pixel_snap(vec2 vertex)
 {
     vertex += 1.0;

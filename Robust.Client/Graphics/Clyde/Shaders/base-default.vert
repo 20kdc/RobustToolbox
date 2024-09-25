@@ -15,10 +15,6 @@ varying vec4 VtxModulate;
 // idk yet.
 uniform mat3 modelMatrix;
 
-// Allows us to do texture atlassing with texture coordinates 0->1
-// Input texture coordinates get mapped to this range.
-uniform vec4 modifyUV;
-
 // [SHADER_HEADER_CODE]
 
 void main()
@@ -37,7 +33,7 @@ void main()
 
     gl_Position = vec4(VERTEX, 0.0, 1.0);
     Pos = (VERTEX + 1.0) / 2.0;
-    UV = mix(modifyUV.xy, modifyUV.zw, tCoord);
+    UV = tCoord;
     UV2 = tCoord2;
     VtxModulate = zFromSrgb(modulate);
 }
