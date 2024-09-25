@@ -101,6 +101,12 @@ namespace Robust.Client.Graphics.Clyde
             public PAL.RenderTexture WallBleedIntermediateRenderTarget1 = default!;
             public PAL.RenderTexture WallBleedIntermediateRenderTarget2 = default!;
 
+            /// <summary>
+            /// Clyde performs entity post-effects using this render target.
+            /// It may be null.
+            /// </summary>
+            public PAL.RenderTexture? EntityPostRenderTarget = null;
+
             public string? Name { get; }
 
             public Viewport(ClydeHandle handle, string? name, Clyde clyde)
@@ -189,6 +195,7 @@ namespace Robust.Client.Graphics.Clyde
                 LightRenderTarget.Dispose();
                 WallBleedIntermediateRenderTarget1.Dispose();
                 WallBleedIntermediateRenderTarget2.Dispose();
+                EntityPostRenderTarget?.Dispose();
 
                 _clyde._viewports.Remove(_handle);
             }

@@ -261,7 +261,9 @@ namespace Robust.Client.Graphics.Clyde
             var screenSize = viewport.Size;
             var overlayIndex = 0;
 
-            PAL.RenderTexture? entityPostRenderTarget = null;
+            // easier to type, better to prevent field get thrashing
+            var entityPostRT = viewport.EntityPostRenderTarget;
+
             bool flushed = false;
             for (var i = 0; i < _drawingSpriteList.Count; i++)
             {
@@ -326,24 +328,26 @@ namespace Robust.Client.Graphics.Clyde
                         //
                         // TODO PERFORMANCE better renderTarget re-use / caching.
 
-                        if (entityPostRenderTarget == null
-                            || entityPostRenderTarget.Size.X < screenSpriteSize.X
-                            || entityPostRenderTarget.Size.Y < screenSpriteSize.Y)
+                        if (entityPostRT == null
+                            || entityPostRT.Size.X < screenSpriteSize.X
+                            || entityPostRT.Size.Y < screenSpriteSize.Y)
                         {
-                            entityPostRenderTarget = _pal.CreateRenderTarget(screenSpriteSize,
+                            entityPostRT?.Dispose();
+                            entityPostRT = _pal.CreateRenderTarget(screenSpriteSize,
                                 new RenderTargetFormatParameters(RenderTargetColorFormat.Rgba8Srgb, true),
-                                name: nameof(entityPostRenderTarget));
+                                name: nameof(entityPostRT));
+                            viewport.EntityPostRenderTarget = entityPostRT;
                         }
 
-                        _renderHandle.UseRenderTarget(entityPostRenderTarget);
-                        _renderHandle.Clear(default, 0);
+                        _renderHandle.UseRenderTarget(entityPostRT);
+                        _renderHandle.Clear(Color.Transparent, 0);
 
                         // Calculate viewport so that the entity thinks it's drawing to the same position,
                         // which is necessary for light application,
                         // but it's ACTUALLY drawing into the center of the render target.
                         roundedPos = (Vector2i) entry.SpriteScreenBB.Center;
                         var flippedPos = new Vector2i(roundedPos.X, screenSize.Y - roundedPos.Y);
-                        flippedPos -= entityPostRenderTarget.Size / 2;
+                        flippedPos -= entityPostRT.Size / 2;
                         _renderHandle.Viewport(Box2i.FromDimensions(-flippedPos, screenSize));
 
                         if (entry.Sprite.RaiseShaderEvent)
@@ -354,7 +358,7 @@ namespace Robust.Client.Graphics.Clyde
 
                 spriteSystem.Render(entry.Uid, entry.Sprite, _renderHandle.DrawingHandleWorld, eye.Rotation, in entry.WorldRot, in entry.WorldPos);
 
-                if (entry.Sprite.PostShader != null && entityPostRenderTarget != null)
+                if (entry.Sprite.PostShader != null && entityPostRT != null)
                 {
                     var oldProj = _currentMatrixProj;
                     var oldView = _currentMatrixView;
@@ -367,11 +371,11 @@ namespace Robust.Client.Graphics.Clyde
                     _renderHandle.SetProjView(proj, view);
                     _renderHandle.SetModelTransform(Matrix3x2.Identity);
 
-                    var rounded = roundedPos - entityPostRenderTarget.Size / 2;
+                    var rounded = roundedPos - entityPostRT.Size / 2;
 
-                    var box = Box2i.FromDimensions(rounded, entityPostRenderTarget.Size);
+                    var box = Box2i.FromDimensions(rounded, entityPostRT.Size);
 
-                    _renderHandle.DrawTextureScreen(entityPostRenderTarget.Texture,
+                    _renderHandle.DrawTextureScreen(entityPostRT.Texture,
                         box.BottomLeft, box.BottomRight, box.TopLeft, box.TopRight,
                         Color.White, null);
 
@@ -393,7 +397,6 @@ namespace Robust.Client.Graphics.Clyde
             }
 
             ArrayPool<int>.Shared.Return(indexList);
-            entityPostRenderTarget?.Dispose();
 
             _debugStats.Entities += _drawingSpriteList.Count;
             _drawingSpriteList.Clear();
