@@ -59,9 +59,9 @@ internal sealed partial class Clyde
     void IClyde.SetWindowTitle(string s) => _pal.SetWindowTitle(s);
     void IClyde.SetWindowMonitor(IClydeMonitor s) => _pal.SetWindowMonitor(s);
     void IClyde.RequestWindowAttention() => _pal.RequestWindowAttention();
-    public event Action<WindowResizedEventArgs> OnWindowResized = delegate {};
-    public event Action<WindowFocusedEventArgs> OnWindowFocused = delegate {};
-    public event Action<WindowContentScaleEventArgs> OnWindowScaleChanged = delegate {};
+    public event Action<WindowResizedEventArgs>? OnWindowResized;
+    public event Action<WindowFocusedEventArgs>? OnWindowFocused;
+    public event Action<WindowContentScaleEventArgs>? OnWindowScaleChanged;
 
     ICursor IClyde.GetStandardCursor(StandardCursorShape shape) => _pal.GetStandardCursor(shape);
     ICursor IClyde.CreateCursor(Image<Rgba32> image, Vector2i hotSpot) => _pal.CreateCursor(image, hotSpot);
@@ -72,30 +72,30 @@ internal sealed partial class Clyde
     void IClyde.TextInputStart() => _pal.TextInputStart();
     void IClyde.TextInputStop() => _pal.TextInputStop();
 
-    public event Action<TextEnteredEventArgs> TextEntered = delegate {};
-    public event Action<TextEditingEventArgs> TextEditing = delegate {};
-    public event Action<MouseMoveEventArgs> MouseMove = delegate {};
-    public event Action<MouseEnterLeaveEventArgs> MouseEnterLeave = delegate {};
-    public event Action<KeyEventArgs> KeyUp = delegate {};
-    public event Action<KeyEventArgs> KeyDown = delegate {};
-    public event Action<MouseWheelEventArgs> MouseWheel = delegate {};
-    public event Action<WindowRequestClosedEventArgs> CloseWindow = delegate {};
-    public event Action<WindowDestroyedEventArgs> DestroyWindow = delegate {};
+    public event Action<TextEnteredEventArgs>? TextEntered;
+    public event Action<TextEditingEventArgs>? TextEditing;
+    public event Action<MouseMoveEventArgs>? MouseMove;
+    public event Action<MouseEnterLeaveEventArgs>? MouseEnterLeave;
+    public event Action<KeyEventArgs>? KeyUp;
+    public event Action<KeyEventArgs>? KeyDown;
+    public event Action<MouseWheelEventArgs>? MouseWheel;
+    public event Action<WindowRequestClosedEventArgs>? CloseWindow;
+    public event Action<WindowDestroyedEventArgs>? DestroyWindow;
 
     private void RegisterWindowingConnectors()
     {
-        _pal.OnWindowResized += OnWindowResized.Invoke;
-        _pal.OnWindowFocused += OnWindowFocused.Invoke;
-        _pal.OnWindowScaleChanged += OnWindowScaleChanged.Invoke;
+        _pal.OnWindowResized += (e) => OnWindowResized?.Invoke(e);
+        _pal.OnWindowFocused += (e) => OnWindowFocused?.Invoke(e);
+        _pal.OnWindowScaleChanged += (e) => OnWindowScaleChanged?.Invoke(e);
         // --
-        _pal.TextEntered += TextEntered.Invoke;
-        _pal.TextEditing += TextEditing.Invoke;
-        _pal.MouseMove += MouseMove.Invoke;
-        _pal.MouseEnterLeave += MouseEnterLeave.Invoke;
-        _pal.KeyUp += KeyUp.Invoke;
-        _pal.KeyDown += KeyDown.Invoke;
-        _pal.MouseWheel += MouseWheel.Invoke;
-        _pal.CloseWindow += CloseWindow.Invoke;
-        _pal.DestroyWindow += DestroyWindow.Invoke;
+        _pal.TextEntered += (e) => TextEntered?.Invoke(e);
+        _pal.TextEditing += (e) => TextEditing?.Invoke(e);
+        _pal.MouseMove += (e) => MouseMove?.Invoke(e);
+        _pal.MouseEnterLeave += (e) => MouseEnterLeave?.Invoke(e);
+        _pal.KeyUp += (e) => KeyUp?.Invoke(e);
+        _pal.KeyDown += (e) => KeyDown?.Invoke(e);
+        _pal.MouseWheel += (e) => MouseWheel?.Invoke(e);
+        _pal.CloseWindow += (e) => CloseWindow?.Invoke(e);
+        _pal.DestroyWindow += (e) => DestroyWindow?.Invoke(e);
     }
 }
