@@ -114,7 +114,7 @@ namespace Robust.Client.Graphics.Clyde
 
             InitOpenGL();
 
-            _sawmillOgl.Debug("Setting viewport and rendering splash...");
+            _clydeSawmill.Debug("Setting viewport and rendering splash...");
 
             ((IGPURenderState) _renderState).SetViewport(0, 0, _pal.ScreenSize.X, _pal.ScreenSize.Y);
 
@@ -178,24 +178,16 @@ namespace Robust.Client.Graphics.Clyde
             _entityManager.EventBus.UnsubscribeEvent<GridRemovalEvent>(EventSource.Local, this);
         }
 
-        /// <summary>Called by InitMainWindowAndRenderer</summary>
+        /// <summary>Called by InitializePostWindowing</summary>
         private void InitOpenGL()
         {
             _renderState = _pal.CreateRenderState();
 
-            var vendor = _pal._hasGL.Vendor;
-            var renderer = _pal._hasGL.Renderer;
-            var version = _pal._hasGL.Version;
-
-            _sawmillOgl.Debug("OpenGL Vendor: {0}", vendor);
-            _sawmillOgl.Debug("OpenGL Renderer: {0}", renderer);
-            _sawmillOgl.Debug("OpenGL Version: {0}", version);
-
             DebugInfo = new ClydeDebugInfo(
                 _pal._hasGL.GLVersion,
-                renderer,
-                vendor,
-                version,
+                _pal._hasGL.Renderer,
+                _pal._hasGL.Vendor,
+                _pal._hasGL.Version,
                 _pal._hasGL.Overriding,
                 _pal._windowing!.GetDescription());
 
@@ -204,19 +196,19 @@ namespace Robust.Client.Graphics.Clyde
             // Primitive Restart's presence or lack thereof changes the amount of required memory.
             InitRenderingBatchBuffers();
 
-            _sawmillOgl.Debug("Loading stock textures...");
+            _clydeSawmill.Debug("Loading stock textures...");
 
             LoadStockTextures();
 
-            _sawmillOgl.Debug("Loading stock shaders...");
+            _clydeSawmill.Debug("Loading stock shaders...");
 
             LoadStockShaders();
 
-            _sawmillOgl.Debug("Creating various GL objects...");
+            _clydeSawmill.Debug("Creating various GL objects...");
 
             CreateMiscGLObjects();
 
-            _sawmillOgl.Debug("Setting up RenderHandle...");
+            _clydeSawmill.Debug("Setting up RenderHandle...");
 
             _renderHandle = new RenderHandle(this, _entityManager);
         }
@@ -270,12 +262,6 @@ namespace Robust.Client.Graphics.Clyde
         {
             _pal._glContext?.Shutdown();
             _pal.ShutdownWindowing();
-        }
-
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        internal bool IsMainThread()
-        {
-            return _pal.IsMainThread();
         }
     }
 }

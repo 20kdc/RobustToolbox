@@ -246,6 +246,10 @@ namespace Robust.Client.Graphics.Clyde
                 _sawmillOgl.Warning("NO VERTEX ARRAY OBJECTS! Things will probably go terribly, terribly wrong (no fallback path yet)");
             }
 
+            _sawmillOgl.Debug("OpenGL Vendor: {0}", _hasGL.Vendor);
+            _sawmillOgl.Debug("OpenGL Renderer: {0}", _hasGL.Renderer);
+            _sawmillOgl.Debug("OpenGL Version: {0}", _hasGL.Version);
+
             return true;
         }
 
