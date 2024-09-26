@@ -48,8 +48,7 @@ internal sealed partial class PAL
         var bufferLength = size.X * size.Y;
         if (!(_hasGL.FenceSync && _hasGL.AnyMapBuffer && _hasGL.PixelBufferObjects))
         {
-            _sawmillOgl.Debug("clyde.ogl",
-                "Necessary features for async screenshots not available, falling back to blocking path.");
+            _sawmillOgl.Debug("Necessary features for async screenshots not available, falling back to blocking path.");
 
             // We need these 3 features to be able to do asynchronous screenshots, if we don't have them,
             // we'll have to fall back to a crappy synchronous stalling method of glReadnPixels().

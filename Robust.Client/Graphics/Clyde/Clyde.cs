@@ -79,6 +79,7 @@ namespace Robust.Client.Graphics.Clyde
         {
             _clydeSawmill = _logManager.GetSawmill("clyde");
             _pal._sawmillOgl = _logManager.GetSawmill("clyde.ogl");
+            _pal._sawmillWin = _logManager.GetSawmill("clyde.win");
 
             _cfg.OnValueChanged(CVars.DisplayVSync, VSyncChanged, true);
             _cfg.OnValueChanged(CVars.DisplayWindowMode, WindowModeChanged, true);
@@ -107,8 +108,18 @@ namespace Robust.Client.Graphics.Clyde
             _pal._gameThread = Thread.CurrentThread;
 
             _pal.InitGLContextManager();
+
             if (!InitMainWindowAndRenderer())
                 return false;
+
+            InitOpenGL();
+
+            _sawmillOgl.Debug("Setting viewport and rendering splash...");
+
+            ((IGPURenderState) _renderState).SetViewport(0, 0, ScreenSize.X, ScreenSize.Y);
+
+            // Quickly do a render with _drawingSplash = true so the screen isn't blank.
+            Render();
 
             return true;
         }

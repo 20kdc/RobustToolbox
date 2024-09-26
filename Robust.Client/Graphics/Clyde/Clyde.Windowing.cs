@@ -35,11 +35,6 @@ namespace Robust.Client.Graphics.Clyde
         IWindowingImpl? IWindowingHost.Windowing => _windowing;
         bool IWindowingHost.ThreadWindowApi => _threadWindowApi;
 
-#pragma warning disable 414
-        // Keeping this for if/when we ever get a new renderer.
-        private Renderer _chosenRenderer;
-#pragma warning restore 414
-
         private ResPath? _windowIconPath;
         private Thread? _windowingThread;
         private bool _vSync;
@@ -180,8 +175,6 @@ namespace Robust.Client.Graphics.Clyde
             DebugTools.AssertNotNull(_windowing);
             DebugTools.AssertNotNull(_pal._glContext);
 
-            _chosenRenderer = Renderer.OpenGL;
-
             var succeeded = false;
             string? lastError = null;
 
@@ -193,7 +186,7 @@ namespace Robust.Client.Graphics.Clyde
                 {
                     if (!TryInitMainWindow(glSpec, out lastError))
                     {
-                        Logger.DebugS("clyde.win", $"OpenGL {glSpec.OpenGLVersion} unsupported: {lastError}");
+                        _pal._sawmillWin.Debug($"OpenGL {glSpec.OpenGLVersion} unsupported: {lastError}");
                         continue;
                     }
 
@@ -204,7 +197,7 @@ namespace Robust.Client.Graphics.Clyde
             else
             {
                 if (!TryInitMainWindow(null, out lastError))
-                    Logger.DebugS("clyde.win", $"Failed to create window: {lastError}");
+                    _pal._sawmillWin.Debug($"Failed to create window: {lastError}");
                 else
                     succeeded = true;
             }
@@ -229,8 +222,7 @@ namespace Robust.Client.Graphics.Clyde
                     }
                 }
 
-                Logger.FatalS("clyde.win",
-                    "Failed to create main game window! " +
+                _pal._sawmillWin.Debug("Failed to create main game window! " +
                     "This probably means your GPU is too old to run the game. " +
                     $"That or update your graphics drivers. {lastError}");
 
@@ -252,15 +244,6 @@ namespace Robust.Client.Graphics.Clyde
             {
                 _sawmillOgl.Warning("NO VERTEX ARRAY OBJECTS! Things will probably go terribly, terribly wrong (no fallback path yet)");
             }
-
-            InitOpenGL();
-
-            _sawmillOgl.Debug("Setting viewport and rendering splash...");
-
-            ((IGPURenderState) _renderState).SetViewport(0, 0, ScreenSize.X, ScreenSize.Y);
-
-            // Quickly do a render with _drawingSplash = true so the screen isn't blank.
-            Render();
 
             return true;
         }

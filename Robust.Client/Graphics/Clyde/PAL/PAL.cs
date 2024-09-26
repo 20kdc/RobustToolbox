@@ -10,6 +10,7 @@ internal sealed partial class PAL : IGPUAbstraction
 {
     internal Thread? _gameThread;
     internal ISawmill _sawmillOgl = default!;
+    internal ISawmill _sawmillWin = default!;
 
     public bool HasPrimitiveRestart => _hasGL.PrimitiveRestart;
     public bool HasSrgb => _hasGL.Srgb;

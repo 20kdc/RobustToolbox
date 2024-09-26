@@ -18,13 +18,5 @@ namespace Robust.Client.Graphics.Clyde
 
         // To be clear: You shouldn't change this. This just helps with understanding where Primitive Restart is being used.
         private const ushort PrimitiveRestartIndex = ushort.MaxValue;
-
-        private enum Renderer : sbyte
-        {
-            // Auto: Try all supported renderers (not necessarily the renderers shown here)
-            Auto = default,
-            OpenGL = 1,
-            Explode = -1,
-        }
     }
 }
