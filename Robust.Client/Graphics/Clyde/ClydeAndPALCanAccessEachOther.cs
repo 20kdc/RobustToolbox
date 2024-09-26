@@ -109,10 +109,3 @@ internal sealed partial class Clyde
         _pal.DestroyWindow += DestroyWindow.Invoke;
     }
 }
-
-internal sealed partial class PAL
-{
-    [Dependency] internal readonly Clyde _clyde = default!;
-
-    ClydeHandle IWindowingHost.AllocRid() => _clyde.AllocRid();
-}

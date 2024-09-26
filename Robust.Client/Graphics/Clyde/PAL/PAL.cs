@@ -12,6 +12,8 @@ internal sealed partial class PAL : IGPUAbstraction, IWindowingHost, IWindowing
     internal ISawmill _sawmillOgl = default!;
     internal ISawmill _sawmillWin = default!;
 
+    private long _nextRid = 1;
+
     public bool HasPrimitiveRestart => _hasGL.PrimitiveRestart;
     public bool HasSrgb => _hasGL.Srgb;
     public bool HasFloatFramebuffers => _hasGL.FloatFramebuffers;
@@ -27,5 +29,10 @@ internal sealed partial class PAL : IGPUAbstraction, IWindowingHost, IWindowing
     internal void CheckGlError([CallerFilePath] string? path = null, [CallerLineNumber] int line = default)
     {
         _hasGL.CheckGlError(path, line);
+    }
+
+    ClydeHandle IWindowingHost.AllocRid()
+    {
+        return new(_nextRid++);
     }
 }
