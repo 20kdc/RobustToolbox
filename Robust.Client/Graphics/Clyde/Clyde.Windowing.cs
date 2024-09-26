@@ -19,19 +19,19 @@ using GL = OpenToolkit.Graphics.OpenGL4.GL;
 
 namespace Robust.Client.Graphics.Clyde
 {
-    internal partial class Clyde
+    internal partial class PAL
     {
-        private readonly List<WindowReg> _windows = new();
+        internal readonly List<WindowReg> _windows = new();
         List<WindowReg> IWindowingHost.Windows => _windows;
         private readonly List<WindowHandle> _windowHandles = new();
         private readonly Dictionary<int, MonitorHandle> _monitorHandles = new();
         Dictionary<int, MonitorHandle> IWindowingHost.MonitorHandles => _monitorHandles;
 
         private int _primaryMonitorId;
-        private WindowReg? _mainWindow;
+        internal WindowReg? _mainWindow;
         WindowReg? IWindowingHost.MainWindow => _mainWindow;
 
-        private IWindowingImpl? _windowing;
+        internal IWindowingImpl? _windowing;
         IWindowingImpl? IWindowingHost.Windowing => _windowing;
         bool IWindowingHost.ThreadWindowApi => _threadWindowApi;
 
@@ -39,7 +39,8 @@ namespace Robust.Client.Graphics.Clyde
         private Thread? _windowingThread;
         private bool _vSync;
         private WindowMode _windowMode;
-        private bool _threadWindowBlit;
+        internal bool _threadWindowApi;
+        internal bool _threadWindowBlit;
         bool IWindowingHost.EffectiveThreadWindowBlit => _threadWindowBlit && !_hasGL.GLES;
 
         public event Action<TextEnteredEventArgs>? TextEntered;
@@ -88,7 +89,7 @@ namespace Robust.Client.Graphics.Clyde
             return _windowing?.WindowGetX11Id(_mainWindow!) ?? null;
         }
 
-        private bool InitWindowing()
+        internal bool InitWindowing()
         {
             if (OperatingSystem.IsWindows() && _cfg.GetCVar(CVars.DisplayAngleEs3On10_0))
             {
@@ -124,7 +125,7 @@ namespace Robust.Client.Graphics.Clyde
 
         private bool TryInitMainWindow(GLContextSpec? glSpec, [NotNullWhen(false)] out string? error)
         {
-            DebugTools.AssertNotNull(_pal._glContext);
+            DebugTools.AssertNotNull(_glContext);
 
             var width = _cfg.GetCVar(CVars.DisplayWidth);
             var height = _cfg.GetCVar(CVars.DisplayHeight);
@@ -170,23 +171,23 @@ namespace Robust.Client.Graphics.Clyde
             return true;
         }
 
-        private unsafe bool InitMainWindowAndRenderer()
+        internal unsafe bool InitMainWindowAndRenderer()
         {
             DebugTools.AssertNotNull(_windowing);
-            DebugTools.AssertNotNull(_pal._glContext);
+            DebugTools.AssertNotNull(_glContext);
 
             var succeeded = false;
             string? lastError = null;
 
-            if (_pal._glContext!.RequireWindowGL)
+            if (_glContext!.RequireWindowGL)
             {
-                var specs = _pal._glContext!.SpecsToTry;
+                var specs = _glContext!.SpecsToTry;
 
                 foreach (var glSpec in specs)
                 {
                     if (!TryInitMainWindow(glSpec, out lastError))
                     {
-                        _pal._sawmillWin.Debug($"OpenGL {glSpec.OpenGLVersion} unsupported: {lastError}");
+                        _sawmillWin.Debug($"OpenGL {glSpec.OpenGLVersion} unsupported: {lastError}");
                         continue;
                     }
 
@@ -197,7 +198,7 @@ namespace Robust.Client.Graphics.Clyde
             else
             {
                 if (!TryInitMainWindow(null, out lastError))
-                    _pal._sawmillWin.Debug($"Failed to create window: {lastError}");
+                    _sawmillWin.Debug($"Failed to create window: {lastError}");
                 else
                     succeeded = true;
             }
@@ -222,7 +223,7 @@ namespace Robust.Client.Graphics.Clyde
                     }
                 }
 
-                _pal._sawmillWin.Debug("Failed to create main game window! " +
+                _sawmillWin.Debug("Failed to create main game window! " +
                     "This probably means your GPU is too old to run the game. " +
                     $"That or update your graphics drivers. {lastError}");
 
@@ -233,14 +234,14 @@ namespace Robust.Client.Graphics.Clyde
             DebugTools.AssertNotNull(_mainWindow);
 
             // GLFeatures must be set by _glContext.
-            var glFeatures = _pal._glContext.GLWrapper;
+            var glFeatures = _glContext.GLWrapper;
             DebugTools.AssertNotNull(glFeatures);
 
             // We're ready, copy over information...
-            _pal._hasGL = glFeatures!;
-            _pal.SetupDebugCallback();
+            _hasGL = glFeatures!;
+            SetupDebugCallback();
 
-            if (!_pal._hasGL.AnyVertexArrayObjects)
+            if (!_hasGL.AnyVertexArrayObjects)
             {
                 _sawmillOgl.Warning("NO VERTEX ARRAY OBJECTS! Things will probably go terribly, terribly wrong (no fallback path yet)");
             }
@@ -268,7 +269,21 @@ namespace Robust.Client.Graphics.Clyde
             }
         }
 
-        private void ShutdownWindowing()
+        void IWindowingHost.SetupDebugCallback()
+        {
+            SetupDebugCallback();
+        }
+
+        RenderTexture IWindowingHost.CreateWindowRenderTarget(Vector2i size)
+        {
+            return CreateRenderTarget(size, new RenderTargetFormatParameters
+            {
+                ColorFormat = RenderTargetColorFormat.Rgba8Srgb,
+                HasDepthStencil = true
+            });
+        }
+
+        internal void ShutdownWindowing()
         {
             _windowing?.Shutdown();
         }
@@ -300,12 +315,12 @@ namespace Robust.Client.Graphics.Clyde
         public IClydeWindow CreateWindow(WindowCreateParameters parameters)
         {
             DebugTools.AssertNotNull(_windowing);
-            DebugTools.AssertNotNull(_pal._glContext);
+            DebugTools.AssertNotNull(_glContext);
             DebugTools.AssertNotNull(_mainWindow);
 
-            var glSpec = _pal._glContext!.SpecToCreateWindowsWith;
+            var glSpec = _glContext!.SpecToCreateWindowsWith;
 
-            _pal._glContext.BeforeSharedWindowCreateUnbind();
+            _glContext.BeforeSharedWindowCreateUnbind();
 
             var (reg, error) = SharedWindowCreate(
                 glSpec,
@@ -343,10 +358,10 @@ namespace Robust.Client.Graphics.Clyde
                 _windows.Add(reg);
                 _windowHandles.Add(reg.Handle);
 
-                reg.RenderTarget = new PAL.RenderWindow(_pal, reg.Id, true, reg.FramebufferSize);
+                reg.RenderTarget = new RenderWindow(this, reg.Id, true, reg.FramebufferSize);
 
-                _pal._glContext!.WindowCreated(glSpec, reg);
-                _pal._glContext!.UpdateVSync(_vSync);
+                _glContext!.WindowCreated(glSpec, reg);
+                _glContext!.UpdateVSync(_vSync);
             }
 
             // Pass through result whether successful or not, caller handles it.
@@ -360,7 +375,7 @@ namespace Robust.Client.Graphics.Clyde
 
         void IWindowingHost.UpdateVSync()
         {
-            _pal._glContext?.UpdateVSync(_vSync);
+            _glContext?.UpdateVSync(_vSync);
         }
 
         void IWindowingHost.DoDestroyWindow(WindowReg reg)
@@ -378,7 +393,7 @@ namespace Robust.Client.Graphics.Clyde
 
             reg.IsDisposed = true;
 
-            _pal._glContext!.WindowDestroyed(reg);
+            _glContext!.WindowDestroyed(reg);
             _windowing!.WindowDestroy(reg);
 
             _windows.Remove(reg);
@@ -395,32 +410,22 @@ namespace Robust.Client.Graphics.Clyde
             DispatchEvents();
         }
 
-        private void SwapAllBuffers()
+        internal void SwapAllBuffers()
         {
-            _pal._glContext?.SwapAllBuffers();
+            _glContext?.SwapAllBuffers();
         }
 
-        private void VSyncChanged(bool newValue)
+        internal void VSyncChanged(bool newValue)
         {
             _vSync = newValue;
-            _pal._glContext?.UpdateVSync(newValue);
+            _glContext?.UpdateVSync(newValue);
         }
 
-        private void WindowModeChanged(int mode)
+        internal void WindowModeChanged(int mode)
         {
             _windowMode = (WindowMode) mode;
             if (_mainWindow != null)
                 _windowing?.WindowSetMode(_mainWindow, _windowMode);
-        }
-
-        Task<string> IClipboardManager.GetText()
-        {
-            return _windowing?.ClipboardGetText(_mainWindow!) ?? Task.FromResult("");
-        }
-
-        void IClipboardManager.SetText(string text)
-        {
-            _windowing?.ClipboardSetText(_mainWindow!, text);
         }
 
         public IEnumerable<IClydeMonitor> EnumerateMonitors()

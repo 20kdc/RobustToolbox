@@ -11,7 +11,7 @@ using Button = Robust.Client.Input.Mouse.Button;
 
 namespace Robust.Client.Graphics.Clyde;
 
-internal partial class Clyde
+internal partial class PAL
 {
     private sealed partial class Sdl2WindowingImpl
     {

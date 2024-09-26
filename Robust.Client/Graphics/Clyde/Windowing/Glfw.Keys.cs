@@ -15,7 +15,7 @@ using Robust.Shared.Configuration;
 
 namespace Robust.Client.Graphics.Clyde
 {
-    internal partial class Clyde
+    internal partial class PAL
     {
         private sealed partial class GlfwWindowingImpl
         {

@@ -6,13 +6,12 @@ using Robust.Shared.Log;
 #endif
 
 using System.Collections.Generic;
-using OpenToolkit.Graphics.OpenGL4;
 using Robust.Client.Input;
 using Robust.Shared.Maths;
 
 namespace Robust.Client.Graphics.Clyde
 {
-    internal sealed partial class Clyde
+    internal sealed partial class PAL
     {
         // To avoid re-entrancy bollocks we need ANOTHER queue here to actually dispatch our raw input events.
         // Yes, on top of the two queues inside the GLFW impl.
@@ -112,7 +111,7 @@ namespace Robust.Client.Graphics.Clyde
             var loaded = reg.RenderTarget;
             loaded.SizeActual = reg.FramebufferSize;
 
-            _pal._glContext!.WindowResized(reg, oldSize);
+            _glContext!.WindowResized(reg, oldSize);
 
             var eventArgs = new WindowResizedEventArgs(
                 oldSize,

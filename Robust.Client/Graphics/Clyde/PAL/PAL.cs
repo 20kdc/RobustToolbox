@@ -6,7 +6,7 @@ using Robust.Shared.Log;
 namespace Robust.Client.Graphics.Clyde;
 
 /// <summary>'Sanity layer' over GL, windowing, etc.</summary>
-internal sealed partial class PAL : IGPUAbstraction
+internal sealed partial class PAL : IGPUAbstraction, IWindowingHost, IWindowing
 {
     internal Thread? _gameThread;
     internal ISawmill _sawmillOgl = default!;

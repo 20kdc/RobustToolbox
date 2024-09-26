@@ -18,7 +18,7 @@ namespace Robust.Client.Graphics.Clyde
                 if (_cfg.GetCVar(CVars.DisplayAngleCustomSwapChain))
                 {
                     _sawmillOgl.Debug("Trying custom swap chain ANGLE.");
-                    var ctxAngle = new PAL.GLContextAngle(_clyde);
+                    var ctxAngle = new PAL.GLContextAngle(this);
 
                     if (ctxAngle.TryInitialize())
                     {
@@ -31,7 +31,7 @@ namespace Robust.Client.Graphics.Clyde
                 if (_cfg.GetCVar(CVars.DisplayEgl))
                 {
                     _sawmillOgl.Debug("Trying EGL");
-                    var ctxEgl = new PAL.GLContextEgl(_clyde);
+                    var ctxEgl = new PAL.GLContextEgl(this);
                     ctxEgl.InitializePublic();
                     _glContext = ctxEgl;
                     return;
@@ -42,14 +42,14 @@ namespace Robust.Client.Graphics.Clyde
             if (OperatingSystem.IsLinux() && _cfg.GetCVar(CVars.DisplayEgl))
             {
                 _sawmillOgl.Debug("Trying EGL");
-                var ctxEgl = new PAL.GLContextEgl(_clyde);
+                var ctxEgl = new PAL.GLContextEgl(this);
                 ctxEgl.InitializePublic();
                 _glContext = ctxEgl;
                 return;
             }
             */
 
-            _glContext = new PAL.GLContextWindow(_clyde);
+            _glContext = new PAL.GLContextWindow(this);
         }
     }
 }

@@ -5,11 +5,11 @@ using Robust.Shared.Utility;
 
 namespace Robust.Client.Graphics.Clyde;
 
-internal sealed partial class Clyde
+internal sealed partial class PAL
 {
     private bool _usQwertyKeys;
 
-    private void InitKeys()
+    internal void InitKeys()
     {
         _cfg.OnValueChanged(CVars.DisplayUSQWERTYHotkeys, val =>
         {

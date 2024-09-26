@@ -120,7 +120,7 @@ namespace Robust.Client
                     deps.Register<Clyde, Clyde>();
                     deps.Register<IClyde, Clyde>();
                     deps.Register<IGPUAbstraction, PAL>();
-                    deps.Register<IWindowing, Clyde>();
+                    deps.Register<IWindowing, PAL>();
                     deps.Register<IClipboardManager, Clyde>();
                     deps.Register<IClydeInternal, Clyde>();
                     deps.Register<IAudioManager, AudioManager>();

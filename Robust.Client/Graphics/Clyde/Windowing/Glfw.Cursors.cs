@@ -11,7 +11,7 @@ using GlfwImage = OpenToolkit.GraphicsLibraryFramework.Image;
 
 namespace Robust.Client.Graphics.Clyde
 {
-    internal partial class Clyde
+    internal partial class PAL
     {
         private sealed unsafe partial class GlfwWindowingImpl
         {

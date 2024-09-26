@@ -7,6 +7,13 @@ using Robust.Shared.Log;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using Robust.Shared.Configuration;
+using System.Threading.Tasks;
+using Robust.Client.UserInterface;
+using Robust.Client.Input;
+using Robust.Shared.Map;
+using Robust.Shared.Timing;
+using System.Numerics;
+using System.Collections.Generic;
 
 namespace Robust.Client.Graphics.Clyde;
 
@@ -37,25 +44,75 @@ internal sealed partial class Clyde
         return _pal.CreateRenderTarget(size, format, sampleParameters, name);
     }
 
-    void IWindowingHost.SetupDebugCallback()
+    Task<string> IClipboardManager.GetText()
     {
-        _pal.SetupDebugCallback();
+        return _pal._windowing?.ClipboardGetText(_pal._mainWindow!) ?? Task.FromResult("");
     }
 
-    IConfigurationManager IWindowingHost.Cfg => _cfg;
-    ILogManager IWindowingHost.LogManager => _logManager;
-
-    PAL.RenderTexture IWindowingHost.CreateWindowRenderTarget(Vector2i size)
+    void IClipboardManager.SetText(string text)
     {
-        return _pal.CreateRenderTarget(size, new RenderTargetFormatParameters
-        {
-            ColorFormat = RenderTargetColorFormat.Rgba8Srgb,
-            HasDepthStencil = true
-        });
+        _pal._windowing?.ClipboardSetText(_pal._mainWindow!, text);
+    }
+
+    bool IClydeInternal.SeparateWindowThread => _pal._threadWindowApi;
+    string IClydeInternal.GetKeyName(Keyboard.Key key) => _pal.GetKeyName(key);
+    uint? IClydeInternal.GetX11WindowId() => _pal.GetX11WindowId();
+    void IClydeInternal.RunOnWindowThread(Action action) => _pal.RunOnWindowThread(action);
+    ScreenCoordinates IClydeInternal.MouseScreenPosition => _pal.MouseScreenPosition;
+    void IClydeInternal.ProcessInput(FrameEventArgs frameEventArgs) => _pal.ProcessInput(frameEventArgs);
+
+    IClydeWindow IClyde.MainWindow => _pal.MainWindow;
+    Vector2i IClyde.ScreenSize => _pal.ScreenSize;
+    bool IClyde.IsFocused => _pal.IsFocused;
+    IEnumerable<IClydeWindow> IClyde.AllWindows => _pal.AllWindows;
+    Vector2 IClyde.DefaultWindowScale => _pal.DefaultWindowScale;
+    void IClyde.SetWindowTitle(string s) => _pal.SetWindowTitle(s);
+    void IClyde.SetWindowMonitor(IClydeMonitor s) => _pal.SetWindowMonitor(s);
+    void IClyde.RequestWindowAttention() => _pal.RequestWindowAttention();
+    public event Action<WindowResizedEventArgs> OnWindowResized = delegate {};
+    public event Action<WindowFocusedEventArgs> OnWindowFocused = delegate {};
+    public event Action<WindowContentScaleEventArgs> OnWindowScaleChanged = delegate {};
+
+    ICursor IClyde.GetStandardCursor(StandardCursorShape shape) => _pal.GetStandardCursor(shape);
+    ICursor IClyde.CreateCursor(Image<Rgba32> image, Vector2i hotSpot) => _pal.CreateCursor(image, hotSpot);
+    void IClyde.SetCursor(ICursor? cursor) => _pal.SetCursor(cursor);
+    IEnumerable<IClydeMonitor> IClyde.EnumerateMonitors() => _pal.EnumerateMonitors();
+    IClydeWindow IClyde.CreateWindow(WindowCreateParameters parameters) => _pal.CreateWindow(parameters);
+    void IClyde.TextInputSetRect(UIBox2i rect) => _pal.TextInputSetRect(rect);
+    void IClyde.TextInputStart() => _pal.TextInputStart();
+    void IClyde.TextInputStop() => _pal.TextInputStop();
+
+    public event Action<TextEnteredEventArgs> TextEntered = delegate {};
+    public event Action<TextEditingEventArgs> TextEditing = delegate {};
+    public event Action<MouseMoveEventArgs> MouseMove = delegate {};
+    public event Action<MouseEnterLeaveEventArgs> MouseEnterLeave = delegate {};
+    public event Action<KeyEventArgs> KeyUp = delegate {};
+    public event Action<KeyEventArgs> KeyDown = delegate {};
+    public event Action<MouseWheelEventArgs> MouseWheel = delegate {};
+    public event Action<WindowRequestClosedEventArgs> CloseWindow = delegate {};
+    public event Action<WindowDestroyedEventArgs> DestroyWindow = delegate {};
+
+    private void RegisterWindowingConnectors()
+    {
+        _pal.OnWindowResized += OnWindowResized.Invoke;
+        _pal.OnWindowFocused += OnWindowFocused.Invoke;
+        _pal.OnWindowScaleChanged += OnWindowScaleChanged.Invoke;
+        // --
+        _pal.TextEntered += TextEntered.Invoke;
+        _pal.TextEditing += TextEditing.Invoke;
+        _pal.MouseMove += MouseMove.Invoke;
+        _pal.MouseEnterLeave += MouseEnterLeave.Invoke;
+        _pal.KeyUp += KeyUp.Invoke;
+        _pal.KeyDown += KeyDown.Invoke;
+        _pal.MouseWheel += MouseWheel.Invoke;
+        _pal.CloseWindow += CloseWindow.Invoke;
+        _pal.DestroyWindow += DestroyWindow.Invoke;
     }
 }
 
 internal sealed partial class PAL
 {
     [Dependency] internal readonly Clyde _clyde = default!;
+
+    ClydeHandle IWindowingHost.AllocRid() => _clyde.AllocRid();
 }

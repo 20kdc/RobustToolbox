@@ -57,7 +57,7 @@ namespace Robust.Client.Graphics.Clyde
 
             public override string SawmillCategory => "clyde.ogl.angle";
 
-            public GLContextAngle(Clyde clyde) : base(clyde)
+            public GLContextAngle(IWindowingHost clyde) : base(clyde)
             {
             }
 

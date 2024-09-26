@@ -734,11 +734,11 @@ namespace Robust.Client.Graphics.Clyde
             _lightingReady = false;
             _currentMatrixModel = Matrix3x2.Identity;
             SetScissorFull(null);
-            BindRenderTargetFull(_mainWindow!.RenderTarget);
+            BindRenderTargetFull(_pal._mainWindow!.RenderTarget);
             _batchMetaData = null;
             _queuedShaderInstance = _defaultShader;
 
-            ((IGPURenderState) _renderState).SetViewport(0, 0, _mainWindow!.FramebufferSize.X, _mainWindow!.FramebufferSize.Y);
+            ((IGPURenderState) _renderState).SetViewport(0, 0, _pal._mainWindow!.FramebufferSize.X, _pal._mainWindow!.FramebufferSize.Y);
         }
 
         [StructLayout(LayoutKind.Explicit)]

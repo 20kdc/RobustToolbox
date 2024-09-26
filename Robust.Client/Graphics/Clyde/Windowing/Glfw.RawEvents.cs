@@ -3,7 +3,7 @@ using OpenToolkit.GraphicsLibraryFramework;
 
 namespace Robust.Client.Graphics.Clyde
 {
-    partial class Clyde
+    partial class PAL
     {
         private unsafe partial class GlfwWindowingImpl
         {

@@ -7,7 +7,7 @@ using Robust.Shared.Map;
 
 namespace Robust.Client.Graphics.Clyde
 {
-    partial class Clyde
+    partial class PAL
     {
         private partial class GlfwWindowingImpl
         {

@@ -58,7 +58,7 @@ namespace Robust.Client.Graphics.Clyde
 
             public override string SawmillCategory => "clyde.ogl.window";
 
-            public GLContextWindow(Clyde clyde) : base(clyde)
+            public GLContextWindow(IWindowingHost clyde) : base(clyde)
             {
             }
 

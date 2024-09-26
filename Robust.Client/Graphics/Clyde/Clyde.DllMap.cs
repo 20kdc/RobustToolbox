@@ -3,9 +3,9 @@ using System.Runtime.InteropServices;
 
 namespace Robust.Client.Graphics.Clyde
 {
-    internal partial class Clyde
+    internal partial class PAL
     {
-        static Clyde()
+        static PAL()
         {
             if (OperatingSystem.IsWindows() &&
                 RuntimeInformation.ProcessArchitecture == Architecture.X64 &&

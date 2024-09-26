@@ -18,7 +18,7 @@ using X11Window = TerraFX.Interop.Xlib.Window;
 
 namespace Robust.Client.Graphics.Clyde
 {
-    internal partial class Clyde
+    internal partial class PAL
     {
         private sealed unsafe partial class GlfwWindowingImpl
         {

@@ -43,7 +43,7 @@ namespace Robust.Client.Graphics.Clyde
             _pal.CheckTransferringScreenshots();
 
             var allMinimized = true;
-            foreach (var windowReg in _windows)
+            foreach (var windowReg in _pal._windows)
             {
                 if (!windowReg.IsMinimized)
                 {
@@ -52,7 +52,7 @@ namespace Robust.Client.Graphics.Clyde
                 }
             }
 
-            var size = ScreenSize;
+            var size = _pal.ScreenSize;
             if (size.X == 0 || size.Y == 0 || allMinimized)
             {
                 // Sleep to avoid turning the computer into a heater.
@@ -70,10 +70,10 @@ namespace Robust.Client.Graphics.Clyde
             // Basic pre-render busywork.
 
             // Update shared UBOs.
-            _updateUniformConstants(_mainWindow!.FramebufferSize);
+            _updateUniformConstants(_pal._mainWindow!.FramebufferSize);
 
             {
-                CalcScreenMatrices(ScreenSize, out var proj, out var view);
+                CalcScreenMatrices(_pal.ScreenSize, out var proj, out var view);
                 SetProjViewFull(proj, view);
             }
 
@@ -82,7 +82,7 @@ namespace Robust.Client.Graphics.Clyde
             {
                 DrawSplash(_renderHandle);
                 FlushRenderQueue();
-                SwapAllBuffers();
+                _pal.SwapAllBuffers();
                 return;
             }
 
@@ -94,7 +94,7 @@ namespace Robust.Client.Graphics.Clyde
 
             // Clear screen to correct color.
             var clearValue = ConvertClearFromSrgb(_userInterfaceManager.GetMainClearColor());
-            MainWindow.RenderTarget.Clear(clearValue.R, clearValue.G, clearValue.B, clearValue.A, stencilMask: -1, stencilValue: 0);
+            _pal.MainWindow.RenderTarget.Clear(clearValue.R, clearValue.G, clearValue.B, clearValue.A, stencilMask: -1, stencilValue: 0);
 
             using (_pal.DebugGroup("UI"))
             using (_prof.Group("UI"))
@@ -108,7 +108,7 @@ namespace Robust.Client.Graphics.Clyde
             using (_prof.Group("Swap buffers"))
             {
                 // And finally, swap those buffers!
-                SwapAllBuffers();
+                _pal.SwapAllBuffers();
             }
 
             using (_prof.Group("Stats"))
@@ -142,7 +142,7 @@ namespace Robust.Client.Graphics.Clyde
 
             if (overlay.OverwriteTargetFrameBuffer)
             {
-                MainWindow.RenderTarget.Clear(0, 0, 0, 0, stencilMask: -1, stencilValue: 0);
+                _pal.MainWindow.RenderTarget.Clear(0, 0, 0, 0, stencilMask: -1, stencilValue: 0);
             }
 
             try
@@ -418,7 +418,7 @@ namespace Robust.Client.Graphics.Clyde
 
             var texture = _resourceCache.GetResource<TextureResource>(splashTex).Texture;
 
-            handle.DrawingHandleScreen.DrawTexture(texture, (ScreenSize - texture.Size) / 2);
+            handle.DrawingHandleScreen.DrawTexture(texture, (_pal.ScreenSize - texture.Size) / 2);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

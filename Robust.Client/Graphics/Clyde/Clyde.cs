@@ -28,7 +28,7 @@ namespace Robust.Client.Graphics.Clyde
     /// <summary>
     ///     Responsible for most things rendering on OpenGL mode.
     /// </summary>
-    internal sealed partial class Clyde : IClydeInternal, IPostInjectInit, IEntityEventSubscriber, IWindowingHost, IWindowing
+    internal sealed partial class Clyde : IClydeInternal, IPostInjectInit, IEntityEventSubscriber
     {
         [Dependency] private readonly IClydeTileDefinitionManager _tileDefinitionManager = default!;
         [Dependency] private readonly IEyeManager _eyeManager = default!;
@@ -67,8 +67,6 @@ namespace Robust.Client.Graphics.Clyde
 
         private ISawmill _clydeSawmill = default!;
 
-        private bool _threadWindowApi;
-
         public Clyde()
         {
             _currentRenderTarget = default!;
@@ -77,12 +75,14 @@ namespace Robust.Client.Graphics.Clyde
 
         public bool InitializePreWindowing()
         {
+            RegisterWindowingConnectors();
+
             _clydeSawmill = _logManager.GetSawmill("clyde");
             _pal._sawmillOgl = _logManager.GetSawmill("clyde.ogl");
             _pal._sawmillWin = _logManager.GetSawmill("clyde.win");
 
-            _cfg.OnValueChanged(CVars.DisplayVSync, VSyncChanged, true);
-            _cfg.OnValueChanged(CVars.DisplayWindowMode, WindowModeChanged, true);
+            _cfg.OnValueChanged(CVars.DisplayVSync, _pal.VSyncChanged, true);
+            _cfg.OnValueChanged(CVars.DisplayWindowMode, _pal.WindowModeChanged, true);
             _cfg.OnValueChanged(CVars.LightResolutionScale, LightResolutionScaleChanged, true);
             _cfg.OnValueChanged(CVars.MaxShadowcastingLights, MaxShadowcastingLightsChanged, true);
             _cfg.OnValueChanged(CVars.LightSoftShadows, SoftShadowsChanged, true);
@@ -95,12 +95,12 @@ namespace Robust.Client.Graphics.Clyde
             if (OperatingSystem.IsWindows() || OperatingSystem.IsLinux())
                 _cfg.OverrideDefault(CVars.DisplayThreadWindowApi, true);
 
-            _threadWindowBlit = _cfg.GetCVar(CVars.DisplayThreadWindowBlit);
-            _threadWindowApi = _cfg.GetCVar(CVars.DisplayThreadWindowApi);
+            _pal._threadWindowBlit = _cfg.GetCVar(CVars.DisplayThreadWindowBlit);
+            _pal._threadWindowApi = _cfg.GetCVar(CVars.DisplayThreadWindowApi);
 
-            InitKeys();
+            _pal.InitKeys();
 
-            return InitWindowing();
+            return _pal.InitWindowing();
         }
 
         public bool InitializePostWindowing()
@@ -109,14 +109,14 @@ namespace Robust.Client.Graphics.Clyde
 
             _pal.InitGLContextManager();
 
-            if (!InitMainWindowAndRenderer())
+            if (!_pal.InitMainWindowAndRenderer())
                 return false;
 
             InitOpenGL();
 
             _sawmillOgl.Debug("Setting viewport and rendering splash...");
 
-            ((IGPURenderState) _renderState).SetViewport(0, 0, ScreenSize.X, ScreenSize.Y);
+            ((IGPURenderState) _renderState).SetViewport(0, 0, _pal.ScreenSize.X, _pal.ScreenSize.Y);
 
             // Quickly do a render with _drawingSplash = true so the screen isn't blank.
             Render();
@@ -124,28 +124,25 @@ namespace Robust.Client.Graphics.Clyde
             return true;
         }
 
-        public bool SeparateWindowThread => _threadWindowApi;
-
         public void EnterWindowLoop()
         {
-            _windowing!.EnterWindowLoop();
+            _pal._windowing!.EnterWindowLoop();
         }
 
         public void TerminateWindowLoop()
         {
-            _windowing!.TerminateWindowLoop();
+            _pal._windowing!.TerminateWindowLoop();
         }
 
         public void FrameProcess(FrameEventArgs eventArgs)
         {
-            if (!_threadWindowApi)
+            if (!_pal._threadWindowApi)
             {
-                _windowing!.PollEvents();
+                _pal._windowing!.PollEvents();
             }
 
-            _windowing?.FlushDispose();
-            FlushShaderInstanceDispose();
             _pal.FlushDispose();
+            FlushShaderInstanceDispose();
             FlushViewportDispose();
         }
 
@@ -200,7 +197,7 @@ namespace Robust.Client.Graphics.Clyde
                 vendor,
                 version,
                 _pal._hasGL.Overriding,
-                _windowing!.GetDescription());
+                _pal._windowing!.GetDescription());
 
             _renderState.Blend = BlendParameters.Mix;
 
@@ -272,7 +269,7 @@ namespace Robust.Client.Graphics.Clyde
         public void Shutdown()
         {
             _pal._glContext?.Shutdown();
-            ShutdownWindowing();
+            _pal.ShutdownWindowing();
         }
 
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]

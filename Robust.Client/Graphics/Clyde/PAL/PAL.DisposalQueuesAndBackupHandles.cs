@@ -87,6 +87,7 @@ internal sealed partial class PAL
     /// <summary>Disposes of dead resources.</summary>
     internal void FlushDispose()
     {
+        _windowing?.FlushDispose();
         while (_renderTextureDisposeQueue.TryDequeue(out var handle))
         {
             DeleteRenderTexture(handle);
