@@ -34,23 +34,6 @@ internal sealed partial class Clyde
         return _pal.CreateRenderTarget(size, format, sampleParameters, name);
     }
 
-    Task<string> IClipboardManager.GetText()
-    {
-        return _pal._windowing?.ClipboardGetText(_pal._mainWindow!) ?? Task.FromResult("");
-    }
-
-    void IClipboardManager.SetText(string text)
-    {
-        _pal._windowing?.ClipboardSetText(_pal._mainWindow!, text);
-    }
-
-    bool IClydeInternal.SeparateWindowThread => _pal._threadWindowApi;
-    string IClydeInternal.GetKeyName(Keyboard.Key key) => _pal.GetKeyName(key);
-    uint? IClydeInternal.GetX11WindowId() => _pal.GetX11WindowId();
-    void IClydeInternal.RunOnWindowThread(Action action) => _pal.RunOnWindowThread(action);
-    ScreenCoordinates IClydeInternal.MouseScreenPosition => _pal.MouseScreenPosition;
-    void IClydeInternal.ProcessInput(FrameEventArgs frameEventArgs) => _pal.ProcessInput(frameEventArgs);
-
     IClydeWindow IClyde.MainWindow => _pal.MainWindow;
     Vector2i IClyde.ScreenSize => _pal.ScreenSize;
     bool IClyde.IsFocused => _pal.IsFocused;
@@ -72,30 +55,10 @@ internal sealed partial class Clyde
     void IClyde.TextInputStart() => _pal.TextInputStart();
     void IClyde.TextInputStop() => _pal.TextInputStop();
 
-    public event Action<TextEnteredEventArgs>? TextEntered;
-    public event Action<TextEditingEventArgs>? TextEditing;
-    public event Action<MouseMoveEventArgs>? MouseMove;
-    public event Action<MouseEnterLeaveEventArgs>? MouseEnterLeave;
-    public event Action<KeyEventArgs>? KeyUp;
-    public event Action<KeyEventArgs>? KeyDown;
-    public event Action<MouseWheelEventArgs>? MouseWheel;
-    public event Action<WindowRequestClosedEventArgs>? CloseWindow;
-    public event Action<WindowDestroyedEventArgs>? DestroyWindow;
-
     private void RegisterWindowingConnectors()
     {
         _pal.OnWindowResized += (e) => OnWindowResized?.Invoke(e);
         _pal.OnWindowFocused += (e) => OnWindowFocused?.Invoke(e);
         _pal.OnWindowScaleChanged += (e) => OnWindowScaleChanged?.Invoke(e);
-        // --
-        _pal.TextEntered += (e) => TextEntered?.Invoke(e);
-        _pal.TextEditing += (e) => TextEditing?.Invoke(e);
-        _pal.MouseMove += (e) => MouseMove?.Invoke(e);
-        _pal.MouseEnterLeave += (e) => MouseEnterLeave?.Invoke(e);
-        _pal.KeyUp += (e) => KeyUp?.Invoke(e);
-        _pal.KeyDown += (e) => KeyDown?.Invoke(e);
-        _pal.MouseWheel += (e) => MouseWheel?.Invoke(e);
-        _pal.CloseWindow += (e) => CloseWindow?.Invoke(e);
-        _pal.DestroyWindow += (e) => DestroyWindow?.Invoke(e);
     }
 }

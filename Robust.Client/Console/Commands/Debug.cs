@@ -898,7 +898,7 @@ namespace Robust.Client.Console.Commands
 
     internal sealed class GetKeyInfoCommand : LocalizedCommands
     {
-        [Dependency] private readonly IClydeInternal _clyde = default!;
+        [Dependency] private readonly IPALInternal _pal = default!;
 
         public override string Command => "keyinfo";
 
@@ -914,7 +914,7 @@ namespace Robust.Client.Console.Commands
             {
                 var key = (Keyboard.Key)parsed!;
 
-                var name = _clyde.GetKeyName(key);
+                var name = _pal.GetKeyName(key);
 
                 shell.WriteLine($"name: '{name}' ");
             }

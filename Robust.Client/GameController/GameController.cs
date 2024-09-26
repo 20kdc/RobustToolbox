@@ -71,6 +71,7 @@ namespace Robust.Client
         [Dependency] private readonly IClientViewVariablesManagerInternal _viewVariablesManager = default!;
         [Dependency] private readonly IDiscordRichPresence _discord = default!;
         [Dependency] private readonly IClydeInternal _clyde = default!;
+        [Dependency] private readonly IPALInternal _pal = default!;
         [Dependency] private readonly IAudioInternal _audio = default!;
         [Dependency] private readonly IFontManagerInternal _fontManager = default!;
         [Dependency] private readonly IModLoaderInternal _modLoader = default!;
@@ -113,7 +114,8 @@ namespace Robust.Client
         {
             DebugTools.AssertNotNull(_resourceManifest);
 
-            _clyde.InitializePostWindowing();
+            _pal.InitializePostWindowing();
+            _clyde.InitializePostGL();
             _audio.InitializePostWindowing();
             _clyde.SetWindowTitle(
                 Options.DefaultWindowTitle ?? _resourceManifest!.DefaultWindowTitle ?? "RobustToolbox");
@@ -401,13 +403,13 @@ namespace Robust.Client
                 });
             }
 
-            _clyde.TextEntered += TextEntered;
-            _clyde.TextEditing += TextEditing;
-            _clyde.MouseMove += MouseMove;
-            _clyde.KeyUp += KeyUp;
-            _clyde.KeyDown += KeyDown;
-            _clyde.MouseWheel += MouseWheel;
-            _clyde.CloseWindow += args =>
+            _pal.TextEntered += TextEntered;
+            _pal.TextEditing += TextEditing;
+            _pal.MouseMove += MouseMove;
+            _pal.KeyUp += KeyUp;
+            _pal.KeyDown += KeyDown;
+            _pal.MouseWheel += MouseWheel;
+            _pal.CloseWindow += args =>
             {
                 if (args.Window == _clyde.MainWindow)
                 {
@@ -416,7 +418,7 @@ namespace Robust.Client
             };
 
             // Bring display up as soon as resources are mounted.
-            return _clyde.InitializePreWindowing();
+            return _pal.InitializePreWindowing();
         }
 
         private Stream? VerifierExtraLoadHandler(string arg)
@@ -486,7 +488,7 @@ namespace Robust.Client
         {
             using (_prof.Group("Input Events"))
             {
-                _clyde.ProcessInput(frameEventArgs);
+                _pal.ProcessInput(frameEventArgs);
             }
 
             using (_prof.Group("Network"))
@@ -709,7 +711,7 @@ namespace Robust.Client
 
         internal void CleanupWindowThread()
         {
-            _clyde.Shutdown();
+            _pal.Shutdown();
             _audio.Shutdown();
         }
 

@@ -37,6 +37,7 @@ namespace Robust.Client.UserInterface
         [Dependency] private readonly IInputManager _inputManager = default!;
         [Dependency] private readonly IFontManager _fontManager = default!;
         [Dependency] private readonly IClydeInternal _clyde = default!;
+        [Dependency] private readonly IPALInternal _pal = default!;
         [Dependency] private readonly IClientGameTiming _gameTiming = default!;
         [Dependency] private readonly IResourceCache _resourceCache = default!;
         [Dependency] private readonly IPlayerManager _playerManager = default!;
@@ -149,12 +150,12 @@ namespace Robust.Client.UserInterface
         {
             _sawmillUI = _logManager.GetSawmill("ui");
 
-            RootControl = CreateWindowRoot(_clyde.MainWindow);
+            RootControl = CreateWindowRoot(_pal.MainWindow);
             RootControl.Name = "MainWindowRoot";
             RootControl.DisableAutoScaling = false;
 
-            _clyde.DestroyWindow += WindowDestroyed;
-            _clyde.OnWindowFocused += ClydeOnWindowFocused;
+            _pal.DestroyWindow += WindowDestroyed;
+            _pal.OnWindowFocused += ClydeOnWindowFocused;
 
             MainViewport = new MainViewportContainer(_eyeManager)
             {

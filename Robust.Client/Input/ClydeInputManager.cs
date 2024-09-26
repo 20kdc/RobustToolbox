@@ -7,13 +7,13 @@ namespace Robust.Client.Input
 {
     internal sealed class ClydeInputManager : InputManager
     {
-        [Dependency] private readonly IClydeInternal _clyde = default!;
+        [Dependency] private readonly IPALInternal _pal = default!;
 
-        public override ScreenCoordinates MouseScreenPosition => _clyde.MouseScreenPosition;
+        public override ScreenCoordinates MouseScreenPosition => _pal.MouseScreenPosition;
 
         public override string GetKeyName(Keyboard.Key key)
         {
-            return _clyde.GetKeyName(key);
+            return _pal.GetKeyName(key);
         }
     }
 }

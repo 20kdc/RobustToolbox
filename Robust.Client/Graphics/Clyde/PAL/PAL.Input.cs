@@ -9,7 +9,7 @@ internal sealed partial class PAL
 {
     private bool _usQwertyKeys;
 
-    internal void InitKeys()
+    private void InitKeys()
     {
         _cfg.OnValueChanged(CVars.DisplayUSQWERTYHotkeys, val =>
         {

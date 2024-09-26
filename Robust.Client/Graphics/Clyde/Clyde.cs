@@ -73,44 +73,13 @@ namespace Robust.Client.Graphics.Clyde
             SixLabors.ImageSharp.Configuration.Default.PreferContiguousImageBuffers = true;
         }
 
-        public bool InitializePreWindowing()
+        public void InitializePostGL()
         {
-            RegisterWindowingConnectors();
-
-            _clydeSawmill = _logManager.GetSawmill("clyde");
-            _pal._sawmillOgl = _logManager.GetSawmill("clyde.ogl");
-            _pal._sawmillWin = _logManager.GetSawmill("clyde.win");
-
-            _cfg.OnValueChanged(CVars.DisplayVSync, _pal.VSyncChanged, true);
-            _cfg.OnValueChanged(CVars.DisplayWindowMode, _pal.WindowModeChanged, true);
             _cfg.OnValueChanged(CVars.LightResolutionScale, LightResolutionScaleChanged, true);
             _cfg.OnValueChanged(CVars.MaxShadowcastingLights, MaxShadowcastingLightsChanged, true);
             _cfg.OnValueChanged(CVars.LightSoftShadows, SoftShadowsChanged, true);
             _cfg.OnValueChanged(CVars.MaxLightCount, MaxLightsChanged, true);
             _cfg.OnValueChanged(CVars.MaxOccluderCount, MaxOccludersChanged, true);
-            // I can't be bothered to tear down and set these threads up in a cvar change handler.
-
-            // Windows and Linux can be trusted to not explode with threaded windowing,
-            // macOS cannot.
-            if (OperatingSystem.IsWindows() || OperatingSystem.IsLinux())
-                _cfg.OverrideDefault(CVars.DisplayThreadWindowApi, true);
-
-            _pal._threadWindowBlit = _cfg.GetCVar(CVars.DisplayThreadWindowBlit);
-            _pal._threadWindowApi = _cfg.GetCVar(CVars.DisplayThreadWindowApi);
-
-            _pal.InitKeys();
-
-            return _pal.InitWindowing();
-        }
-
-        public bool InitializePostWindowing()
-        {
-            _pal._gameThread = Thread.CurrentThread;
-
-            _pal.InitGLContextManager();
-
-            if (!_pal.InitMainWindowAndRenderer())
-                return false;
 
             InitOpenGL();
 
@@ -120,28 +89,10 @@ namespace Robust.Client.Graphics.Clyde
 
             // Quickly do a render with _drawingSplash = true so the screen isn't blank.
             Render();
-
-            return true;
-        }
-
-        public void EnterWindowLoop()
-        {
-            _pal._windowing!.EnterWindowLoop();
-        }
-
-        public void TerminateWindowLoop()
-        {
-            _pal._windowing!.TerminateWindowLoop();
         }
 
         public void FrameProcess(FrameEventArgs eventArgs)
         {
-            if (!_pal._threadWindowApi)
-            {
-                _pal._windowing!.PollEvents();
-            }
-
-            _pal.FlushDispose();
             FlushShaderInstanceDispose();
             FlushViewportDispose();
         }
@@ -162,6 +113,9 @@ namespace Robust.Client.Graphics.Clyde
             // This cvar does not modify the actual GL version requested or anything,
             // it overrides the version we detect to detect GL features.
             GLWrapper.RegisterBlockCVars(_cfg);
+            RegisterWindowingConnectors();
+
+            _clydeSawmill = _logManager.GetSawmill("clyde");
         }
 
         public void RegisterGridEcsEvents()
@@ -189,7 +143,7 @@ namespace Robust.Client.Graphics.Clyde
                 _pal._hasGL.Vendor,
                 _pal._hasGL.Version,
                 _pal._hasGL.Overriding,
-                _pal._windowing!.GetDescription());
+                _pal.WindowingDescription);
 
             _renderState.Blend = BlendParameters.Mix;
 
@@ -256,12 +210,6 @@ namespace Robust.Client.Graphics.Clyde
                 Srgb = true,
                 SampleParameters = new TextureSampleParameters() { Filter = false, WrapMode = TextureWrapMode.MirroredRepeat}
             });
-        }
-
-        public void Shutdown()
-        {
-            _pal._glContext?.Shutdown();
-            _pal.ShutdownWindowing();
         }
     }
 }

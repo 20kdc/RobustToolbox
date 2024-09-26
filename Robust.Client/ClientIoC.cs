@@ -108,6 +108,7 @@ namespace Robust.Client
                     deps.Register<IGPUAbstraction, ClydeHeadless>();
                     deps.Register<IWindowing, ClydeHeadless>();
                     deps.Register<IClipboardManager, ClydeHeadless>();
+                    deps.Register<IPALInternal, ClydeHeadless>();
                     deps.Register<IClydeInternal, ClydeHeadless>();
                     deps.Register<IAudioManager, HeadlessAudioManager>();
                     deps.Register<IAudioInternal, HeadlessAudioManager>();
@@ -121,7 +122,8 @@ namespace Robust.Client
                     deps.Register<IClyde, Clyde>();
                     deps.Register<IGPUAbstraction, PAL>();
                     deps.Register<IWindowing, PAL>();
-                    deps.Register<IClipboardManager, Clyde>();
+                    deps.Register<IClipboardManager, PAL>();
+                    deps.Register<IPALInternal, PAL>();
                     deps.Register<IClydeInternal, Clyde>();
                     deps.Register<IAudioManager, AudioManager>();
                     deps.Register<IAudioInternal, AudioManager>();

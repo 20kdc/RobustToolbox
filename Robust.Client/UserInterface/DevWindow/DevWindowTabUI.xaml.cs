@@ -16,7 +16,7 @@ namespace Robust.Client.UserInterface;
 [GenerateTypedNameReferences]
 public sealed partial class DevWindowTabUI : Control
 {
-    [Dependency] private readonly IClydeInternal _clyde = default!;
+    [Dependency] private readonly IPALInternal _pal = default!;
     [Dependency] private readonly IInputManager _input = default!;
 
     public Control? SelectedControl { get; private set; }
@@ -136,7 +136,7 @@ public sealed partial class DevWindowTabUI : Control
         }
 
         UserInterfaceManager.OnPostDrawUIRoot += OnPostDrawUIRoot;
-        _clyde.MouseMove += OnMouseMove;
+        _pal.MouseMove += OnMouseMove;
         _input.UIKeyBindStateChanged += OnUIKeyBindStateChanged;
     }
 
@@ -148,7 +148,7 @@ public sealed partial class DevWindowTabUI : Control
         ControlTreeRoot.RemoveAllChildren();
 
         UserInterfaceManager.OnPostDrawUIRoot -= OnPostDrawUIRoot;
-        _clyde.MouseMove -= OnMouseMove;
+        _pal.MouseMove -= OnMouseMove;
         _input.UIKeyBindStateChanged -= OnUIKeyBindStateChanged;
     }
 

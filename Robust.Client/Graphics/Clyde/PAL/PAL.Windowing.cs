@@ -31,7 +31,7 @@ namespace Robust.Client.Graphics.Clyde
         internal WindowReg? _mainWindow;
         WindowReg? IWindowingHost.MainWindow => _mainWindow;
 
-        internal IWindowingImpl? _windowing;
+        private IWindowingImpl? _windowing;
         IWindowingImpl? IWindowingHost.Windowing => _windowing;
         bool IWindowingHost.ThreadWindowApi => _threadWindowApi;
 
@@ -39,8 +39,10 @@ namespace Robust.Client.Graphics.Clyde
         private Thread? _windowingThread;
         private bool _vSync;
         private WindowMode _windowMode;
-        internal bool _threadWindowApi;
-        internal bool _threadWindowBlit;
+        private bool _threadWindowApi;
+        private bool _threadWindowBlit;
+
+        bool IPALInternal.SeparateWindowThread => _threadWindowApi;
         bool IWindowingHost.EffectiveThreadWindowBlit => _threadWindowBlit && !_hasGL.GLES;
 
         public event Action<TextEnteredEventArgs>? TextEntered;
@@ -89,7 +91,7 @@ namespace Robust.Client.Graphics.Clyde
             return _windowing?.WindowGetX11Id(_mainWindow!) ?? null;
         }
 
-        internal bool InitWindowing()
+        private bool InitWindowing()
         {
             if (OperatingSystem.IsWindows() && _cfg.GetCVar(CVars.DisplayAngleEs3On10_0))
             {
@@ -171,7 +173,7 @@ namespace Robust.Client.Graphics.Clyde
             return true;
         }
 
-        internal unsafe bool InitMainWindowAndRenderer()
+        private unsafe bool InitMainWindowAndRenderer()
         {
             DebugTools.AssertNotNull(_windowing);
             DebugTools.AssertNotNull(_glContext);
@@ -287,7 +289,7 @@ namespace Robust.Client.Graphics.Clyde
             });
         }
 
-        internal void ShutdownWindowing()
+        private void ShutdownWindowing()
         {
             _windowing?.Shutdown();
         }
@@ -419,13 +421,13 @@ namespace Robust.Client.Graphics.Clyde
             _glContext?.SwapAllBuffers();
         }
 
-        internal void VSyncChanged(bool newValue)
+        private void VSyncChanged(bool newValue)
         {
             _vSync = newValue;
             _glContext?.UpdateVSync(newValue);
         }
 
-        internal void WindowModeChanged(int mode)
+        private void WindowModeChanged(int mode)
         {
             _windowMode = (WindowMode) mode;
             if (_mainWindow != null)

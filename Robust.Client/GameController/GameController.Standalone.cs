@@ -98,7 +98,7 @@ namespace Robust.Client
                 return;
             }
 
-            if (_clyde.SeparateWindowThread)
+            if (_pal.SeparateWindowThread)
             {
                 var stackSize = _configurationManager.GetCVar(CVars.SysGameThreadStackSize);
                 var priority = (ThreadPriority) _configurationManager.GetCVar(CVars.SysGameThreadPriority);
@@ -119,7 +119,7 @@ namespace Robust.Client
                 _gameThread.Start();
 
                 // Will block until game exit
-                _clyde.EnterWindowLoop();
+                _pal.EnterWindowLoop();
 
                 if (_gameThread.IsAlive)
                 {
@@ -148,7 +148,7 @@ namespace Robust.Client
             ContinueStartupAndLoop(mode);
 
             // Game thread exited, make sure window thread unblocks to finish shutdown.
-            _clyde.TerminateWindowLoop();
+            _pal.TerminateWindowLoop();
         }
 
         private void ContinueStartupAndLoop(DisplayMode mode)

@@ -10,30 +10,20 @@ using Robust.Shared.Timing;
 
 namespace Robust.Client.Graphics
 {
-    internal interface IClydeInternal : IClyde, IClipboardManager
+    internal interface IClydeInternal : IClyde
     {
         // Basic main loop hooks.
         void Render();
         void FrameProcess(FrameEventArgs eventArgs);
-        void ProcessInput(FrameEventArgs frameEventArgs);
 
         // Init.
-        bool SeparateWindowThread { get; }
-        bool InitializePreWindowing();
-        void EnterWindowLoop();
-        bool InitializePostWindowing();
+        // PAL.InitializePreWindowing
+        // PAL.EnterWindowLoop
+        // PAL.InitializePostWindowing
+        void InitializePostGL();
         void Ready();
-        void TerminateWindowLoop();
-
-        event Action<TextEnteredEventArgs> TextEntered;
-        event Action<TextEditingEventArgs> TextEditing;
-        event Action<MouseMoveEventArgs> MouseMove;
-        event Action<MouseEnterLeaveEventArgs> MouseEnterLeave;
-        event Action<KeyEventArgs> KeyUp;
-        event Action<KeyEventArgs> KeyDown;
-        event Action<MouseWheelEventArgs> MouseWheel;
-        event Action<WindowRequestClosedEventArgs> CloseWindow;
-        event Action<WindowDestroyedEventArgs> DestroyWindow;
+        // PAL.Shutdown
+        // PAL.TerminateWindowLoop
 
         ClydeHandle LoadShader(ParsedShader shader, string? name = null, Dictionary<string,string>? defines = null);
 
@@ -44,11 +34,6 @@ namespace Robust.Client.Graphics
         /// </summary>
         ShaderInstance InstanceShader(ShaderSourceResource handle, bool? light = null, BlendParameters? blend = null);
 
-        /// <summary>
-        ///     This is purely a hook for <see cref="IInputManager"/>, use that instead.
-        /// </summary>
-        ScreenCoordinates MouseScreenPosition { get; }
-
         IClydeDebugInfo DebugInfo { get; }
 
         IClydeDebugStats DebugStats { get; }
@@ -57,17 +42,8 @@ namespace Robust.Client.Graphics
 
         ClydeDebugLayers DebugLayers { get; set; }
 
-        string GetKeyName(Keyboard.Key key);
-
-        void Shutdown();
-
-        /// <returns>Null if not running on X11.</returns>
-        uint? GetX11WindowId();
-
         void RegisterGridEcsEvents();
 
         void ShutdownGridEcsEvents();
-
-        void RunOnWindowThread(Action action);
     }
 }

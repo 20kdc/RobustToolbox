@@ -25,7 +25,7 @@ namespace Robust.Client.UserInterface
         // Uses nativefiledialog to open the file dialogs cross platform.
         // On Linux, if the kdialog command is found, it will be used instead.
         // TODO: Should we maybe try to avoid running kdialog if the DE isn't KDE?
-        [Dependency] private readonly IClydeInternal _clyde = default!;
+        [Dependency] private readonly IPALInternal _pal = default!;
 
         private bool _kDialogAvailable;
         private bool _checkedKDialogAvailable;
@@ -168,7 +168,7 @@ namespace Robust.Client.UserInterface
                 // So we are forced to execute this synchronously on the main windowing thread.
                 // nativefiledialog doesn't provide any form of async API, so this WILL lock up half the client.
                 var tcs = new TaskCompletionSource<string?>();
-                _clyde.RunOnWindowThread(() => tcs.SetResult(action()));
+                _pal.RunOnWindowThread(() => tcs.SetResult(action()));
 
                 return tcs.Task;
             }
@@ -325,7 +325,7 @@ namespace Robust.Client.UserInterface
                 startInfo.ArgumentList.Add(option);
             }
 
-            if (_clyde.GetX11WindowId() is { } id)
+            if (_pal.GetX11WindowId() is { } id)
             {
                 startInfo.ArgumentList.Add("--attach");
                 startInfo.ArgumentList.Add(id.ToString());

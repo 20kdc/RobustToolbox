@@ -8,9 +8,9 @@ namespace Robust.Client.Graphics.Clyde
     internal sealed partial class PAL
     {
         internal GLWrapper _hasGL = default!;
-        internal GLContextBase? _glContext;
+        private GLContextBase? _glContext;
 
-        internal void InitGLContextManager()
+        private void InitGLContextManager()
         {
             // Advanced GL contexts currently disabled due to lack of testing etc.
             if (OperatingSystem.IsWindows() && _cfg.GetCVar(CVars.DisplayAngle))

@@ -4,7 +4,7 @@ using System.IO;
 using System.Numerics;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using Robust.Client.Audio;
+using Robust.Client.Graphics;
 using Robust.Client.Input;
 using Robust.Client.ResourceManagement;
 using Robust.Client.UserInterface.CustomControls;
@@ -24,7 +24,7 @@ namespace Robust.Client.Graphics.Clyde
     ///     Hey look, it's Clyde's evil twin brother!
     /// </summary>
     [UsedImplicitly]
-    internal sealed class ClydeHeadless : IClydeInternal, IGPUAbstraction, IWindowing
+    internal sealed class ClydeHeadless : IClydeInternal, IGPUAbstraction, IWindowing, IPALInternal
     {
         // Would it make sense to report a fake resolution like 720p here so code doesn't break? idk.
         public IClydeWindow MainWindow { get; }
@@ -134,6 +134,13 @@ namespace Robust.Client.Graphics.Clyde
             // Nada.
         }
 
+        public void PollEventsAndCleanupResources()
+        {
+            // Eeenope.
+        }
+
+        public string WindowingDescription => "Headless";
+
         public void FrameProcess(FrameEventArgs eventArgs)
         {
             // Nada.
@@ -164,6 +171,10 @@ namespace Robust.Client.Graphics.Clyde
         public bool InitializePostWindowing()
         {
             return true;
+        }
+
+        public void InitializePostGL()
+        {
         }
 
         public bool HasPrimitiveRestart => true;
