@@ -13,6 +13,12 @@ namespace Robust.Client.Graphics.Clyde;
 
 internal partial class PAL
 {
+    /// <summary>
+    /// Currently bound shader program. PAL rebinds this when a draw call or uniform set requires it.
+    /// This was separated from render state to reduce uniform set overhead.
+    /// </summary>
+    internal GLShaderProgram? _currentProgram = null;
+
     private ulong _uniformBufferVersion = 1;
 
     public ulong AllocateUniformBufferVersion()
@@ -128,27 +134,19 @@ internal sealed class GLShaderProgram : GPUShaderProgram
 
                 // -- After this point, everything is mostly initialized, except... --
 
-                // Below code uses this since uniforms are being set.
+                _pal._currentProgram = this;
                 GL.UseProgram(Handle);
                 clyde.CheckGlError();
 
-                try
+                // Bind texture uniforms to units.
+                // By doing this we skip having to go fetch them later.
+                // By placing uniforms at preallocated spots,
+                //  you can do stuff like Clyde's Main/Light units, without needing to intern uniforms.
+                foreach (var pair in source.SamplerUnits)
                 {
-                    // Bind texture uniforms to units.
-                    // By doing this we skip having to go fetch them later.
-                    // By placing uniforms at preallocated spots,
-                    //  you can do stuff like Clyde's Main/Light units, without needing to intern uniforms.
-                    foreach (var pair in source.SamplerUnits)
-                    {
-                        // The use of Add here is intentional, to catch doubly-added uniforms.
-                        _textureUnits.Add(pair.Key, pair.Value);
-                        SetUniformMaybe(pair.Key, pair.Value);
-                    }
-                }
-                finally
-                {
-                    GL.UseProgram(_pal._backupProgram);
-                    clyde.CheckGlError();
+                    // The use of Add here is intentional, to catch doubly-added uniforms.
+                    _textureUnits.Add(pair.Key, pair.Value);
+                    SetUniformMaybe(pair.Key, pair.Value);
                 }
             }
             finally
@@ -183,6 +181,18 @@ internal sealed class GLShaderProgram : GPUShaderProgram
             return handle;
         }
 
+    }
+
+    /// <summary>Ensures this shader program is bound.</summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Bind()
+    {
+        if (_pal._currentProgram != this)
+        {
+            _pal._currentProgram = this;
+            GL.UseProgram(Handle);
+            _pal.CheckGlError();
+        }
     }
 
     protected override void DisposeImpl()
@@ -390,156 +400,80 @@ internal sealed class GLShaderProgram : GPUShaderProgram
 
     public override void SetUniformDirect(int uniformId, int integer)
     {
-        if (_pal._backupProgram != Handle)
-        {
-            GL.UseProgram(Handle);
-            _pal.CheckGlError();
-            GL.Uniform1(uniformId, integer);
-            _pal.CheckGlError();
-            GL.UseProgram(_pal._backupProgram);
-            _pal.CheckGlError();
-        }
-        else
-        {
-            GL.Uniform1(uniformId, integer);
-            _pal.CheckGlError();
-        }
+        Bind();
+        GL.Uniform1(uniformId, integer);
+        _pal.CheckGlError();
     }
 
     public override void SetUniformDirect(int uniformId, float single)
     {
-        if (_pal._backupProgram != Handle)
-        {
-            GL.UseProgram(Handle);
-            _pal.CheckGlError();
-            GL.Uniform1(uniformId, single);
-            _pal.CheckGlError();
-            GL.UseProgram(_pal._backupProgram);
-            _pal.CheckGlError();
-        }
-        else
-        {
-            GL.Uniform1(uniformId, single);
-            _pal.CheckGlError();
-        }
+        Bind();
+        GL.Uniform1(uniformId, single);
+        _pal.CheckGlError();
     }
 
     public override void SetUniformDirect(int uniformId, float[] singles)
     {
-        if (_pal._backupProgram != Handle)
-        {
-            GL.UseProgram(Handle);
-            _pal.CheckGlError();
-            GL.Uniform1(uniformId, singles.Length, singles);
-            _pal.CheckGlError();
-            GL.UseProgram(_pal._backupProgram);
-            _pal.CheckGlError();
-        }
-        else
-        {
-            GL.Uniform1(uniformId, singles.Length, singles);
-            _pal.CheckGlError();
-        }
+        Bind();
+        GL.Uniform1(uniformId, singles.Length, singles);
+        _pal.CheckGlError();
     }
 
     public override void SetUniformDirect(int slot, in Vector2 vector)
     {
+        Bind();
         unsafe
         {
             fixed (Vector2* ptr = &vector)
             {
-                if (_pal._backupProgram != Handle)
-                {
-                    GL.UseProgram(Handle);
-                    _pal.CheckGlError();
-                    GL.Uniform2(slot, 1, (float*)ptr);
-                    _pal.CheckGlError();
-                    GL.UseProgram(_pal._backupProgram);
-                    _pal.CheckGlError();
-                }
-                else
-                {
-                    GL.Uniform2(slot, 1, (float*)ptr);
-                    _pal.CheckGlError();
-                }
+                GL.Uniform2(slot, 1, (float*)ptr);
+                _pal.CheckGlError();
             }
         }
     }
 
     public override void SetUniformDirect(int slot, Vector2[] vectors)
     {
+        Bind();
         unsafe
         {
             fixed (Vector2* ptr = &vectors[0])
             {
-                if (_pal._backupProgram != Handle)
-                {
-                    GL.UseProgram(Handle);
-                    _pal.CheckGlError();
-                    GL.Uniform2(slot, vectors.Length, (float*)ptr);
-                    _pal.CheckGlError();
-                    GL.UseProgram(_pal._backupProgram);
-                    _pal.CheckGlError();
-                }
-                else
-                {
-                    GL.Uniform2(slot, vectors.Length, (float*)ptr);
-                    _pal.CheckGlError();
-                }
+                GL.Uniform2(slot, vectors.Length, (float*)ptr);
+                _pal.CheckGlError();
             }
         }
     }
 
     public override void SetUniformDirect(int slot, in Vector3 vector)
     {
+        Bind();
         unsafe
         {
             fixed (Vector3* ptr = &vector)
             {
-                if (_pal._backupProgram != Handle)
-                {
-                    GL.UseProgram(Handle);
-                    _pal.CheckGlError();
-                    GL.Uniform3(slot, 1, (float*)ptr);
-                    _pal.CheckGlError();
-                    GL.UseProgram(_pal._backupProgram);
-                    _pal.CheckGlError();
-                }
-                else
-                {
-                    GL.Uniform3(slot, 1, (float*)ptr);
-                    _pal.CheckGlError();
-                }
+                GL.Uniform3(slot, 1, (float*)ptr);
+                _pal.CheckGlError();
             }
         }
     }
 
     public override void SetUniformDirect(int slot, in Vector4 vector)
     {
+        Bind();
         unsafe
         {
             fixed (Vector4* ptr = &vector)
             {
-                if (_pal._backupProgram != Handle)
-                {
-                    GL.UseProgram(Handle);
-                    _pal.CheckGlError();
-                    GL.Uniform4(slot, 1, (float*)ptr);
-                    _pal.CheckGlError();
-                    GL.UseProgram(_pal._backupProgram);
-                    _pal.CheckGlError();
-                }
-                else
-                {
-                    GL.Uniform4(slot, 1, (float*)ptr);
-                    _pal.CheckGlError();
-                }
+                GL.Uniform4(slot, 1, (float*)ptr);
+                _pal.CheckGlError();
             }
         }
     }
 
     public override unsafe void SetUniformDirect(int slot, in Matrix3x2 value)
     {
+        Bind();
         // We put the rows of the input matrix into the columns of our GPU matrices
         // this transpose is required, as in C#, we premultiply vectors with matrices
         // (vM) while GL postmultiplies vectors with matrices (Mv); however, since
@@ -551,49 +485,38 @@ internal sealed class GLShaderProgram : GPUShaderProgram
             value.M21, value.M22, 0,
             value.M31, value.M32, 1
         };
-        if (_pal._backupProgram != Handle)
-        {
-            GL.UseProgram(Handle);
-            _pal.CheckGlError();
-            GL.UniformMatrix3(slot, 1, false, (float*)buf);
-            _pal.CheckGlError();
-            GL.UseProgram(_pal._backupProgram);
-            _pal.CheckGlError();
-        }
-        else
-        {
-            GL.UniformMatrix3(slot, 1, false, (float*)buf);
-            _pal.CheckGlError();
-        }
+        GL.UniformMatrix3(slot, 1, false, (float*)buf);
+        _pal.CheckGlError();
     }
 
     public override unsafe void SetUniformDirect(int uniformId, in Matrix4 value, bool transpose=true)
     {
-        Matrix4 tmpTranspose = value;
+        Bind();
         if (transpose)
         {
+            Matrix4 tmpTranspose = value;
             // transposition not supported on GLES2, & no access to _hasGLES
             tmpTranspose.Transpose();
-        }
-        if (_pal._backupProgram != Handle)
-        {
-            GL.UseProgram(Handle);
-            _pal.CheckGlError();
             GL.UniformMatrix4(uniformId, 1, false, (float*) &tmpTranspose);
-            _pal.CheckGlError();
-            GL.UseProgram(_pal._backupProgram);
             _pal.CheckGlError();
         }
         else
         {
-            GL.UniformMatrix4(uniformId, 1, false, (float*) &tmpTranspose);
-            _pal.CheckGlError();
+            unsafe
+            {
+                fixed (Matrix4* ptr = &value)
+                {
+                    GL.UniformMatrix4(uniformId, 1, false, (float*) ptr);
+                    _pal.CheckGlError();
+                }
+            }
         }
-        _pal.CheckGlError();
     }
 
     public override void SetUniformDirect(int slot, in Color color, bool convertToLinear=true)
     {
+        Bind();
+
         var converted = color;
         if (convertToLinear)
         {
@@ -602,25 +525,15 @@ internal sealed class GLShaderProgram : GPUShaderProgram
 
         unsafe
         {
-            if (_pal._backupProgram != Handle)
-            {
-                GL.UseProgram(Handle);
-                _pal.CheckGlError();
-                GL.Uniform4(slot, 1, (float*) &converted);
-                _pal.CheckGlError();
-                GL.UseProgram(_pal._backupProgram);
-                _pal.CheckGlError();
-            }
-            else
-            {
-                GL.Uniform4(slot, 1, (float*) &converted);
-                _pal.CheckGlError();
-            }
+            GL.Uniform4(slot, 1, (float*) &converted);
+            _pal.CheckGlError();
         }
     }
 
     public override void SetUniformDirect(int uniformId, bool[] bools)
     {
+        Bind();
+
         Span<int> intBools = stackalloc int[bools.Length];
 
         for (var i = 0; i < bools.Length; i++)
@@ -632,20 +545,8 @@ internal sealed class GLShaderProgram : GPUShaderProgram
         {
             fixed (int* intBoolsPtr = intBools)
             {
-                if (_pal._backupProgram != Handle)
-                {
-                    GL.UseProgram(Handle);
-                    _pal.CheckGlError();
-                    GL.Uniform1(uniformId, bools.Length, intBoolsPtr);
-                    _pal.CheckGlError();
-                    GL.UseProgram(_pal._backupProgram);
-                    _pal.CheckGlError();
-                }
-                else
-                {
-                    GL.Uniform1(uniformId, bools.Length, intBoolsPtr);
-                    _pal.CheckGlError();
-                }
+                GL.Uniform1(uniformId, bools.Length, intBoolsPtr);
+                _pal.CheckGlError();
             }
         }
     }

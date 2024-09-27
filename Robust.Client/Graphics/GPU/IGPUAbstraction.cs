@@ -80,7 +80,13 @@ public interface IGPUAbstraction
     /// <summary>Creates a Vertex Array Object. This object specifies the vertex data of a draw call.</summary>
     GPUVertexArrayObject CreateVAO(string? name = null);
 
-    /// <summary>Creates a new render state. This is similar to render passes in WebGPU, but you can do all sorts of fun stuff.</summary>
+    /// <summary>
+    /// Creates a new render state.
+    /// These are kind of similar to render passes in WebGPU, but really it's closest to a virtualized OpenGL context.
+    /// In particular, you can make draw calls to the same framebuffer on different render states, and their order will be preserved.
+    /// Beware, though: Rapidly switching between render states is kind of expensive.
+    /// In practice this feature isolates Clyde code from Content code, while still avoiding unnecessary state updates.
+    /// </summary>
     IGPURenderState CreateRenderState();
 
     /// <summary>Compiles a shader program. Throws ShaderCompilationException on error.</summary>

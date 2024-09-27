@@ -20,10 +20,15 @@ namespace Robust.Client.Graphics.Clyde;
 internal partial class PAL
 {
     public int LastGLDrawCalls { get; set; }
-    // Amount of render state resets.
-    // This is the "main" PAL overhead, so we want to keep a close eye on these.
+    /// <summary>
+    /// Amount of render state resets.
+    /// This is the "main" PAL overhead, so we want to keep a close eye on these.
+    /// </summary>
     public int LastRenderStateResets { get; set; }
 
+    /// <summary>
+    /// Currently bound render state. PAL rebinds this when a draw call requires it.
+    /// </summary>
     private GLRenderState? _currentRenderState = null;
 
     // Some simple flags that basically just tracks the current state of glEnable(GL_STENCIL/GL_SCISSOR_TEST)
@@ -199,10 +204,6 @@ internal partial class PAL
             set
             {
                 _program = (GLShaderProgram?) value;
-                if (_pal._currentRenderState == this && GPUResource.IsValid(_program))
-                {
-                    _pal.DCUseProgram(_program.Handle);
-                }
             }
         }
 
@@ -377,8 +378,6 @@ internal partial class PAL
                     _pal.DCSetScissor(_renderTarget, _scissor);
                 }
                 _pal._currentRenderState = this;
-                if (_program != null)
-                    _pal.DCUseProgram(_program.Handle);
                 if (_vao != null)
                     _pal.DCBindVAO(_vao.ObjectHandle);
                 _pal.SetStencilImmediate(_stencil);
@@ -407,12 +406,20 @@ internal partial class PAL
                     }
                 }
             }
-            // Bind() is always called before draw commands (and at pretty much no other time)
-            // So do this here.
+        }
+
+        /// <summary>
+        /// Prepares draw call state that can't be or isn't maintained by the render state itself.
+        /// In practice, this means the UBO emulator. Any other way = massive state thrashing.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void PrepForDrawCall()
+        {
+            _program!.Bind();
             if (!_pal._hasGL.UniformBuffers && _program != null)
             {
                 // UBOs not supported.
-                // The UBO emulator uses a versioning scheme to try and keep deduplication.
+                // The UBO emulator uses a versioning scheme to avoid repeatedly setting uniforms.
                 foreach (var entry in _uniformBuffers)
                 {
                     if (_program.UniformBufferVersions.TryGetValue(entry.Key, out var version))
@@ -427,6 +434,9 @@ internal partial class PAL
                     }
                 }
             }
+            // If this assert triggers, it is likely that ApplyIntoShader did something it shouldn't.
+            DebugTools.AssertEqual(_program, _pal._currentProgram);
+            DebugTools.AssertNotNull(_vao);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -440,7 +450,7 @@ internal partial class PAL
         public void DrawArrays(DrawPrimitiveTopology topology, int offset, int count)
         {
             Bind();
-            DebugTools.AssertNotNull(_vao);
+            PrepForDrawCall();
             GL.DrawArrays((PrimitiveType) topology, offset, count);
             _pal.CheckGlError();
             _pal.LastGLDrawCalls += 1;
@@ -450,11 +460,11 @@ internal partial class PAL
         public void DrawElements(DrawPrimitiveTopology topology, int offset, int count)
         {
             Bind();
-            DebugTools.AssertNotNull(_vao);
+            PrepForDrawCall();
             DebugTools.Assert(_vao!.IndexBufferIsBound);
             if (_pal._hasGL.VertexArrayObject)
                 DebugTools.Assert(GL.GetInteger(GetPName.VertexArrayBinding) == _vao.ObjectHandle);
-            // In the hands of a skilled evildoer, the crash that would result from this could leak arbitrary memory.
+            // In the hands of a skilled evildoer, the crash that would result from this could read arbitrary memory.
             // Just to be clear, that's bad.
             if (GL.GetInteger(GetPName.ElementArrayBufferBinding) == 0)
                 throw new Exception("Somehow, ElementArrayBufferBinding == 0");

@@ -20,18 +20,9 @@ internal sealed partial class PAL
     // They are also reset during disposal if necessary.
     // This mechanism should only be used for items where checking with _currentRenderState is inconvenient,
     //  or where it's REALLY necessary we restore to something that looks valid (in other words, resources).
-    internal uint _backupProgram;
     private uint _backupVAO;
     private RenderTargetBase _backupRenderTarget = default!;
 
-    /// <summary>To be called *only* from GLRenderState</summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void DCUseProgram(uint program)
-    {
-        GL.UseProgram(program);
-        _hasGL.CheckGlError();
-        _backupProgram = program;
-    }
     /// <summary>To be called *only* from GLRenderState</summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void DCBindVAO(uint vao)
@@ -51,14 +42,12 @@ internal sealed partial class PAL
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal void DeleteProgram(uint program)
     {
-        if (_backupProgram == program)
-            _backupProgram = 0;
         GL.DeleteProgram(program);
         _hasGL.CheckGlError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal void DeleteVAO(uint vao)
+    private void DeleteVAO(uint vao)
     {
         if (_backupVAO == vao)
             _backupVAO = 0;
@@ -85,7 +74,7 @@ internal sealed partial class PAL
     }
 
     /// <summary>Disposes of dead resources.</summary>
-    internal void FlushDispose()
+    private void FlushDispose()
     {
         _windowing?.FlushDispose();
         while (_renderTextureDisposeQueue.TryDequeue(out var handle))

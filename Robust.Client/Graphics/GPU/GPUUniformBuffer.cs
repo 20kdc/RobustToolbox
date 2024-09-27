@@ -42,7 +42,12 @@ public abstract class GPUUniformBufferBase : GPUResource
     /// <summary>'Applies' current contents into a GPUBuffer (UBOs).</summary>
     protected abstract void ApplyIntoUBO(GPUBuffer buffer);
 
-    /// <summary>'Applies' current contents into a GPUShaderProgram (emulator).</summary>
+    /// <summary>
+    /// 'Applies' current contents into a GPUShaderProgram (emulator).
+    /// This absolutely must not interact with any other GPUShaderPrograms.
+    /// Ideally this should just be a collection of SetUniform calls for the given program.
+    /// Ignoring this will result in a debug assert fail. On release builds, the results are undefined.
+    /// </summary>
     public abstract void ApplyIntoShader(GPUShaderProgram program);
 
     protected override sealed void DisposeImpl()

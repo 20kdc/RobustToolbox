@@ -65,7 +65,10 @@ public interface IGPURenderState
 
     /// <summary>
     /// Deliberately disconnects the OpenGL state from the IGPURenderState.
-    /// If you expect to "thrash" the state without doing anything, this can optimize performance.
+    /// This is useful to optimize performance in exactly two cases:
+    /// * If you expect to "thrash" the state without drawing (and you can't otherwise fix this).
+    /// * If you are about to reset to 'defaults' before using another render state.
+    /// The next render state used for drawing WILL increase LastRenderStateResets.
     /// </summary>
     void Unbind();
 
