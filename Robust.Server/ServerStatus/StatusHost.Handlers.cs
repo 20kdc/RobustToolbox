@@ -18,6 +18,7 @@ namespace Robust.Server.ServerStatus
             AddHandler(HandleTeapot);
             AddHandler(HandleStatus);
             AddHandler(HandleInfo);
+            AddHandler(HandleNewKey);
             AddAczHandlers();
         }
 

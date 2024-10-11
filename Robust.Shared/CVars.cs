@@ -893,6 +893,16 @@ namespace Robust.Shared
         public static readonly CVarDef<string> AuthServer =
             CVarDef.Create("auth.server", AuthManager.DefaultAuthServer, CVar.SERVERONLY);
 
+        /// <summary>
+        /// NewKey salt.
+        /// This randomizes the mapping from user public keys to GUIDs.
+        /// This is kept hidden from clients.
+        /// Using this cvar adds extra security, but is not strictly required.
+        /// 'Mining' a GUID would take roughly the hashpower of the Bitcoin network going for at least a thousand years.
+        /// </summary>
+        public static readonly CVarDef<string> AuthNewKeySalt =
+            CVarDef.Create("auth.newkey_salt", "", CVar.SERVERONLY | CVar.CONFIDENTIAL);
+
         /*
          * RENDERING
          */
