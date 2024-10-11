@@ -138,12 +138,46 @@ namespace Robust.Shared.Network
                     var authHash = Base64Helpers.ConvertToBase64Url(authHashBytes);
 
                     var url = $"{authServer}api/session/hasJoined?hash={authHash}&userId={msgEncResponse.UserId}";
-                    var joinedRespJson = await _http.Client.GetFromJsonAsync<HasJoinedResponse>(url);
+                    // NewKey: Launcher embeds signalling into the username which client passes.
+                    // This signal tells us to ask Status for help.
+                    HasJoinedResponse? joinedRespJson;
+                    bool newkey = msgLogin.UserName.StartsWith("NK!", false, System.Globalization.CultureInfo.InvariantCulture);
+                    if (newkey)
+                    {
+                        var reqUserName = msgLogin.UserName.Substring(3);
+                        if (!UsernameHelpers.IsNameValid(reqUserName, out var reason))
+                        {
+                            connection.Disconnect($"Username is invalid ({reason.ToText()}).");
+                            return;
+                        }
+                        // Notably, ConvertToBase64Url is not the same thing.
+                        var res = NewKeyGetHash(Convert.ToBase64String(authHashBytes));
+                        if (res == null)
+                        {
+                            connection.Disconnect(DisconnectReasonNewKeyError);
+                            return;
+                        }
+                        var hjud = new HasJoinedUserData(reqUserName, res!.Value, null);
+                        joinedRespJson = new HasJoinedResponse(true, hjud);
+                    }
+                    else
+                    {
+                        joinedRespJson = await _http.Client.GetFromJsonAsync<HasJoinedResponse>(url);
+                    }
 
                     if (joinedRespJson is not {IsValid: true})
                     {
                         connection.Disconnect("Failed to validate login");
                         return;
+                    }
+
+                    if (!newkey)
+                    {
+                        // NewKey: Defend against an auth server trying to claim keybound GUIDs
+                        var userGuid = joinedRespJson.UserData!.UserId;
+                        var bytes = joinedRespJson.UserData!.UserId.ToByteArray();
+                        bytes[7] &= 0x7F;
+                        joinedRespJson = joinedRespJson with { UserData = joinedRespJson.UserData! with { UserId = new Guid(bytes) }};
                     }
 
                     _logger.Verbose(
